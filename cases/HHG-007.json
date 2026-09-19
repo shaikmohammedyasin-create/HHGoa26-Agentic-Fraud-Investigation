@@ -15,7 +15,7 @@
     "exposure_usd": 111.92,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C09933-K2. Most recent: 2016-12-05 $225.96 (in_person). Average amount: $123.86.",
+        "claim": "50 previous transactions retrieved for card C09933-K2. Most recent: 2016-12-31 $47.96 (in_person). Average amount: $0.00.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C09933-K2)",
         "entity_ids": [
@@ -44,19 +44,19 @@
         ]
       },
       {
-        "claim": "Mixed-channel activity in 48h window: in_person, online.",
+        "claim": "Mixed-channel activity in 48h window: online, in_person.",
         "source": "graph",
         "ref": "query:card_window(card_id=C09933-K2)",
         "entity_ids": [
-          "3511937",
-          "3512302",
-          "3512690",
-          "3512716",
-          "3513073"
+          "3509151",
+          "3509355",
+          "3509392",
+          "3509466",
+          "3510700"
         ]
       },
       {
-        "claim": "20 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
+        "claim": "15 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
         "source": "document",
         "ref": "retrieval:pattern+keyword(pattern=card_not_present_fraud)",
         "entity_ids": [
@@ -75,7 +75,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-7c4c7f3c",
+        "ref": "evidence_request:ER-de3de535",
         "entity_ids": [
           "C09933"
         ]
@@ -134,7 +134,7 @@
         "reason": "R4: decline pending authorization"
       }
     ],
-    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER"
   },
   "sar": {
     "file": false,
@@ -147,5 +147,5 @@
   "stop_reason": "Borderline probability 0.55; investigation halted per stopping criteria. Escalated for analyst review.",
   "tool_calls": 17,
   "tokens": 0,
-  "latency_s": 0.17
+  "latency_s": 8.96
 }

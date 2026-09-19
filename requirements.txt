@@ -6,6 +6,7 @@ pydantic-settings>=2.2.0
 
 # Database
 aiosqlite>=0.20.0
+pyTigerGraph>=2.0.4
 
 # Data preparation
 pandas>=2.2.0

@@ -1,0 +1,78 @@
+// ============================================================
+// Step 1: Deploy Remaining 7 Vertices to fraud_investigation
+// Note: Customer vertex already exists in fraud_investigation.
+// ============================================================
+
+USE GRAPH fraud_investigation
+
+CREATE SCHEMA_CHANGE JOB deploy_hhgoa_vertices FOR GRAPH fraud_investigation {
+  ADD VERTEX Card (
+    PRIMARY_ID card_id STRING,
+    customer_id STRING,
+    card4 STRING,
+    card6 STRING
+  ) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+  ADD VERTEX Transaction (
+    PRIMARY_ID txn_id STRING,
+    ts DATETIME,
+    amount DOUBLE,
+    product_cd STRING,
+    channel STRING,
+    addr1 STRING,
+    addr2 STRING,
+    risk_score DOUBLE,
+    p_email STRING,
+    r_email STRING,
+    customer_id STRING,
+    card_id STRING
+  ) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+  ADD VERTEX DeviceProfile (
+    PRIMARY_ID device_profile_id STRING,
+    device_info STRING,
+    os STRING,
+    browser STRING,
+    screen STRING,
+    device_type STRING
+  ) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+  ADD VERTEX EmailDomain (
+    PRIMARY_ID domain STRING
+  ) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+  ADD VERTEX BillingRegion (
+    PRIMARY_ID region_code STRING,
+    country_code STRING
+  ) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+  ADD VERTEX ClosedCase (
+    PRIMARY_ID case_id STRING,
+    customer_id STRING,
+    card_id STRING,
+    opened_at DATETIME,
+    closed_at DATETIME,
+    outcome STRING,
+    pattern STRING,
+    exposure_usd DOUBLE,
+    n_txns INT,
+    report_filed BOOL,
+    analyst_notes STRING
+  ) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+
+  ADD VERTEX InvestigationCase (
+    PRIMARY_ID case_id STRING,
+    trigger_type STRING,
+    trigger_text STRING,
+    opened_at DATETIME,
+    status STRING,
+    verdict STRING,
+    fraud_probability DOUBLE,
+    pattern STRING,
+    exposure_usd DOUBLE,
+    summary STRING
+  ) WITH STATS="OUTDEGREE_BY_EDGETYPE";
+}
+
+RUN SCHEMA_CHANGE JOB deploy_hhgoa_vertices
+DROP JOB deploy_hhgoa_vertices

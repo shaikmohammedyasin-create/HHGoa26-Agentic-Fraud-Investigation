@@ -1,0 +1,443 @@
+{
+  "case_id": "HHG-014",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.329,
+    "pattern": "account_takeover",
+    "pattern_description": "Mixed-channel activity inconsistent with cardholder",
+    "affected_txn_ids": [
+      "3478561"
+    ],
+    "first_suspicious_txn_id": "3478561",
+    "connected_card_ids": [
+      "C11082-K1",
+      "C09906-K1",
+      "C07762-K1",
+      "C06197-K1",
+      "C12645-K1",
+      "C03528-K1",
+      "C07485-K1",
+      "C03744-K1",
+      "C09049-K1",
+      "C09733-K1"
+    ],
+    "connected_device_profiles": [
+      "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
+    ],
+    "exposure_usd": 74.96,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C13487-K1. Most recent: 2016-12-27 $57.89 (in_person). Average amount: $0.00.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C13487-K1)",
+        "entity_ids": [
+          "C13487-K1"
+        ]
+      },
+      {
+        "claim": "Device profile shared across 19 other card(s): C11082-K1, C09906-K1, C07762-K1, C06197-K1, C12645-K1.",
+        "source": "graph",
+        "ref": "query:accounts_sharing_device(device=SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080)",
+        "entity_ids": [
+          "C11082-K1",
+          "C09906-K1",
+          "C07762-K1",
+          "C06197-K1",
+          "C12645-K1",
+          "C03528-K1",
+          "C07485-K1",
+          "C03744-K1",
+          "C09049-K1",
+          "C09733-K1"
+        ]
+      },
+      {
+        "claim": "Mixed-channel activity in 48h window: online, in_person.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C13487-K1)",
+        "entity_ids": [
+          "3477218",
+          "3478561",
+          "3478886"
+        ]
+      },
+      {
+        "claim": "15 prior closed case(s) retrieved by pattern (account_takeover) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=account_takeover)",
+        "entity_ids": [
+          "CC-5559",
+          "CC-5563",
+          "CC-5507",
+          "CC-5514",
+          "CC-5530",
+          "CC-5509",
+          "CC-5495",
+          "CC-5467",
+          "CC-5505",
+          "CC-5397"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "source": "customer",
+        "ref": "evidence_request:ER-4a717aeb",
+        "entity_ids": [
+          "C13487"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5559",
+      "CC-5563",
+      "CC-5507",
+      "CC-5514",
+      "CC-5530",
+      "CC-5509",
+      "CC-5495",
+      "CC-5467",
+      "CC-5505",
+      "CC-5397",
+      "CC-5554",
+      "CC-5500",
+      "CC-5472",
+      "CC-5522",
+      "CC-5562"
+    ],
+    "summary": "Case HHG-014 investigated account_takeover activity on card C13487-K1 (customer C13487) around transaction 3478561 ($74.96, online). Assessed fraud probability 0.33 (LOW risk) from 5 evidence items across 3 independent sources. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-014"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "No response received within the 24-hour window."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy §3a: probability ≥ 0.30 triggers case creation"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: insufficient evidence for blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: no reply within 24 hours"
+      },
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R4: decline pending authorization"
+      }
+    ],
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER"
+  },
+  "sar": {
+    "file": false,
+    "reason": "FILE_REPORT not recommended; SAR not required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Borderline probability 0.33; investigation halted per stopping criteria. Escalated for analyst review.",
+  "tool_calls": 20,
+  "tokens": 0,
+  "latency_s": 20.65,
+  "investigation_trace": {
+    "1_trigger": {
+      "case_id": "HHG-014",
+      "trigger_type": "analyst_request",
+      "trigger_text": "Analyst request: several cards this month show purchases from the same unusual device profile. Review transaction 3478561 on card C13487-K1 and look for related activity.",
+      "flagged_txn_id": "3478561",
+      "card_id": "C13487-K1",
+      "customer_id": "C13487",
+      "risk_score": null
+    },
+    "2_live_graph_mcp": {
+      "strict_mode_active": true,
+      "tool_calls_count": 20,
+      "graph_evidence_items_count": 3,
+      "graph_evidence_sample": [
+        {
+          "claim": "50 previous transactions retrieved for card C13487-K1. Most recent: 2016-12-27 $57.89 (in_person). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C13487-K1)",
+          "entity_ids": [
+            "C13487-K1"
+          ]
+        },
+        {
+          "claim": "Device profile shared across 19 other card(s): C11082-K1, C09906-K1, C07762-K1, C06197-K1, C12645-K1.",
+          "source": "graph",
+          "ref": "query:accounts_sharing_device(device=SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080)",
+          "entity_ids": [
+            "C11082-K1",
+            "C09906-K1",
+            "C07762-K1",
+            "C06197-K1",
+            "C12645-K1",
+            "C03528-K1",
+            "C07485-K1",
+            "C03744-K1",
+            "C09049-K1",
+            "C09733-K1"
+          ]
+        },
+        {
+          "claim": "Mixed-channel activity in 48h window: online, in_person.",
+          "source": "graph",
+          "ref": "query:card_window(card_id=C13487-K1)",
+          "entity_ids": [
+            "3477218",
+            "3478561",
+            "3478886"
+          ]
+        }
+      ]
+    },
+    "3_evidence_gathered": {
+      "total_items": 5,
+      "graph_items": 3,
+      "document_items": 1,
+      "customer_items": 1,
+      "all_evidence": [
+        {
+          "claim": "50 previous transactions retrieved for card C13487-K1. Most recent: 2016-12-27 $57.89 (in_person). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C13487-K1)",
+          "entity_ids": [
+            "C13487-K1"
+          ],
+          "severity": "MEDIUM",
+          "confidence": 0.95
+        },
+        {
+          "claim": "Device profile shared across 19 other card(s): C11082-K1, C09906-K1, C07762-K1, C06197-K1, C12645-K1.",
+          "source": "graph",
+          "ref": "query:accounts_sharing_device(device=SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080)",
+          "entity_ids": [
+            "C11082-K1",
+            "C09906-K1",
+            "C07762-K1",
+            "C06197-K1",
+            "C12645-K1",
+            "C03528-K1",
+            "C07485-K1",
+            "C03744-K1",
+            "C09049-K1",
+            "C09733-K1"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.8
+        },
+        {
+          "claim": "Mixed-channel activity in 48h window: online, in_person.",
+          "source": "graph",
+          "ref": "query:card_window(card_id=C13487-K1)",
+          "entity_ids": [
+            "3477218",
+            "3478561",
+            "3478886"
+          ],
+          "severity": "MEDIUM",
+          "confidence": 0.7
+        },
+        {
+          "claim": "15 prior closed case(s) retrieved by pattern (account_takeover) and keyword match over analyst notes.",
+          "source": "document",
+          "ref": "retrieval:pattern+keyword(pattern=account_takeover)",
+          "entity_ids": [
+            "CC-5559",
+            "CC-5563",
+            "CC-5507",
+            "CC-5514",
+            "CC-5530",
+            "CC-5509",
+            "CC-5495",
+            "CC-5467",
+            "CC-5505",
+            "CC-5397"
+          ],
+          "severity": "LOW",
+          "confidence": 0.75
+        },
+        {
+          "claim": "Customer response (simulated): No response received within the 24-hour window.",
+          "source": "customer",
+          "ref": "evidence_request:ER-4a717aeb",
+          "entity_ids": [
+            "C13487"
+          ],
+          "severity": "LOW",
+          "confidence": 0.8
+        }
+      ]
+    },
+    "4_evidence_provenance": {
+      "all_refs_valid": true,
+      "all_sources_valid": true,
+      "total_sources_used": 3
+    },
+    "5_risk_assessment": {
+      "fraud_probability": 0.329,
+      "exposure_usd": 74.96,
+      "verdict": "uncertain",
+      "status": "escalated"
+    },
+    "6_fraud_pattern": {
+      "pattern": "account_takeover",
+      "pattern_description": "Mixed-channel activity inconsistent with cardholder"
+    },
+    "7_uncertainty": {
+      "uncertainty_items_count": 1,
+      "items": [
+        {
+          "question": "Did the cardholder make this transaction?",
+          "impact": "Customer denial raises probability significantly; confirmation closes the case",
+          "resolution_method": "VERIFY_WITH_CUSTOMER",
+          "status": "open"
+        }
+      ]
+    },
+    "8_evidence_requests": [
+      {
+        "type": "customer_validation",
+        "asked_after_step": 4,
+        "assumed_response": "No response received within the 24-hour window."
+      }
+    ],
+    "9_additional_evidence_received": [
+      {
+        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "source": "customer",
+        "ref": "evidence_request:ER-4a717aeb"
+      }
+    ],
+    "10_reassessment_and_diff": {
+      "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER",
+      "stop_reason": "Borderline probability 0.33; investigation halted per stopping criteria. Escalated for analyst review."
+    },
+    "11_nba_and_policy": {
+      "initial": [
+        {
+          "action": "CREATE_CASE",
+          "route": "auto",
+          "reason": "Policy §3a: probability ≥ 0.30 triggers case creation"
+        },
+        {
+          "action": "VERIFY_WITH_CUSTOMER",
+          "route": "auto",
+          "reason": "R1: insufficient evidence for blocking"
+        }
+      ],
+      "final": [
+        {
+          "action": "MONITOR_CARD",
+          "route": "auto",
+          "reason": "R4: no reply within 24 hours"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": "L1",
+          "reason": "R4: decline pending authorization"
+        }
+      ],
+      "policy_rules_applied": [
+        "R4"
+      ],
+      "approvals_required": [
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        }
+      ],
+      "sar": {
+        "file": false,
+        "reason": "FILE_REPORT not recommended; SAR not required",
+        "narrative": "",
+        "subjects": [],
+        "total_amount_usd": 0.0,
+        "activity_dates": []
+      }
+    },
+    "12_persistence_and_summary": {
+      "written_to_graph": true,
+      "graph_case_id": "CASE-2016-HHG-014",
+      "audit_events_count": 78,
+      "summary": "Case HHG-014 investigated account_takeover activity on card C13487-K1 (customer C13487) around transaction 3478561 ($74.96, online). Assessed fraud probability 0.33 (LOW risk) from 5 evidence items across 3 independent sources. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+      "tokens_used": 0,
+      "latency_s": 20.65
+    }
+  },
+  "benchmark_comparison": {
+    "expected": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_new_device",
+      "status": "closed_fraud",
+      "sar_file": true,
+      "nba_final_actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT"
+      ],
+      "reason": "Analyst request: unusual device profile shared across multiple cards with prior fraud"
+    },
+    "actual": {
+      "verdict": "uncertain",
+      "pattern": "account_takeover",
+      "status": "escalated",
+      "sar_file": false,
+      "fraud_probability": 0.329,
+      "exposure_usd": 74.96,
+      "nba_final_actions": [
+        "MONITOR_CARD",
+        "DECLINE_TRANSACTION"
+      ]
+    },
+    "verdict_match": false,
+    "pattern_match": false,
+    "sar_match": false,
+    "checkpoints_passed": 30,
+    "checkpoints_total": 30,
+    "failed_checkpoints": [],
+    "root_cause": "pattern detection"
+  }
+}

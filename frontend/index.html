@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HHGoa '26 — Agentic Fraud Investigation Command Center</title>
+  <meta name="description" content="TigerGraph-native, evidence-grounded, policy-controlled agentic fraud investigation command center for IEEE HHGoa 2026.">
+  
+  <!-- Modern Typography from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Unified Design System CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ── Top Command Bar ─────────────────────────────────────────────────── -->
+  <header class="command-bar" id="commandBar">
+    <div class="brand">
+      <div class="brand-icon">TG</div>
+      <div>
+        <div class="brand-title">HHGoa '26 Agentic Fraud Investigation</div>
+        <div class="brand-subtitle">Analyst Command Center &bull; Task #3</div>
+      </div>
+    </div>
+
+    <div class="command-controls">
+      <div class="case-select-wrapper">
+        <label for="caseSelect">Case:</label>
+        <select id="caseSelect" title="Select benchmark case trigger"></select>
+      </div>
+
+      <button id="btnInvestigate" class="btn-primary" title="Execute real backend investigation">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        Start Live Investigation
+      </button>
+
+      <div class="system-status">
+        <div class="status-badge" title="TigerGraph Savanna Cloud Status">
+          <span class="status-dot healthy" id="tgStatusDot"></span>
+          <span id="tgStatusText">TG: connected</span>
+        </div>
+        <div class="status-badge" title="Durable State DB Status">
+          <span class="status-dot healthy" id="dbStatusDot"></span>
+          <span id="dbStatusText">DB: healthy</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Primary Workspace ───────────────────────────────────────────────── -->
+  <main class="workspace" id="mainWorkspace">
+
+    <!-- ── Left Panel: Context & Live Progression Stepper ─────────────────── -->
+    <aside class="panel-left" id="panelLeft">
+      <div class="panel-header">
+        <h3>Trigger Context</h3>
+      </div>
+
+      <div class="card-box" id="triggerCard">
+        <span class="trigger-type-pill" id="triggerTypeBadge">RISK SCORE</span>
+        <div class="trigger-text" id="triggerText">Loading case trigger details...</div>
+
+        <div class="meta-grid">
+          <div class="meta-item">
+            <div class="meta-label">Flagged Txn</div>
+            <div class="meta-val" id="metaTxnId">—</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Card ID</div>
+            <div class="meta-val" id="metaCardId">—</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Customer ID</div>
+            <div class="meta-val" id="metaCustId">—</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-label">Trigger Score</div>
+            <div class="meta-val" id="metaRiskScore">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-header">
+        <h3>Investigation Progression</h3>
+      </div>
+
+      <div class="timeline-stepper" id="timelineStepper">
+        <div class="step-item active">
+          <div class="step-icon">1</div>
+          <div class="step-content">
+            <div class="step-title">Trigger Ingested</div>
+            <div class="step-desc">Alert accepted, initial record verified</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">2</div>
+          <div class="step-content">
+            <div class="step-title">Graph Memory Created</div>
+            <div class="step-desc">InvestigationCase created in open state</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">3</div>
+          <div class="step-content">
+            <div class="step-title">Live TigerGraph Traversal</div>
+            <div class="step-desc">History, 48h windows, tiny sequences, accounts</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">4</div>
+          <div class="step-content">
+            <div class="step-title">Evidence & Provenance</div>
+            <div class="step-desc">Multi-source GraphRAG evidence assembled</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">5</div>
+          <div class="step-content">
+            <div class="step-title">Uncertainty Assessment</div>
+            <div class="step-desc">Risk scoring, ambiguity and confidence evaluation</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">6</div>
+          <div class="step-content">
+            <div class="step-title">Additional Evidence Request</div>
+            <div class="step-desc">Targeted customer validation or analyst query</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">7</div>
+          <div class="step-content">
+            <div class="step-title">NBA & Policy Routing</div>
+            <div class="step-desc">Permission gating: Auto vs L1 Analyst vs L2 Compliance</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">8</div>
+          <div class="step-content">
+            <div class="step-title">Graph Case Persistence</div>
+            <div class="step-desc">Final verdict, SAR narrative, TigerGraph upsert</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Center Panel: Threat Assessment & Interactive Graph ────────────── -->
+    <section class="panel-center" id="panelCenter">
+      <div class="assessment-banner" id="assessmentBanner">
+        <div class="verdict-badge verdict-uncertain" id="verdictBadge">PENDING</div>
+
+        <div class="prob-metric">
+          <div class="prob-header">
+            <span>FRAUD PROBABILITY</span>
+            <span id="probVal">0.00</span>
+          </div>
+          <div class="prob-bar-track">
+            <div class="prob-bar-fill" id="probBar"></div>
+          </div>
+        </div>
+
+        <div class="stat-pill">
+          <div class="stat-pill-label">Detected Pattern</div>
+          <div class="stat-pill-value" id="patternVal">—</div>
+        </div>
+
+        <div class="stat-pill">
+          <div class="stat-pill-label">Exposure</div>
+          <div class="stat-pill-value" id="exposureVal">$0.00</div>
+        </div>
+      </div>
+
+      <div class="graph-stage" id="graphStage">
+        <canvas id="graphCanvas"></canvas>
+
+        <div class="graph-legend">
+          <div class="legend-item"><span class="legend-color" style="background:#f43f5e;"></span> Flagged Txn</div>
+          <div class="legend-item"><span class="legend-color" style="background:#6366f1;"></span> Card</div>
+          <div class="legend-item"><span class="legend-color" style="background:#38bdf8;"></span> Customer</div>
+          <div class="legend-item"><span class="legend-color" style="background:#06b6d4;"></span> Device Profile</div>
+          <div class="legend-item"><span class="legend-color" style="background:#a855f7;"></span> Prior Case</div>
+          <div class="legend-item"><span class="legend-color" style="background:#10b981;"></span> Graph Case</div>
+        </div>
+
+        <div class="graph-controls">
+          <button id="btnZoomIn" class="btn-icon" title="Zoom In">+</button>
+          <button id="btnZoomOut" class="btn-icon" title="Zoom Out">&minus;</button>
+          <button id="btnResetView" class="btn-icon" title="Reset Graph View">&#x21ba;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Right Panel: Inspector Tabs ───────────────────────────────────── -->
+    <aside class="panel-right" id="panelRight">
+      <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="tabEvidence">
+          Evidence <span class="tab-badge" id="evCount">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tabUncertainty">
+          Uncertainty <span class="tab-badge" id="uncCount">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tabAddEvidence">
+          Add'l Evidence
+        </button>
+        <button class="tab-btn" data-tab="tabNbaDiff">
+          NBA Diff
+        </button>
+        <button class="tab-btn" data-tab="tabApprovals">
+          Approvals <span class="tab-badge" id="aprCount">0</span>
+        </button>
+        <button class="tab-btn" data-tab="tabPersistence">
+          Case Memory
+        </button>
+      </nav>
+
+      <div class="tab-content-area">
+        <!-- Tab 1: Evidence & Provenance -->
+        <div class="tab-pane active" id="tabEvidence">
+          <div id="evidenceList"></div>
+        </div>
+
+        <!-- Tab 2: Uncertainty -->
+        <div class="tab-pane" id="tabUncertainty">
+          <div id="uncertaintyList"></div>
+        </div>
+
+        <!-- Tab 3: Additional Evidence -->
+        <div class="tab-pane" id="tabAddEvidence">
+          <div id="addEvidenceList"></div>
+        </div>
+
+        <!-- Tab 4: NBA Diff -->
+        <div class="tab-pane" id="tabNbaDiff">
+          <div id="nbaDiffContent"></div>
+        </div>
+
+        <!-- Tab 5: Approvals Console -->
+        <div class="tab-pane" id="tabApprovals">
+          <div id="approvalsList"></div>
+        </div>
+
+        <!-- Tab 6: Case Memory & SAR -->
+        <div class="tab-pane" id="tabPersistence">
+          <div id="persistenceContent"></div>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- ── Scripts ───────────────────────────────────────────────────────── -->
+  <script src="js/api.js"></script>
+  <script src="js/graph.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

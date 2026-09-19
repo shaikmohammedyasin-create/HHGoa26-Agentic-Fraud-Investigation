@@ -50,6 +50,10 @@ def _route(local_fn: str, tg_fn: str, *args, **kwargs):
             fn = getattr(_tg_adapter(), tg_fn)
             return fn(*args, **kwargs)
         except Exception as exc:
+            import os
+            if settings.strict_graph_backend or os.environ.get("STRICT_GRAPH_BACKEND") in ("1", "true", "True"):
+                log.error("tg.strict_mode_failed", error=str(exc), fn=tg_fn)
+                raise RuntimeError(f"TigerGraph execution failed in strict mode for {tg_fn}: {exc}") from exc
             log.warning("tg.fallback_to_local", error=str(exc), fn=tg_fn)
     return getattr(_local_store(), local_fn)(*args, **kwargs)
 

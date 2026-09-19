@@ -15,7 +15,7 @@
     "exposure_usd": 30.91,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C05876-K2. Most recent: 2016-12-18 $57.02 (in_person). Average amount: $80.09.",
+        "claim": "50 previous transactions retrieved for card C05876-K2. Most recent: 2016-12-29 $35.95 (in_person). Average amount: $0.00.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C05876-K2)",
         "entity_ids": [
@@ -31,21 +31,9 @@
         ]
       },
       {
-        "claim": "5 prior closed case(s) retrieved by pattern (none) and keyword match over analyst notes.",
-        "source": "document",
-        "ref": "retrieval:pattern+keyword(pattern=none)",
-        "entity_ids": [
-          "CC-5559",
-          "CC-5558",
-          "CC-5556",
-          "CC-5563",
-          "CC-5555"
-        ]
-      },
-      {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-639fe5ab",
+        "ref": "evidence_request:ER-36c87205",
         "entity_ids": [
           "C05876"
         ]
@@ -53,14 +41,9 @@
     ],
     "similar_prior_cases": [
       "CC-2370",
-      "CC-0003",
-      "CC-5559",
-      "CC-5558",
-      "CC-5556",
-      "CC-5563",
-      "CC-5555"
+      "CC-0003"
     ],
-    "summary": "Case HHG-012 investigated none activity on card C05876-K2 (customer C05876) around transaction 3553342 ($30.91, in_person). Assessed fraud probability 0.23 (LOW risk) from 4 evidence items across 3 independent sources. Key signals: 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "summary": "Case HHG-012 investigated none activity on card C05876-K2 (customer C05876) around transaction 3553342 ($30.91, in_person). Assessed fraud probability 0.23 (LOW risk) from 3 evidence items across 2 independent sources. Key signals: 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-012"
   },
@@ -104,5 +87,5 @@
   "stop_reason": "Borderline probability 0.23; investigation halted per stopping criteria. Escalated for analyst review.",
   "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 0.09
+  "latency_s": 8.19
 }

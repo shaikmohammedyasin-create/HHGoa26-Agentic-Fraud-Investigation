@@ -193,6 +193,13 @@ def run_investigation(case_id: str, force: bool = False) -> InvestigationCase:
         log.info("investigation.txn_found", txn_id=flagged_txn.txn_id,
                  amount=flagged_txn.amount, channel=flagged_txn.channel.value)
 
+        # Initial write to graph in 'open' status (InvestigationCase vertex creation)
+        try:
+            case.graph_case_id = graph.write_investigation_case(case.model_dump(mode="json"))
+            _audit(case, "case_created_in_graph", metadata={"graph_case_id": case.graph_case_id})
+        except Exception as exc:
+            log.warning("investigation.initial_graph_write_skipped", error=str(exc))
+
         # ── STEP 2: Identity record ──────────────────────────────────────────
         flagged_identity = _graph("get_transaction_identity", case.flagged_txn_id)
         device_label: str | None = None

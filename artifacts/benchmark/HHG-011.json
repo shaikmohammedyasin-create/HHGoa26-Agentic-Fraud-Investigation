@@ -1,0 +1,569 @@
+{
+  "case_id": "HHG-011",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.921,
+    "pattern": "card_testing",
+    "pattern_description": "Three or more sub-$10 online authorizations followed by a larger purchase",
+    "affected_txn_ids": [
+      "3582107",
+      "3584859",
+      "3583415",
+      "3580219",
+      "3582375",
+      "3579400",
+      "3583435",
+      "3578471",
+      "3580417",
+      "3579576",
+      "3580776",
+      "3580232",
+      "3579407",
+      "3584985",
+      "3582738",
+      "3579597",
+      "3580933",
+      "3582338",
+      "3584460",
+      "3584516",
+      "3582082",
+      "3582142",
+      "3583101",
+      "3583199",
+      "3583914",
+      "3578817",
+      "3583140",
+      "3583417",
+      "3580765",
+      "3585064",
+      "3580821",
+      "3583670",
+      "3583411",
+      "3578486",
+      "3582413",
+      "3580202",
+      "3580712",
+      "3578496",
+      "3582175",
+      "3583368",
+      "3580907",
+      "3584401",
+      "3582178",
+      "3578451",
+      "3585345",
+      "3584706",
+      "3578997",
+      "3582671",
+      "3580815",
+      "3582897",
+      "3581048",
+      "3584153",
+      "3584003",
+      "3580951",
+      "3584962",
+      "3578491",
+      "3584693",
+      "3582868",
+      "3582602",
+      "3583644",
+      "3580348",
+      "3583968",
+      "3581345",
+      "3580380",
+      "3580137",
+      "3578475",
+      "3578506",
+      "3578405",
+      "3580992",
+      "3582624",
+      "3580478",
+      "3578995",
+      "3583406",
+      "3580544",
+      "3583494",
+      "3578483",
+      "3585055",
+      "3583348",
+      "3583229",
+      "3584155",
+      "3582327",
+      "3583866",
+      "3580403",
+      "3580427"
+    ],
+    "first_suspicious_txn_id": "3578405",
+    "connected_card_ids": [
+      "C03938-K1",
+      "C05595-K1",
+      "C05678-K1"
+    ],
+    "connected_device_profiles": [
+      "SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown"
+    ],
+    "exposure_usd": 4135.17,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C11923-K2. Most recent: 2016-12-29 $41.30 (online). Average amount: $0.00.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C11923-K2)",
+        "entity_ids": [
+          "C11923-K2"
+        ]
+      },
+      {
+        "claim": "Card-testing sequence detected: 3 online transactions ($6.33, $6.39, $6.35) within a 2-hour window before flagged transaction.",
+        "source": "graph",
+        "ref": "query:tiny_transaction_sequence(card_id=C11923-K2)",
+        "entity_ids": [
+          "3583411",
+          "3583415",
+          "3583417"
+        ]
+      },
+      {
+        "claim": "84 online transactions on this card within 48h of the flagged transaction.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C11923-K2, hours=48)",
+        "entity_ids": [
+          "3578405",
+          "3578451",
+          "3578471",
+          "3578475",
+          "3578483",
+          "3578486",
+          "3578491",
+          "3578496",
+          "3578506",
+          "3578817"
+        ]
+      },
+      {
+        "claim": "Device profile shared across 3 other card(s): C03938-K1, C05595-K1, C05678-K1.",
+        "source": "graph",
+        "ref": "query:accounts_sharing_device(device=SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown)",
+        "entity_ids": [
+          "C03938-K1",
+          "C05595-K1",
+          "C05678-K1"
+        ]
+      },
+      {
+        "claim": "10 prior confirmed fraud case(s) found for customer C11923 or card C11923-K2: CC-4501, CC-3905, CC-3206, CC-3039, CC-2799.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C11923)",
+        "entity_ids": [
+          "CC-4501",
+          "CC-3905",
+          "CC-3206",
+          "CC-3039",
+          "CC-2799"
+        ]
+      },
+      {
+        "claim": "Customer C11923 reported: \"Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368.\"",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "C11923",
+          "C11923-K2"
+        ]
+      },
+      {
+        "claim": "15 prior closed case(s) retrieved by pattern (card_testing) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=card_testing)",
+        "entity_ids": [
+          "CC-5187",
+          "CC-4940",
+          "CC-4501",
+          "CC-4225",
+          "CC-4058",
+          "CC-3653",
+          "CC-2673",
+          "CC-2643",
+          "CC-2394",
+          "CC-2248"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
+        "source": "customer",
+        "ref": "evidence_request:ER-b9c896b5",
+        "entity_ids": [
+          "C11923"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4743",
+      "CC-4501",
+      "CC-3905",
+      "CC-3206",
+      "CC-3039",
+      "CC-2799",
+      "CC-2673",
+      "CC-2247",
+      "CC-1056",
+      "CC-0290",
+      "CC-5187",
+      "CC-4940",
+      "CC-4225",
+      "CC-4058",
+      "CC-3653"
+    ],
+    "summary": "Case HHG-011 investigated card_testing activity on card C11923-K2 (customer C11923) around transaction 3583368 ($131.30, online). Assessed fraud probability 0.92 (CRITICAL risk) from 8 evidence items across 3 independent sources. Key signals: card-testing sequence detected; 84 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-011"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R5: card-testing sequence detected, purchase over $100 already cleared"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R5: card-testing sequence detected, purchase over $100 already cleared"
+      }
+    ],
+    "what_changed": "nothing"
+  },
+  "sar": {
+    "file": false,
+    "reason": "FILE_REPORT not recommended; SAR not required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Fraud probability 0.92 ≥ 0.85 with 3 independent evidence sources.",
+  "tool_calls": 20,
+  "tokens": 0,
+  "latency_s": 46.55,
+  "investigation_trace": {
+    "1_trigger": {
+      "case_id": "HHG-011",
+      "trigger_type": "customer_report",
+      "trigger_text": "Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368.",
+      "flagged_txn_id": "3583368",
+      "card_id": "C11923-K2",
+      "customer_id": "C11923",
+      "risk_score": null
+    },
+    "2_live_graph_mcp": {
+      "strict_mode_active": true,
+      "tool_calls_count": 20,
+      "graph_evidence_items_count": 5,
+      "graph_evidence_sample": [
+        {
+          "claim": "50 previous transactions retrieved for card C11923-K2. Most recent: 2016-12-29 $41.30 (online). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C11923-K2)",
+          "entity_ids": [
+            "C11923-K2"
+          ]
+        },
+        {
+          "claim": "Card-testing sequence detected: 3 online transactions ($6.33, $6.39, $6.35) within a 2-hour window before flagged transaction.",
+          "source": "graph",
+          "ref": "query:tiny_transaction_sequence(card_id=C11923-K2)",
+          "entity_ids": [
+            "3583411",
+            "3583415",
+            "3583417"
+          ]
+        },
+        {
+          "claim": "84 online transactions on this card within 48h of the flagged transaction.",
+          "source": "graph",
+          "ref": "query:card_window(card_id=C11923-K2, hours=48)",
+          "entity_ids": [
+            "3578405",
+            "3578451",
+            "3578471",
+            "3578475",
+            "3578483",
+            "3578486",
+            "3578491",
+            "3578496",
+            "3578506",
+            "3578817"
+          ]
+        },
+        {
+          "claim": "Device profile shared across 3 other card(s): C03938-K1, C05595-K1, C05678-K1.",
+          "source": "graph",
+          "ref": "query:accounts_sharing_device(device=SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown)",
+          "entity_ids": [
+            "C03938-K1",
+            "C05595-K1",
+            "C05678-K1"
+          ]
+        }
+      ]
+    },
+    "3_evidence_gathered": {
+      "total_items": 8,
+      "graph_items": 5,
+      "document_items": 1,
+      "customer_items": 2,
+      "all_evidence": [
+        {
+          "claim": "50 previous transactions retrieved for card C11923-K2. Most recent: 2016-12-29 $41.30 (online). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C11923-K2)",
+          "entity_ids": [
+            "C11923-K2"
+          ],
+          "severity": "MEDIUM",
+          "confidence": 0.95
+        },
+        {
+          "claim": "Card-testing sequence detected: 3 online transactions ($6.33, $6.39, $6.35) within a 2-hour window before flagged transaction.",
+          "source": "graph",
+          "ref": "query:tiny_transaction_sequence(card_id=C11923-K2)",
+          "entity_ids": [
+            "3583411",
+            "3583415",
+            "3583417"
+          ],
+          "severity": "CRITICAL",
+          "confidence": 0.9
+        },
+        {
+          "claim": "84 online transactions on this card within 48h of the flagged transaction.",
+          "source": "graph",
+          "ref": "query:card_window(card_id=C11923-K2, hours=48)",
+          "entity_ids": [
+            "3578405",
+            "3578451",
+            "3578471",
+            "3578475",
+            "3578483",
+            "3578486",
+            "3578491",
+            "3578496",
+            "3578506",
+            "3578817"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.85
+        },
+        {
+          "claim": "Device profile shared across 3 other card(s): C03938-K1, C05595-K1, C05678-K1.",
+          "source": "graph",
+          "ref": "query:accounts_sharing_device(device=SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown)",
+          "entity_ids": [
+            "C03938-K1",
+            "C05595-K1",
+            "C05678-K1"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.8
+        },
+        {
+          "claim": "10 prior confirmed fraud case(s) found for customer C11923 or card C11923-K2: CC-4501, CC-3905, CC-3206, CC-3039, CC-2799.",
+          "source": "graph",
+          "ref": "query:closed_cases_for_customer(customer_id=C11923)",
+          "entity_ids": [
+            "CC-4501",
+            "CC-3905",
+            "CC-3206",
+            "CC-3039",
+            "CC-2799"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.95
+        },
+        {
+          "claim": "Customer C11923 reported: \"Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368.\"",
+          "source": "customer",
+          "ref": "trigger:customer_report",
+          "entity_ids": [
+            "C11923",
+            "C11923-K2"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.85
+        },
+        {
+          "claim": "15 prior closed case(s) retrieved by pattern (card_testing) and keyword match over analyst notes.",
+          "source": "document",
+          "ref": "retrieval:pattern+keyword(pattern=card_testing)",
+          "entity_ids": [
+            "CC-5187",
+            "CC-4940",
+            "CC-4501",
+            "CC-4225",
+            "CC-4058",
+            "CC-3653",
+            "CC-2673",
+            "CC-2643",
+            "CC-2394",
+            "CC-2248"
+          ],
+          "severity": "LOW",
+          "confidence": 0.75
+        },
+        {
+          "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
+          "source": "customer",
+          "ref": "evidence_request:ER-b9c896b5",
+          "entity_ids": [
+            "C11923"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.8
+        }
+      ]
+    },
+    "4_evidence_provenance": {
+      "all_refs_valid": true,
+      "all_sources_valid": true,
+      "total_sources_used": 3
+    },
+    "5_risk_assessment": {
+      "fraud_probability": 0.921,
+      "exposure_usd": 4135.17,
+      "verdict": "fraud",
+      "status": "closed_fraud"
+    },
+    "6_fraud_pattern": {
+      "pattern": "card_testing",
+      "pattern_description": "Three or more sub-$10 online authorizations followed by a larger purchase"
+    },
+    "7_uncertainty": {
+      "uncertainty_items_count": 0,
+      "items": []
+    },
+    "8_evidence_requests": [
+      {
+        "type": "customer_validation",
+        "asked_after_step": 4,
+        "assumed_response": "Customer states they did not make these purchases and still has the card in their possession."
+      }
+    ],
+    "9_additional_evidence_received": [
+      {
+        "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
+        "source": "customer",
+        "ref": "evidence_request:ER-b9c896b5"
+      }
+    ],
+    "10_reassessment_and_diff": {
+      "what_changed": "nothing",
+      "stop_reason": "Fraud probability 0.92 ≥ 0.85 with 3 independent evidence sources."
+    },
+    "11_nba_and_policy": {
+      "initial": [
+        {
+          "action": "BLOCK_CARD",
+          "route": "L1",
+          "reason": "R5: card-testing sequence detected, purchase over $100 already cleared"
+        }
+      ],
+      "final": [
+        {
+          "action": "BLOCK_CARD",
+          "route": "L1",
+          "reason": "R5: card-testing sequence detected, purchase over $100 already cleared"
+        }
+      ],
+      "policy_rules_applied": [
+        "R5"
+      ],
+      "approvals_required": [
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        }
+      ],
+      "sar": {
+        "file": false,
+        "reason": "FILE_REPORT not recommended; SAR not required",
+        "narrative": "",
+        "subjects": [],
+        "total_amount_usd": 0.0,
+        "activity_dates": []
+      }
+    },
+    "12_persistence_and_summary": {
+      "written_to_graph": true,
+      "graph_case_id": "CASE-2016-HHG-011",
+      "audit_events_count": 76,
+      "summary": "Case HHG-011 investigated card_testing activity on card C11923-K2 (customer C11923) around transaction 3583368 ($131.30, online). Assessed fraud probability 0.92 (CRITICAL risk) from 8 evidence items across 3 independent sources. Key signals: card-testing sequence detected; 84 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD.",
+      "tokens_used": 0,
+      "latency_s": 46.55
+    }
+  },
+  "benchmark_comparison": {
+    "expected": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_fraud",
+      "status": "closed_fraud",
+      "sar_file": true,
+      "nba_final_actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT"
+      ],
+      "reason": "Customer report for $131.30, burst of online transactions with customer denial"
+    },
+    "actual": {
+      "verdict": "fraud",
+      "pattern": "card_testing",
+      "status": "closed_fraud",
+      "sar_file": false,
+      "fraud_probability": 0.921,
+      "exposure_usd": 4135.17,
+      "nba_final_actions": [
+        "BLOCK_CARD"
+      ]
+    },
+    "verdict_match": true,
+    "pattern_match": false,
+    "sar_match": false,
+    "checkpoints_passed": 30,
+    "checkpoints_total": 30,
+    "failed_checkpoints": [],
+    "root_cause": "pattern detection"
+  }
+}

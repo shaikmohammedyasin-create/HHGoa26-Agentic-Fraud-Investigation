@@ -1,0 +1,311 @@
+{
+  "case_id": "HHG-012",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.231,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3553342"
+    ],
+    "first_suspicious_txn_id": "3553342",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 30.91,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C05876-K2. Most recent: 2016-12-29 $35.95 (in_person). Average amount: $0.00.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C05876-K2)",
+        "entity_ids": [
+          "C05876-K2"
+        ]
+      },
+      {
+        "claim": "1 prior confirmed fraud case(s) found for customer C05876 or card C05876-K2: CC-2370.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C05876)",
+        "entity_ids": [
+          "CC-2370"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "source": "customer",
+        "ref": "evidence_request:ER-36c87205",
+        "entity_ids": [
+          "C05876"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-2370",
+      "CC-0003"
+    ],
+    "summary": "Case HHG-012 investigated none activity on card C05876-K2 (customer C05876) around transaction 3553342 ($30.91, in_person). Assessed fraud probability 0.23 (LOW risk) from 3 evidence items across 2 independent sources. Key signals: 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-012"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "No response received within the 24-hour window."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "ALLOW_TRANSACTION",
+        "route": "auto",
+        "reason": "Low fraud probability with no contradicting signals"
+      }
+    ],
+    "final": [
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: no reply within 24 hours"
+      },
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R4: decline pending authorization"
+      }
+    ],
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: ALLOW_TRANSACTION"
+  },
+  "sar": {
+    "file": false,
+    "reason": "FILE_REPORT not recommended; SAR not required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Borderline probability 0.23; investigation halted per stopping criteria. Escalated for analyst review.",
+  "tool_calls": 16,
+  "tokens": 0,
+  "latency_s": 8.19,
+  "investigation_trace": {
+    "1_trigger": {
+      "case_id": "HHG-012",
+      "trigger_type": "risk_score",
+      "trigger_text": "Real-time model scored transaction 3553342 ($30.91, in billing region 494.0) at 0.55. Review and decide.",
+      "flagged_txn_id": "3553342",
+      "card_id": "C05876-K2",
+      "customer_id": "C05876",
+      "risk_score": 0.55
+    },
+    "2_live_graph_mcp": {
+      "strict_mode_active": true,
+      "tool_calls_count": 16,
+      "graph_evidence_items_count": 2,
+      "graph_evidence_sample": [
+        {
+          "claim": "50 previous transactions retrieved for card C05876-K2. Most recent: 2016-12-29 $35.95 (in_person). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C05876-K2)",
+          "entity_ids": [
+            "C05876-K2"
+          ]
+        },
+        {
+          "claim": "1 prior confirmed fraud case(s) found for customer C05876 or card C05876-K2: CC-2370.",
+          "source": "graph",
+          "ref": "query:closed_cases_for_customer(customer_id=C05876)",
+          "entity_ids": [
+            "CC-2370"
+          ]
+        }
+      ]
+    },
+    "3_evidence_gathered": {
+      "total_items": 3,
+      "graph_items": 2,
+      "document_items": 0,
+      "customer_items": 1,
+      "all_evidence": [
+        {
+          "claim": "50 previous transactions retrieved for card C05876-K2. Most recent: 2016-12-29 $35.95 (in_person). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C05876-K2)",
+          "entity_ids": [
+            "C05876-K2"
+          ],
+          "severity": "MEDIUM",
+          "confidence": 0.95
+        },
+        {
+          "claim": "1 prior confirmed fraud case(s) found for customer C05876 or card C05876-K2: CC-2370.",
+          "source": "graph",
+          "ref": "query:closed_cases_for_customer(customer_id=C05876)",
+          "entity_ids": [
+            "CC-2370"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.95
+        },
+        {
+          "claim": "Customer response (simulated): No response received within the 24-hour window.",
+          "source": "customer",
+          "ref": "evidence_request:ER-36c87205",
+          "entity_ids": [
+            "C05876"
+          ],
+          "severity": "LOW",
+          "confidence": 0.8
+        }
+      ]
+    },
+    "4_evidence_provenance": {
+      "all_refs_valid": true,
+      "all_sources_valid": true,
+      "total_sources_used": 2
+    },
+    "5_risk_assessment": {
+      "fraud_probability": 0.231,
+      "exposure_usd": 30.91,
+      "verdict": "uncertain",
+      "status": "escalated"
+    },
+    "6_fraud_pattern": {
+      "pattern": "none",
+      "pattern_description": ""
+    },
+    "7_uncertainty": {
+      "uncertainty_items_count": 1,
+      "items": [
+        {
+          "question": "Did the cardholder make this transaction?",
+          "impact": "Customer denial raises probability significantly; confirmation closes the case",
+          "resolution_method": "VERIFY_WITH_CUSTOMER",
+          "status": "open"
+        }
+      ]
+    },
+    "8_evidence_requests": [
+      {
+        "type": "customer_validation",
+        "asked_after_step": 4,
+        "assumed_response": "No response received within the 24-hour window."
+      }
+    ],
+    "9_additional_evidence_received": [
+      {
+        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "source": "customer",
+        "ref": "evidence_request:ER-36c87205"
+      }
+    ],
+    "10_reassessment_and_diff": {
+      "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: ALLOW_TRANSACTION",
+      "stop_reason": "Borderline probability 0.23; investigation halted per stopping criteria. Escalated for analyst review."
+    },
+    "11_nba_and_policy": {
+      "initial": [
+        {
+          "action": "ALLOW_TRANSACTION",
+          "route": "auto",
+          "reason": "Low fraud probability with no contradicting signals"
+        }
+      ],
+      "final": [
+        {
+          "action": "MONITOR_CARD",
+          "route": "auto",
+          "reason": "R4: no reply within 24 hours"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": "L1",
+          "reason": "R4: decline pending authorization"
+        }
+      ],
+      "policy_rules_applied": [
+        "R4"
+      ],
+      "approvals_required": [
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        }
+      ],
+      "sar": {
+        "file": false,
+        "reason": "FILE_REPORT not recommended; SAR not required",
+        "narrative": "",
+        "subjects": [],
+        "total_amount_usd": 0.0,
+        "activity_dates": []
+      }
+    },
+    "12_persistence_and_summary": {
+      "written_to_graph": true,
+      "graph_case_id": "CASE-2016-HHG-012",
+      "audit_events_count": 103,
+      "summary": "Case HHG-012 investigated none activity on card C05876-K2 (customer C05876) around transaction 3553342 ($30.91, in_person). Assessed fraud probability 0.23 (LOW risk) from 3 evidence items across 2 independent sources. Key signals: 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+      "tokens_used": 0,
+      "latency_s": 8.19
+    }
+  },
+  "benchmark_comparison": {
+    "expected": {
+      "verdict": "uncertain",
+      "pattern": "none",
+      "status": "escalated",
+      "sar_file": false,
+      "nba_final_actions": [
+        "MONITOR_CARD",
+        "DECLINE_TRANSACTION"
+      ],
+      "reason": "Risk score 0.55, small amount $30.91, in-person region 494.0, customer validation no response"
+    },
+    "actual": {
+      "verdict": "uncertain",
+      "pattern": "none",
+      "status": "escalated",
+      "sar_file": false,
+      "fraud_probability": 0.231,
+      "exposure_usd": 30.91,
+      "nba_final_actions": [
+        "MONITOR_CARD",
+        "DECLINE_TRANSACTION"
+      ]
+    },
+    "verdict_match": true,
+    "pattern_match": true,
+    "sar_match": true,
+    "checkpoints_passed": 30,
+    "checkpoints_total": 30,
+    "failed_checkpoints": [],
+    "root_cause": "none"
+  }
+}

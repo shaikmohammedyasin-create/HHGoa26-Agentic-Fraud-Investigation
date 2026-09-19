@@ -245,9 +245,155 @@ def get_benchmark_report():
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+# ─── Frontend & Enhanced API Endpoints ────────────────────────────────────────
+
+@app.get("/api/cases", tags=["Case Pack"])
+def get_case_pack_triggers():
+    """List all 20 benchmark case triggers from the case pack."""
+    triggers = graph.get_all_case_triggers()
+    return triggers
+
+
+@app.get("/api/investigations/{case_id}/full", tags=["Investigations"])
+def get_full_investigation(case_id: str):
+    """Retrieve complete rich investigation model including trigger, uncertainty, approvals."""
+    payload = app_db.load_investigation(case_id)
+    if not payload:
+        raise HTTPException(404, f"Investigation for case {case_id} not found")
+    return payload
+
+
+@app.get("/api/investigations/{case_id}/graph", tags=["Graph Visualization"])
+def get_investigation_subgraph(case_id: str):
+    """Build a case-scoped local knowledge subgraph for visual rendering."""
+    payload = app_db.load_investigation(case_id)
+    if not payload:
+        raise HTTPException(404, f"Investigation for case {case_id} not found")
+
+    nodes = []
+    links = []
+    seen_nodes = set()
+
+    def add_node(node_id: str, label: str, node_type: str, metadata: dict[str, Any] | None = None):
+        if not node_id or node_id in seen_nodes:
+            return
+        seen_nodes.add(node_id)
+        nodes.append({
+            "id": node_id,
+            "label": label,
+            "type": node_type,
+            "metadata": metadata or {},
+        })
+
+    def add_link(source: str, target: str, rel_type: str):
+        if not source or not target:
+            return
+        links.append({
+            "source": source,
+            "target": target,
+            "type": rel_type,
+        })
+
+    # Subject Customer & Card
+    cust_id = payload.get("customer_id") or (payload.get("trigger") or {}).get("customer_id")
+    card_id = payload.get("card_id") or (payload.get("trigger") or {}).get("card_id")
+    flagged_txn_id = payload.get("flagged_txn_id") or (payload.get("trigger") or {}).get("flagged_txn_id")
+
+    if cust_id:
+        add_node(cust_id, f"Customer: {cust_id}", "Customer", {"customer_id": cust_id})
+    if card_id:
+        add_node(card_id, f"Card: {card_id}", "Card", {"card_id": card_id})
+    if cust_id and card_id:
+        add_link(cust_id, card_id, "OWNS")
+
+    # Flagged Transaction
+    if flagged_txn_id:
+        trigger_meta = payload.get("trigger") or {}
+        add_node(
+            flagged_txn_id,
+            f"Flagged Txn: #{flagged_txn_id}",
+            "FlaggedTransaction",
+            {
+                "txn_id": flagged_txn_id,
+                "amount": trigger_meta.get("amount") or payload.get("exposure_usd"),
+                "risk_score": trigger_meta.get("risk_score"),
+                "is_flagged": True,
+            }
+        )
+        if card_id:
+            add_link(card_id, flagged_txn_id, "MADE")
+
+    # Connected / Affected Transactions
+    for txn_id in payload.get("affected_txn_ids", []):
+        t_id = str(txn_id)
+        if t_id != flagged_txn_id:
+            add_node(t_id, f"Txn: #{t_id}", "Transaction", {"txn_id": t_id, "affected": True})
+            if card_id:
+                add_link(card_id, t_id, "MADE")
+
+    # Connected Device Profiles
+    for dp in payload.get("connected_device_profiles", []):
+        if dp:
+            dp_id = f"DEV-{dp[:32]}"
+            add_node(dp_id, f"Device: {dp[:28]}...", "DeviceProfile", {"full_device": dp})
+            if flagged_txn_id:
+                add_link(flagged_txn_id, dp_id, "FROM_DEVICE")
+
+    # Connected Cards (e.g. from shared devices or multi-card fraud)
+    for c_id in payload.get("connected_card_ids", []):
+        if c_id and c_id != card_id:
+            add_node(c_id, f"Connected: {c_id}", "ConnectedCard", {"card_id": c_id})
+
+    # Closed Cases (Historical memory links)
+    for cc_id in payload.get("similar_prior_cases", [])[:5]:
+        add_node(cc_id, f"Prior Case: {cc_id}", "ClosedCase", {"case_id": cc_id})
+        if cust_id:
+            add_link(cc_id, cust_id, "CC_ON_CUSTOMER")
+        if card_id:
+            add_link(cc_id, card_id, "CC_ON_CARD")
+
+    # Active Investigation Case (Persisted graph memory)
+    graph_case_id = payload.get("graph_case_id") or f"CASE-2016-{case_id}"
+    add_node(
+        graph_case_id,
+        f"Graph Case: {graph_case_id}",
+        "InvestigationCase",
+        {
+            "status": payload.get("status"),
+            "verdict": payload.get("verdict"),
+            "probability": payload.get("fraud_probability"),
+            "written_to_graph": payload.get("written_to_graph", False),
+        }
+    )
+    if card_id:
+        add_link(graph_case_id, card_id, "IC_ON_CARD")
+    if cust_id:
+        add_link(graph_case_id, cust_id, "IC_FOR_CUSTOMER")
+    if flagged_txn_id:
+        add_link(graph_case_id, flagged_txn_id, "IC_INVOLVES")
+
+    return {
+        "case_id": case_id,
+        "nodes": nodes,
+        "links": links,
+        "counts": {"nodes": len(nodes), "links": len(links)},
+    }
+
+
+# ─── Static Frontend Mount ───────────────────────────────────────────────────
+
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+
+frontend_dir = Path(__file__).resolve().parents[1] / "frontend"
+if frontend_dir.exists():
+    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
+
+
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def _reconstruct(payload: dict) -> Any:
     """Reconstruct an InvestigationCase from stored JSON."""
     from backend.models import InvestigationCase
     return InvestigationCase(**payload)
+

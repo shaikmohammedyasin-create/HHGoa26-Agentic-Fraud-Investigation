@@ -39,6 +39,75 @@ _Q = {
 
 # ─── Transport ───────────────────────────────────────────────────────────────
 
+_tg_conn: Any = None
+
+
+def get_connection():
+    """Return a pyTigerGraph connection initialized with current settings."""
+    global _tg_conn
+    if _tg_conn is not None:
+        return _tg_conn
+
+    try:
+        import pyTigerGraph as tg
+
+        host = settings.tg_host.strip()
+        if host.startswith("https://"):
+            raw_host = host[8:]
+        elif host.startswith("http://"):
+            raw_host = host[7:]
+        else:
+            raw_host = host
+        raw_host = raw_host.split(":")[0].split("/")[0]
+        full_host = f"{settings.tg_protocol}://{raw_host}"
+
+        conn = tg.TigerGraphConnection(
+            host=full_host,
+            graphname=settings.tg_graph,
+            gsqlSecret=settings.tg_secret or "",
+            apiToken=settings.tg_token or "",
+            username=settings.tg_username or "tigergraph",
+            password=settings.tg_password or "tigergraph",
+            tgCloud=True,
+            sslPort=str(settings.tg_port),
+        )
+
+        if settings.tg_secret and not conn.apiToken:
+            import time
+            for attempt in range(4):
+                try:
+                    token = conn.getToken(settings.tg_secret, setToken=True)
+                    if isinstance(token, tuple):
+                        conn.apiToken = token[0]
+                    elif isinstance(token, str):
+                        conn.apiToken = token
+                    if conn.apiToken:
+                        break
+                except Exception as e:
+                    if attempt < 3:
+                        time.sleep(1.5)
+                    else:
+                        log.warning("Could not obtain token via TG_SECRET after 4 attempts: %s", e)
+
+        if not settings.tg_secret or conn.apiToken:
+            _tg_conn = conn
+        return conn
+    except Exception as exc:
+        log.warning("Could not initialize pyTigerGraph connection: %s", exc)
+        return None
+
+
+def _get_auth_token() -> str:
+    """Return the active token from TG_TOKEN or acquired dynamically via TG_SECRET."""
+    if settings.tg_token:
+        return settings.tg_token
+    if settings.tg_secret:
+        conn = get_connection()
+        if conn and getattr(conn, "apiToken", None):
+            return conn.apiToken
+    return ""
+
+
 def _mcp():
     """Return the MCP client, or None when MCP is not configured."""
     if not settings.mcp_url:
@@ -47,43 +116,102 @@ def _mcp():
     return mcp.get_mcp()
 
 
+def _tg_base_url() -> str:
+    host = settings.tg_host.strip()
+    if host.startswith("https://"):
+        host = host[8:]
+    elif host.startswith("http://"):
+        host = host[7:]
+    host = host.rstrip("/")
+    if ":" in host:
+        return f"{settings.tg_protocol}://{host}"
+    return f"{settings.tg_protocol}://{host}:{settings.tg_port}"
+
+
 def _run(query_name: str, params: dict[str, Any]) -> Any:
-    """Execute an installed GSQL query via MCP (preferred) or REST."""
+    """Execute an installed GSQL query via pyTigerGraph (preferred), MCP, or REST."""
+    conn = get_connection()
+    if conn is not None and getattr(conn, "apiToken", None):
+        try:
+            res = conn.runInstalledQuery(query_name, params)
+            if isinstance(res, list) and len(res) > 0 and isinstance(res[0], dict):
+                unified = {}
+                for d in res:
+                    unified.update(d)
+                if "result" not in unified:
+                    for v in unified.values():
+                        if isinstance(v, list):
+                            unified["result"] = v
+                            break
+                return unified
+            return res if isinstance(res, dict) else {"result": res}
+        except Exception as exc:
+            err_str = str(exc)
+            if "not valid" in err_str and "vertex" in err_str:
+                return {"result": []}
+            log.warning("pyTigerGraph runInstalledQuery failed for %s: %s, falling back to REST...", query_name, exc)
+
     mcp = _mcp()
     if mcp is not None:
         return mcp.run_query(query_name, params)
 
+    token = _get_auth_token()
     import httpx
 
-    url = f"{settings.tg_protocol}://{settings.tg_host}:{settings.tg_port}/query/{settings.tg_graph}/{query_name}"
+    url = f"{_tg_base_url()}/restpp/query/{settings.tg_graph}/{query_name}"
     headers = {}
-    if settings.tg_token:
-        headers["Authorization"] = f"Bearer {settings.tg_token}"
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
     with httpx.Client(timeout=30) as c:
-        r = c.get(url, params=params, headers=headers)
-        r.raise_for_status()
-        return r.json()
+        try:
+            r = c.get(url, params=params, headers=headers)
+            r.raise_for_status()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                fallback_url = f"{_tg_base_url()}/query/{settings.tg_graph}/{query_name}"
+                r = c.get(fallback_url, params=params, headers=headers)
+                r.raise_for_status()
+            else:
+                raise
+        data = r.json()
+        results = data.get("results", [])
+        if isinstance(results, list) and len(results) > 0 and isinstance(results[0], dict):
+            unified = {}
+            for d in results:
+                unified.update(d)
+            if "result" not in unified:
+                for v in unified.values():
+                    if isinstance(v, list):
+                        unified["result"] = v
+                        break
+            return unified
+        return data
 
 
 def _upsert(vertices: list[dict], edges: list[dict]) -> Any:
-    """Upsert vertices/edges. Prefers MCP upsert_data, else REST /graph."""
-    mcp = _mcp()
-    if mcp is not None:
-        return mcp.call_tool("upsert_data", {"vertices": vertices, "edges": edges})
+    """Upsert vertices/edges using pyTigerGraph connection."""
+    conn = get_connection()
+    v_by_type: dict[str, list] = {}
+    for v in vertices:
+        v_by_type.setdefault(v["type"], []).append((v["id"], v["attributes"]))
+    for vt, vlist in v_by_type.items():
+        conn.upsertVertices(vt, vlist)
 
-    import httpx
-
-    url = f"{settings.tg_protocol}://{settings.tg_host}:{settings.tg_port}/graph/{settings.tg_graph}"
-    headers = {"Content-Type": "application/json"}
-    if settings.tg_token:
-        headers["Authorization"] = f"Bearer {settings.tg_token}"
-    body = {"vertices": {v["type"]: {v["id"]: v["attributes"]} for v in vertices},
-            "edges": {e["type"]: {f"{e['from']}_{e['to']}": {
-                "from": e["from"], "to": e["to"], "attributes": {}}} for e in edges}}
-    with httpx.Client(timeout=30) as c:
-        r = c.post(url, json=body, headers=headers)
-        r.raise_for_status()
-        return r.json()
+    for e in edges:
+        from_type = e.get("from_type", "InvestigationCase")
+        to_type = e.get("to_type")
+        if not to_type:
+            if e["type"] == "IC_ON_CARD":
+                to_type = "Card"
+            elif e["type"] == "IC_FOR_CUSTOMER":
+                to_type = "Customer"
+            elif e["type"] == "IC_INVOLVES":
+                to_type = "Transaction"
+            elif e["type"] == "IC_ON_DEVICE":
+                to_type = "DeviceProfile"
+            else:
+                to_type = "Card"
+        conn.upsertEdges(from_type, e["type"], to_type, [(e["from"], e["to"], e.get("attributes", {}))])
 
 
 # ─── Result shaping ──────────────────────────────────────────────────────────
@@ -148,11 +276,25 @@ def health_check() -> dict[str, str]:
         mcp = _mcp()
         if mcp is not None:
             return mcp.health()
-        # REST sanity check: request the graph metadata.
+
+        # Check via pyTigerGraph if available
+        conn = get_connection()
+        if conn is not None and getattr(conn, "apiToken", None):
+            try:
+                v_types = conn.getVertexTypes()
+                return {"status": "healthy", "graph": settings.tg_graph, "backend": "pyTigerGraph", "vertices": str(len(v_types))}
+            except Exception:
+                pass
+
+        # Fallback to REST sanity check: request the graph metadata
+        token = _get_auth_token()
         import httpx
-        url = f"{settings.tg_protocol}://{settings.tg_host}:{settings.tg_port}/graphs/{settings.tg_graph}"
+        url = f"{_tg_base_url()}/graphs/{settings.tg_graph}"
+        headers = {}
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         with httpx.Client(timeout=10) as c:
-            r = c.get(url)
+            r = c.get(url, headers=headers)
             r.raise_for_status()
         return {"status": "healthy", "graph": settings.tg_graph}
     except Exception as exc:
@@ -207,7 +349,7 @@ def get_card_window(card_id: str, center_ts: datetime, hours: int = 48) -> list[
 def get_tiny_transaction_sequence(card_id: str, center_ts: datetime, window_hours: float = 2.0, amount_threshold: float = 10.0) -> list[TransactionRecord]:
     try:
         res = _run(_Q["tiny_seq"], {"card": card_id, "center_ts": center_ts.isoformat(),
-                                    "hours": window_hours, "threshold": amount_threshold})
+                                    "hours": int(window_hours), "threshold": amount_threshold})
         items = res.get("result", []) if isinstance(res, dict) else []
         return [_to_txn(v) for v in items]
     except Exception as exc:
@@ -218,7 +360,7 @@ def get_card_region_history(card_id: str, limit: int = 50) -> list[dict[str, Any
     try:
         res = _run(_Q["region_history"], {"card": card_id})
         items = res.get("result", []) if isinstance(res, dict) else []
-        return [{"addr1": _vertex_attrs(v).get("region_code")} for v in items]
+        return [{"addr1": str(v.get("v_id") or _vertex_attrs(v).get("region_code") or "")} for v in items]
     except Exception as exc:
         raise RuntimeError(f"TigerGraph get_card_region_history failed: {exc}")
 
@@ -236,7 +378,7 @@ def get_card_product_history(card_id: str) -> list[dict[str, Any]]:
     try:
         res = _run("card_product_history", {"card": card_id})
         items = res.get("result", []) if isinstance(res, dict) else []
-        return [{"ProductCD": _vertex_attrs(v).get("product_cd"), "n": _vertex_attrs(v).get("n", 1)} for v in items]
+        return [{"ProductCD": _vertex_attrs(v).get("product_cd") or _vertex_attrs(v).get("prods.product_cd"), "n": _vertex_attrs(v).get("n", 1)} for v in items]
     except Exception as exc:
         raise RuntimeError(f"TigerGraph get_card_product_history failed: {exc}")
 
@@ -246,7 +388,10 @@ def get_card_amount_stats(card_id: str) -> dict[str, float]:
         res = _run("card_amount_stats", {"card": card_id})
         items = res.get("result", []) if isinstance(res, dict) else []
         if items:
-            return _vertex_attrs(items[0])
+            item = items[0]
+            if "attributes" in item:
+                return _vertex_attrs(item)
+            return item
         return {}
     except Exception as exc:
         raise RuntimeError(f"TigerGraph get_card_amount_stats failed: {exc}")
@@ -258,18 +403,30 @@ def get_device_profile_label(txn_id: str) -> str | None:
         items = res.get("result", []) if isinstance(res, dict) else []
         if not items:
             return None
+        v_id = str(items[0].get("v_id") or "")
+        if v_id and "|" in v_id:
+            return v_id
         a = _vertex_attrs(items[0])
-        return " | ".join(str(a.get(k) or "unknown") for k in ("device_info", "os", "browser", "screen"))
+        label = " | ".join(str(a.get(k) or a.get(f"result.{k}") or "unknown") for k in ("device_info", "os", "browser", "screen"))
+        return label if label != "unknown | unknown | unknown | unknown" else (v_id or None)
     except Exception as exc:
         raise RuntimeError(f"TigerGraph get_device_profile_label failed: {exc}")
 
 
 def get_accounts_sharing_device(device_label: str, limit: int = 20) -> list[dict[str, Any]]:
     try:
-        res = _run(_Q["device_neighbors"], {"dp": device_label, "limit_n": limit})
+        clean_label = device_label.strip() if device_label else ""
+        if clean_label.lower().startswith("dev | "):
+            clean_label = clean_label[6:].strip()
+        if not clean_label or clean_label == "unknown":
+            return []
+        res = _run(_Q["device_neighbors"], {"dp": clean_label, "limit_n": limit})
         items = res.get("result", []) if isinstance(res, dict) else []
         return [{"card_id": str(v.get("v_id")), "customer_id": _vertex_attrs(v).get("customer_id", "")} for v in items]
     except Exception as exc:
+        err_msg = str(exc)
+        if "not valid DeviceProfile vertex" in err_msg or "400 Bad Request" in err_msg:
+            return []
         raise RuntimeError(f"TigerGraph get_accounts_sharing_device failed: {exc}")
 
 
@@ -284,7 +441,7 @@ def get_card_device_history(card_id: str) -> list[dict[str, Any]]:
 
 def get_transaction_velocity(card_id: str, center_ts: datetime, hours: float = 24.0) -> dict[str, Any]:
     try:
-        res = _run(_Q["velocity"], {"card": card_id, "center_ts": center_ts.isoformat(), "hours": hours})
+        res = _run(_Q["velocity"], {"card": card_id, "center_ts": center_ts.isoformat(), "hours": int(hours)})
         return res if isinstance(res, dict) else {}
     except Exception as exc:
         raise RuntimeError(f"TigerGraph get_transaction_velocity failed: {exc}")
@@ -319,7 +476,10 @@ def get_closed_cases_involving_txn(txn_id: str) -> list[HistoricalCase]:
 
 def get_closed_cases_by_device(device_label: str, limit: int = 10) -> list[HistoricalCase]:
     try:
-        res = _run("cases_by_device", {"device_label": device_label, "limit_n": limit})
+        dev_name = device_label.split("|")[0].strip() if "|" in device_label else device_label
+        if not dev_name or dev_name == "unknown":
+            return []
+        res = _run("cases_by_device", {"device_label": dev_name, "limit_n": limit})
         items = res.get("result", []) if isinstance(res, dict) else []
         return [_to_historical_case(v) for v in items]
     except Exception as exc:
@@ -346,7 +506,7 @@ def search_closed_cases_text(query: str, limit: int = 5) -> list[HistoricalCase]
             res = mcp.vector_search(query, top_k=limit)
             items = res.get("result", []) if isinstance(res, dict) else []
             return [_to_historical_case(v) for v in items]
-        res = _run("search_case_notes", {"query": query, "limit_n": limit})
+        res = _run("search_case_notes", {"search_text": query.strip()[:100], "limit_n": limit})
         items = res.get("result", []) if isinstance(res, dict) else []
         return [_to_historical_case(v) for v in items]
     except Exception as exc:
@@ -400,7 +560,6 @@ def write_investigation_case(payload: dict[str, Any]) -> str:
         "type": "InvestigationCase",
         "id": graph_case_id,
         "attributes": {
-            "case_id": graph_case_id,
             "trigger_type": trigger.get("trigger_type", ""),
             "trigger_text": (trigger.get("trigger_text") or "")[:2000],
             "opened_at": trigger.get("opened_at", ""),

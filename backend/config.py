@@ -24,12 +24,14 @@ class Settings(BaseSettings):
 
     # ── Graph backend ────────────────────────────────────────────────────────
     graph_backend: Literal["local", "tigergraph"] = "local"
+    strict_graph_backend: bool = False
 
     # ── TigerGraph ───────────────────────────────────────────────────────────
     tg_host: str = ""
     tg_graph: str = "fraud_investigation"
     tg_username: str = ""
     tg_password: str = ""
+    tg_secret: str = ""
     tg_token: str = ""
     tg_port: int = 443
     tg_protocol: str = "https"

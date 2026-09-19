@@ -1,0 +1,545 @@
+{
+  "case_id": "HHG-019",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.915,
+    "pattern": "account_takeover",
+    "pattern_description": "Mixed-channel activity inconsistent with cardholder",
+    "affected_txn_ids": [
+      "3503878"
+    ],
+    "first_suspicious_txn_id": "3503878",
+    "connected_card_ids": [
+      "C11309-K1",
+      "C01983-K1",
+      "C06224-K2",
+      "C01104-K2"
+    ],
+    "connected_device_profiles": [
+      "Windows | other | chrome 61.0 | 1280x720"
+    ],
+    "exposure_usd": 199.84,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C07987-K2. Most recent: 2016-12-31 $33.92 (in_person). Average amount: $0.00.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C07987-K2)",
+        "entity_ids": [
+          "C07987-K2"
+        ]
+      },
+      {
+        "claim": "Device profile shared across 4 other card(s): C11309-K1, C01983-K1, C06224-K2, C01104-K2.",
+        "source": "graph",
+        "ref": "query:accounts_sharing_device(device=Windows | other | chrome 61.0 | 1280x720)",
+        "entity_ids": [
+          "C11309-K1",
+          "C01983-K1",
+          "C06224-K2",
+          "C01104-K2"
+        ]
+      },
+      {
+        "claim": "13 prior confirmed fraud case(s) found for customer C07987 or card C07987-K2: CC-5026, CC-2860, CC-2011, CC-5548, CC-5553.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C07987)",
+        "entity_ids": [
+          "CC-5026",
+          "CC-2860",
+          "CC-2011",
+          "CC-5548",
+          "CC-5553"
+        ]
+      },
+      {
+        "claim": "Device profile 'Windows | other | chrome 61.0 | 1280x720' appears in 10 confirmed fraud case(s).",
+        "source": "graph",
+        "ref": "query:closed_cases_by_device(device=Windows | other | chrome 61.0 | 1280x720)",
+        "entity_ids": [
+          "CC-5548",
+          "CC-5553",
+          "CC-5517",
+          "CC-5499",
+          "CC-5439"
+        ]
+      },
+      {
+        "claim": "Mixed-channel activity in 48h window: online, in_person.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C07987-K2)",
+        "entity_ids": [
+          "3499109",
+          "3503878",
+          "3507926",
+          "3508124"
+        ]
+      },
+      {
+        "claim": "15 prior closed case(s) retrieved by pattern (account_takeover) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=account_takeover)",
+        "entity_ids": [
+          "CC-5559",
+          "CC-5563",
+          "CC-5507",
+          "CC-5514",
+          "CC-5530",
+          "CC-5509",
+          "CC-5495",
+          "CC-5467",
+          "CC-5505",
+          "CC-5397"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
+        "source": "customer",
+        "ref": "evidence_request:ER-fe6bc39e",
+        "entity_ids": [
+          "C07987"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5026",
+      "CC-2860",
+      "CC-2087",
+      "CC-2011",
+      "CC-5548",
+      "CC-5553",
+      "CC-5517",
+      "CC-5499",
+      "CC-5439",
+      "CC-5421",
+      "CC-5559",
+      "CC-5563",
+      "CC-5507",
+      "CC-5514",
+      "CC-5530"
+    ],
+    "summary": "Case HHG-019 investigated account_takeover activity on card C07987-K2 (customer C07987) around transaction 3503878 ($99.92, online). Assessed fraud probability 0.92 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 13 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-019"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R6: shared device/region/email across multiple cards"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R6: shared origin requires report"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2: exposure > $1,000 or shared device/region"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: shared origin detected"
+      }
+    ],
+    "what_changed": "Added: BLOCK_CARD"
+  },
+  "sar": {
+    "file": true,
+    "reason": "R6: confirmed fraud connected to shared device profile or card",
+    "narrative": "Between 2016-12-01 and 2016-12-01, customer C07987 and card C07987-K2, connected cards C11309-K1, C01983-K1, C06224-K2, device profile 'Windows | other | chrome 61.0 | 1280x720' were involved in 2 transaction(s) assessed as fraud (account_takeover pattern) with total exposure $199.84. The flagged transaction 3503878 of $99.92 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the account_takeover pattern with assessed fraud probability 0.92. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+    "subjects": [
+      "C06224-K2",
+      "C01983-K1",
+      "C01104-K2",
+      "C07987-K2",
+      "C11309-K1",
+      "C07987",
+      "Windows | other | chrome 61.0 | 1280x720"
+    ],
+    "total_amount_usd": 199.84,
+    "activity_dates": [
+      "2016-12-01",
+      "2016-12-01"
+    ]
+  },
+  "stop_reason": "Fraud probability 0.92 ≥ 0.85 with 3 independent evidence sources.",
+  "tool_calls": 20,
+  "tokens": 0,
+  "latency_s": 19.13,
+  "investigation_trace": {
+    "1_trigger": {
+      "case_id": "HHG-019",
+      "trigger_type": "risk_score",
+      "trigger_text": "Real-time model scored transaction 3503878 ($99.92, online) at 0.90. Review and decide.",
+      "flagged_txn_id": "3503878",
+      "card_id": "C07987-K2",
+      "customer_id": "C07987",
+      "risk_score": 0.9
+    },
+    "2_live_graph_mcp": {
+      "strict_mode_active": true,
+      "tool_calls_count": 20,
+      "graph_evidence_items_count": 5,
+      "graph_evidence_sample": [
+        {
+          "claim": "50 previous transactions retrieved for card C07987-K2. Most recent: 2016-12-31 $33.92 (in_person). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C07987-K2)",
+          "entity_ids": [
+            "C07987-K2"
+          ]
+        },
+        {
+          "claim": "Device profile shared across 4 other card(s): C11309-K1, C01983-K1, C06224-K2, C01104-K2.",
+          "source": "graph",
+          "ref": "query:accounts_sharing_device(device=Windows | other | chrome 61.0 | 1280x720)",
+          "entity_ids": [
+            "C11309-K1",
+            "C01983-K1",
+            "C06224-K2",
+            "C01104-K2"
+          ]
+        },
+        {
+          "claim": "13 prior confirmed fraud case(s) found for customer C07987 or card C07987-K2: CC-5026, CC-2860, CC-2011, CC-5548, CC-5553.",
+          "source": "graph",
+          "ref": "query:closed_cases_for_customer(customer_id=C07987)",
+          "entity_ids": [
+            "CC-5026",
+            "CC-2860",
+            "CC-2011",
+            "CC-5548",
+            "CC-5553"
+          ]
+        },
+        {
+          "claim": "Device profile 'Windows | other | chrome 61.0 | 1280x720' appears in 10 confirmed fraud case(s).",
+          "source": "graph",
+          "ref": "query:closed_cases_by_device(device=Windows | other | chrome 61.0 | 1280x720)",
+          "entity_ids": [
+            "CC-5548",
+            "CC-5553",
+            "CC-5517",
+            "CC-5499",
+            "CC-5439"
+          ]
+        }
+      ]
+    },
+    "3_evidence_gathered": {
+      "total_items": 7,
+      "graph_items": 5,
+      "document_items": 1,
+      "customer_items": 1,
+      "all_evidence": [
+        {
+          "claim": "50 previous transactions retrieved for card C07987-K2. Most recent: 2016-12-31 $33.92 (in_person). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C07987-K2)",
+          "entity_ids": [
+            "C07987-K2"
+          ],
+          "severity": "MEDIUM",
+          "confidence": 0.95
+        },
+        {
+          "claim": "Device profile shared across 4 other card(s): C11309-K1, C01983-K1, C06224-K2, C01104-K2.",
+          "source": "graph",
+          "ref": "query:accounts_sharing_device(device=Windows | other | chrome 61.0 | 1280x720)",
+          "entity_ids": [
+            "C11309-K1",
+            "C01983-K1",
+            "C06224-K2",
+            "C01104-K2"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.8
+        },
+        {
+          "claim": "13 prior confirmed fraud case(s) found for customer C07987 or card C07987-K2: CC-5026, CC-2860, CC-2011, CC-5548, CC-5553.",
+          "source": "graph",
+          "ref": "query:closed_cases_for_customer(customer_id=C07987)",
+          "entity_ids": [
+            "CC-5026",
+            "CC-2860",
+            "CC-2011",
+            "CC-5548",
+            "CC-5553"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.95
+        },
+        {
+          "claim": "Device profile 'Windows | other | chrome 61.0 | 1280x720' appears in 10 confirmed fraud case(s).",
+          "source": "graph",
+          "ref": "query:closed_cases_by_device(device=Windows | other | chrome 61.0 | 1280x720)",
+          "entity_ids": [
+            "CC-5548",
+            "CC-5553",
+            "CC-5517",
+            "CC-5499",
+            "CC-5439"
+          ],
+          "severity": "CRITICAL",
+          "confidence": 0.9
+        },
+        {
+          "claim": "Mixed-channel activity in 48h window: online, in_person.",
+          "source": "graph",
+          "ref": "query:card_window(card_id=C07987-K2)",
+          "entity_ids": [
+            "3499109",
+            "3503878",
+            "3507926",
+            "3508124"
+          ],
+          "severity": "MEDIUM",
+          "confidence": 0.7
+        },
+        {
+          "claim": "15 prior closed case(s) retrieved by pattern (account_takeover) and keyword match over analyst notes.",
+          "source": "document",
+          "ref": "retrieval:pattern+keyword(pattern=account_takeover)",
+          "entity_ids": [
+            "CC-5559",
+            "CC-5563",
+            "CC-5507",
+            "CC-5514",
+            "CC-5530",
+            "CC-5509",
+            "CC-5495",
+            "CC-5467",
+            "CC-5505",
+            "CC-5397"
+          ],
+          "severity": "LOW",
+          "confidence": 0.75
+        },
+        {
+          "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
+          "source": "customer",
+          "ref": "evidence_request:ER-fe6bc39e",
+          "entity_ids": [
+            "C07987"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.8
+        }
+      ]
+    },
+    "4_evidence_provenance": {
+      "all_refs_valid": true,
+      "all_sources_valid": true,
+      "total_sources_used": 3
+    },
+    "5_risk_assessment": {
+      "fraud_probability": 0.915,
+      "exposure_usd": 199.84,
+      "verdict": "fraud",
+      "status": "closed_fraud"
+    },
+    "6_fraud_pattern": {
+      "pattern": "account_takeover",
+      "pattern_description": "Mixed-channel activity inconsistent with cardholder"
+    },
+    "7_uncertainty": {
+      "uncertainty_items_count": 0,
+      "items": []
+    },
+    "8_evidence_requests": [
+      {
+        "type": "customer_validation",
+        "asked_after_step": 4,
+        "assumed_response": "Customer states they did not make these purchases and still has the card in their possession."
+      }
+    ],
+    "9_additional_evidence_received": [
+      {
+        "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
+        "source": "customer",
+        "ref": "evidence_request:ER-fe6bc39e"
+      }
+    ],
+    "10_reassessment_and_diff": {
+      "what_changed": "Added: BLOCK_CARD",
+      "stop_reason": "Fraud probability 0.92 ≥ 0.85 with 3 independent evidence sources."
+    },
+    "11_nba_and_policy": {
+      "initial": [
+        {
+          "action": "CREATE_CASE",
+          "route": "auto",
+          "reason": "R6: shared device/region/email across multiple cards"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": "L2",
+          "reason": "R6: shared origin requires report"
+        },
+        {
+          "action": "MONITOR_CONNECTED_CARDS",
+          "route": "auto",
+          "reason": "R6"
+        }
+      ],
+      "final": [
+        {
+          "action": "BLOCK_CARD",
+          "route": "L1",
+          "reason": "R2: customer denied the transaction"
+        },
+        {
+          "action": "CREATE_CASE",
+          "route": "auto",
+          "reason": "R2"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": "L2",
+          "reason": "R2: exposure > $1,000 or shared device/region"
+        },
+        {
+          "action": "MONITOR_CONNECTED_CARDS",
+          "route": "auto",
+          "reason": "R6: shared origin detected"
+        }
+      ],
+      "policy_rules_applied": [
+        "R2",
+        "R6"
+      ],
+      "approvals_required": [
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": null,
+          "status": "pending"
+        }
+      ],
+      "sar": {
+        "file": true,
+        "reason": "R6: confirmed fraud connected to shared device profile or card",
+        "narrative": "Between 2016-12-01 and 2016-12-01, customer C07987 and card C07987-K2, connected cards C11309-K1, C01983-K1, C06224-K2, device profile 'Windows | other | chrome 61.0 | 1280x720' were involved in 2 transaction(s) assessed as fraud (account_takeover pattern) with total exposure $199.84. The flagged transaction 3503878 of $99.92 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the account_takeover pattern with assessed fraud probability 0.92. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+        "subjects": [
+          "C06224-K2",
+          "C01983-K1",
+          "C01104-K2",
+          "C07987-K2",
+          "C11309-K1",
+          "C07987",
+          "Windows | other | chrome 61.0 | 1280x720"
+        ],
+        "total_amount_usd": 199.84,
+        "activity_dates": [
+          "2016-12-01",
+          "2016-12-01"
+        ]
+      }
+    },
+    "12_persistence_and_summary": {
+      "written_to_graph": true,
+      "graph_case_id": "CASE-2016-HHG-019",
+      "audit_events_count": 82,
+      "summary": "Case HHG-019 investigated account_takeover activity on card C07987-K2 (customer C07987) around transaction 3503878 ($99.92, online). Assessed fraud probability 0.92 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 13 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+      "tokens_used": 0,
+      "latency_s": 19.13
+    }
+  },
+  "benchmark_comparison": {
+    "expected": {
+      "verdict": "fraud",
+      "pattern": "account_takeover",
+      "status": "closed_fraud",
+      "sar_file": true,
+      "nba_final_actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT"
+      ],
+      "reason": "Risk score 0.90, account takeover signals (mixed channel / anomalous match status), customer denial"
+    },
+    "actual": {
+      "verdict": "fraud",
+      "pattern": "account_takeover",
+      "status": "closed_fraud",
+      "sar_file": true,
+      "fraud_probability": 0.915,
+      "exposure_usd": 199.84,
+      "nba_final_actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ]
+    },
+    "verdict_match": true,
+    "pattern_match": true,
+    "sar_match": true,
+    "checkpoints_passed": 30,
+    "checkpoints_total": 30,
+    "failed_checkpoints": [],
+    "root_cause": "none"
+  }
+}

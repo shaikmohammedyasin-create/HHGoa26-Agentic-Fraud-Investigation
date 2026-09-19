@@ -1,0 +1,411 @@
+TransactionID,DeviceInfo,id_30,id_31,id_33,DeviceType
+3000008,Windows,unknown,chrome 62.0,unknown,desktop
+3000016,Moto G (5) Plus Build/NPN25.137-72,unknown,android webview 4.0,unknown,mobile
+3000057,Moto G (5) Build/NPP25.137-72,unknown,chrome generic,unknown,mobile
+3000061,Windows,unknown,chrome 62.0,unknown,desktop
+3000078,unknown,unknown,mobile safari generic,unknown,mobile
+3000079,unknown,unknown,mobile safari 10.0,unknown,mobile
+3000093,unknown,unknown,mobile safari 11.0,unknown,mobile
+3000113,unknown,unknown,mobile safari generic,unknown,mobile
+3000123,ALE-L23 Build/HuaweiALE-L23,unknown,chrome 46.0 for android,unknown,mobile
+3000127,Windows,unknown,chrome 62.0,unknown,desktop
+3000164,Windows,unknown,chrome 62.0,unknown,desktop
+3000172,LG-K580 Build/MRA58K,unknown,chrome 62.0 for android,unknown,mobile
+3000190,Moto G (4) Build/NPJ25.93-14.5,unknown,chrome generic,unknown,mobile
+3000197,SM-T710 Build/NRD90M,unknown,chrome 62.0 for android,unknown,mobile
+3000204,SAMSUNG,unknown,chrome generic,unknown,mobile
+3000217,Windows,unknown,chrome 62.0,unknown,desktop
+3000232,Windows,unknown,chrome 61.0,unknown,desktop
+3000242,Windows,unknown,chrome 61.0,unknown,desktop
+3000274,unknown,unknown,mobile safari 11.0,unknown,mobile
+3000280,unknown,unknown,mobile safari 11.0,unknown,mobile
+3000305,unknown,unknown,chrome 62.0,unknown,desktop
+3000314,Blade V6 Build/LRX22G,unknown,chrome 62.0 for android,unknown,mobile
+3000321,unknown,unknown,mobile safari 11.0,unknown,mobile
+3000322,SAMSUNG SM-J700M Build/MMB29K,unknown,samsung browser 6.2,unknown,mobile
+3000381,SM-G531H Build/LMY48B,unknown,chrome 62.0 for android,unknown,mobile
+3000519,Moto C Build/NRD90M.063,unknown,chrome 62.0 for android,unknown,mobile
+3000736,Windows,unknown,chrome 62.0,unknown,desktop
+3000805,Windows,unknown,chrome 62.0,unknown,desktop
+3000815,Windows,unknown,chrome 62.0,unknown,desktop
+3000932,LG-D693n Build/LRX22G,unknown,chrome 60.0 for android,unknown,mobile
+3000943,unknown,unknown,chrome,unknown,desktop
+3000945,Windows,unknown,chrome 62.0,unknown,desktop
+3000960,HUAWEI RIO-L03 Build/HUAWEIRIO-L03,unknown,chrome 62.0 for android,unknown,mobile
+3001089,iOS Device,iOS 10.2.0,mobile safari 10.0,1136x640,mobile
+3001098,MacOS,Mac OS X 10_11_6,chrome 62.0,2560x1600,desktop
+3001102,unknown,unknown,chrome 62.0,unknown,desktop
+3001172,Windows,Windows 7,chrome 62.0,1280x1024,desktop
+3001176,Windows,Windows 7,chrome 62.0,1280x1024,desktop
+3001307,unknown,unknown,chrome 62.0,unknown,desktop
+3001386,Windows,unknown,chrome 62.0,unknown,desktop
+3001393,Windows,Windows 7,chrome 62.0,1920x1080,desktop
+3001433,Windows,unknown,chrome 62.0,unknown,desktop
+3001522,Windows,unknown,firefox 57.0,unknown,desktop
+3001528,Windows,unknown,chrome 62.0,unknown,desktop
+3001546,Windows,unknown,chrome 62.0,unknown,desktop
+3001651,unknown,unknown,mobile safari 11.0,unknown,mobile
+3001718,iOS Device,iOS 11.1.2,mobile safari generic,1334x750,mobile
+3001887,Windows,Windows 10,edge 15.0,1600x900,desktop
+3002221,Windows,Windows 10,chrome 62.0,1024x768,desktop
+3002601,KYOCERA-C6742A Build/LMY47V,Android 5.1.1,chrome generic,960x540,mobile
+3002670,KYOCERA-C6742A Build/LMY47V,Android 5.1.1,chrome generic,960x540,mobile
+3002741,iOS Device,iOS 11.1.1,mobile safari 11.0,1334x750,mobile
+3002983,iOS Device,iOS 10.3.3,mobile safari 10.0,1136x640,mobile
+3003004,iOS Device,iOS 10.3.3,mobile safari 10.0,1136x640,mobile
+3003521,unknown,unknown,chrome 62.0,unknown,desktop
+3004451,SAMSUNG SM-T810 Build/NRD90M,unknown,samsung browser 6.2,unknown,mobile
+3004655,Windows,unknown,firefox 57.0,unknown,desktop
+3005005,Windows,unknown,chrome 62.0,unknown,desktop
+3005024,BLADE V8 SE Build/NRD90M,unknown,chrome 62.0 for android,unknown,mobile
+3005101,Windows,unknown,chrome 62.0,unknown,desktop
+3005123,Windows,unknown,chrome 62.0,unknown,desktop
+3005145,Windows,unknown,chrome 62.0,unknown,desktop
+3005260,MacOS,Mac OS X 10_12_3,chrome 62.0,1440x900,desktop
+3005721,unknown,unknown,mobile safari generic,unknown,mobile
+3005863,Windows,Windows 10,chrome 62.0,1920x1080,desktop
+3006031,Windows,Windows 10,chrome 62.0,1600x900,desktop
+3006117,MacOS,Mac OS X 10_12_6,chrome 62.0,1440x900,desktop
+3006150,iOS Device,iOS 11.1.0,mobile safari 11.0,2048x1536,mobile
+3006222,Windows,unknown,chrome 62.0,unknown,desktop
+3006257,Windows,unknown,chrome 62.0,unknown,desktop
+3006277,Windows,unknown,chrome 62.0,unknown,desktop
+3006493,MacOS,Mac OS X 10_11_6,safari generic,1440x900,desktop
+3006526,iOS Device,iOS 11.0.1,mobile safari 11.0,2732x2048,mobile
+3006928,unknown,unknown,unknown,unknown,unknown
+3006942,Windows,Windows 10,edge 15.0,unknown,desktop
+3007932,iOS Device,iOS 11.1.2,mobile safari 11.0,1334x750,mobile
+3008138,Windows,Windows 10,chrome 62.0,1366x768,desktop
+3008420,Windows,Windows 10,edge 14.0,1920x1080,desktop
+3008727,Windows,unknown,chrome 62.0,unknown,desktop
+3009364,unknown,unknown,safari generic,unknown,desktop
+3009508,Windows,unknown,chrome 62.0,unknown,desktop
+3009511,Windows,unknown,chrome 62.0,unknown,desktop
+3011702,iOS Device,iOS 11.1.2,mobile safari 11.0,1334x750,mobile
+3012151,Windows,unknown,chrome 62.0,unknown,desktop
+3012791,ZEIA8,unknown,chrome 62.0 for android,unknown,mobile
+3012922,ZEIA8,unknown,chrome 62.0 for android,unknown,mobile
+3012958,Windows,unknown,chrome 62.0,unknown,desktop
+3014568,Windows,unknown,chrome 62.0,unknown,desktop
+3015139,unknown,unknown,unknown,unknown,unknown
+3016362,unknown,unknown,chrome 62.0,unknown,desktop
+3017822,Windows,Windows 10,chrome 62.0,1280x1024,desktop
+3017846,Trident/7.0,Windows 7,ie 11.0 for desktop,1920x1080,desktop
+3017897,Windows,Windows 7,chrome 62.0,1920x1080,desktop
+3018410,unknown,unknown,unknown,unknown,unknown
+3018737,unknown,unknown,mobile safari 11.0,unknown,mobile
+3020881,iOS Device,iOS 11.1.1,mobile safari 11.0,1334x750,mobile
+3020895,iOS Device,iOS 11.1.1,mobile safari 11.0,1334x750,mobile
+3022086,Windows,Windows 10,chrome 62.0,1600x900,desktop
+3022152,unknown,unknown,mobile safari 11.0,unknown,mobile
+3022263,SM-G530H Build/LRX22G,unknown,chrome 62.0 for android,unknown,mobile
+3022270,Windows,unknown,chrome 62.0,unknown,desktop
+3022704,Windows,Windows 8.1,chrome 62.0,1600x900,desktop
+3022777,Windows,Windows 8.1,chrome 62.0,1600x900,desktop
+3022865,unknown,unknown,chrome 49.0,unknown,desktop
+3022978,Windows,Windows 10,chrome 62.0,1920x1080,desktop
+3023219,Windows,unknown,firefox 57.0,unknown,desktop
+3023497,MacOS,Mac OS X 10_13_1,chrome 62.0,1920x1080,desktop
+3023541,unknown,unknown,chrome 62.0,unknown,desktop
+3023553,MacOS,Mac OS X 10_13_1,chrome 62.0,1920x1080,desktop
+3023895,Trident/7.0,unknown,ie 11.0 for desktop,unknown,desktop
+3023906,Windows,Windows 10,chrome 62.0,1920x1080,desktop
+3024194,Windows,Windows 10,chrome 62.0,3200x1800,desktop
+3024254,Windows,Windows 10,chrome 62.0,1366x768,desktop
+3024936,Windows,unknown,chrome 62.0,unknown,desktop
+3024961,ALE-L23 Build/HuaweiALE-L23,unknown,chrome 63.0 for android,unknown,mobile
+3025135,Windows,Windows 10,chrome 62.0,1920x1080,desktop
+3025566,unknown,unknown,edge 15.0,unknown,desktop
+3025610,unknown,unknown,edge 15.0,unknown,desktop
+3029127,iOS Device,iOS 9.3.5,mobile safari 9.0,1024x768,mobile
+3030290,Windows,Windows 10,firefox 57.0,1600x900,desktop
+3030697,Windows,Windows 10,edge 15.0,1680x1050,desktop
+3030837,MDDRJS,Windows 7,ie 11.0 for desktop,1440x900,desktop
+3032208,SM-J510FN,unknown,chrome 62.0 for android,unknown,mobile
+3032354,Windows,unknown,chrome 62.0,unknown,desktop
+3032361,iOS Device,iOS 11.1.2,mobile safari generic,2208x1242,mobile
+3032384,iOS Device,iOS 11.1.2,mobile safari generic,2208x1242,mobile
+3032418,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3033866,Windows,Windows 10,chrome 62.0,2736x1824,desktop
+3034040,iOS Device,iOS 9.3.5,mobile safari 9.0,1024x768,mobile
+3034459,iOS Device,iOS 9.3.5,mobile safari 9.0,1024x768,mobile
+3034574,unknown,unknown,unknown,unknown,unknown
+3034642,unknown,unknown,unknown,unknown,unknown
+3036242,Trident/7.0,Windows 7,ie 11.0 for desktop,1920x1080,desktop
+3036519,unknown,unknown,safari generic,unknown,desktop
+3038759,Windows,Windows Vista,chrome 49.0,1440x900,desktop
+3039032,iOS Device,iOS 11.1.2,mobile safari 11.0,1136x640,mobile
+3041580,unknown,unknown,mobile safari generic,unknown,mobile
+3041882,Windows,unknown,chrome 62.0,unknown,desktop
+3041946,Windows,Windows 7,chrome 63.0,1600x900,desktop
+3042227,Trident/7.0,Windows 7,ie 11.0 for desktop,unknown,desktop
+3042672,SM-P350 Build/MMB29M,unknown,chrome 62.0 for android,unknown,mobile
+3043674,SM-J700M Build/MMB29K,unknown,chrome 62.0 for android,unknown,mobile
+3043766,Windows,Windows 10,chrome 62.0,1366x768,desktop
+3044424,Windows,unknown,chrome 62.0,unknown,desktop
+3045126,Windows,Windows 7,firefox 57.0,1680x1050,desktop
+3045247,Windows,Windows 7,firefox 57.0,1680x1050,desktop
+3048209,rv:55.0,Windows 7,firefox 55.0,1366x768,desktop
+3048987,Windows,Windows 10,edge 16.0,1920x1080,desktop
+3049290,Trident/7.0,Windows 7,ie 11.0 for desktop,1600x900,desktop
+3050502,MacOS,Mac OS X 10_12_6,safari generic,2880x1800,desktop
+3051990,iOS Device,iOS 11.2.0,mobile safari 11.0,2208x1242,mobile
+3053503,Windows,Windows 10,chrome 63.0,1366x768,desktop
+3053646,SM-G610M Build/MMB29K,unknown,chrome 62.0 for android,unknown,mobile
+3054453,unknown,unknown,safari generic,unknown,desktop
+3054463,unknown,unknown,safari generic,unknown,desktop
+3054510,unknown,unknown,safari generic,unknown,desktop
+3054511,unknown,unknown,safari generic,unknown,desktop
+3054532,unknown,unknown,safari generic,unknown,desktop
+3055624,MacOS,Mac OS X 10_13_2,safari generic,1440x900,desktop
+3055687,MacOS,Mac OS X 10_13_2,safari generic,1440x900,desktop
+3057975,SM-G610M Build/MMB29K,unknown,chrome 62.0 for android,unknown,mobile
+3058791,iOS Device,iOS 11.0.3,mobile safari 11.0,1334x750,mobile
+3058980,Windows,Windows 10,chrome 63.0,1400x1050,desktop
+3060486,rv:57.0,Mac OS X 10.9,firefox 57.0,1920x1080,desktop
+3060995,Windows,unknown,chrome 62.0,unknown,desktop
+3061540,GT-I9500,unknown,chrome 63.0 for android,unknown,mobile
+3061749,Trident/7.0,Windows 8.1,ie 11.0 for desktop,unknown,desktop
+3062197,LG-K410 Build/LRX22G,unknown,chrome 62.0 for android,unknown,mobile
+3062201,LG-K410 Build/LRX22G,unknown,chrome 62.0 for android,unknown,mobile
+3062625,MacOS,Mac OS X 10_11_6,safari generic,2560x1600,desktop
+3063185,Windows,Windows 7,chrome 63.0,1920x1080,desktop
+3063365,Windows,Windows 7,chrome 63.0,1280x1025,desktop
+3063943,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3064136,MacOS,Mac OS X 10_10_5,safari generic,1920x1080,desktop
+3064986,iOS Device,iOS 10.3.3,mobile safari 10.0,2048x1536,mobile
+3066356,iOS Device,iOS 11.0.2,mobile safari 11.0,1334x750,mobile
+3066479,MacOS,Mac OS X 10_10_5,safari generic,1280x800,desktop
+3067057,Windows,Windows 10,firefox 57.0,1366x768,desktop
+3068200,iOS Device,iOS 11.1.2,mobile safari 11.0,2048x1536,mobile
+3070986,iOS Device,iOS 11.1.2,mobile safari 11.0,1334x750,mobile
+3071209,Windows,Windows 10,firefox 57.0,1680x1050,desktop
+3071655,iOS Device,iOS 11.1.2,mobile safari 11.0,1334x750,mobile
+3072009,Windows,Windows 10,chrome 63.0,1366x768,desktop
+3072040,Windows,Windows 7,chrome 63.0,1600x900,desktop
+3072382,iOS Device,iOS 10.3.3,mobile safari 10.0,1334x750,mobile
+3072772,Windows,Windows 7,chrome 63.0,1680x1050,desktop
+3073868,unknown,unknown,chrome 63.0,unknown,desktop
+3074143,unknown,unknown,unknown,unknown,unknown
+3074803,LG-X210 Build/LMY47I,unknown,chrome 63.0 for android,unknown,mobile
+3075894,Windows,Windows 10,chrome 63.0,1366x768,desktop
+3076175,Windows,Windows 10,chrome 63.0,4500x3000,desktop
+3076269,unknown,unknown,unknown,unknown,unknown
+3076305,unknown,unknown,unknown,unknown,unknown
+3076736,iOS Device,iOS 11.2.1,mobile safari 11.0,1136x640,mobile
+3077016,LG-H871,Android 7.0,firefox,2672x1440,mobile
+3077293,Windows,Windows 10,firefox 57.0,1920x1080,desktop
+3078052,Windows,Windows 10,chrome 61.0,1920x1080,desktop
+3078147,iOS Device,iOS 9.3.5,mobile safari 9.0,1024x768,mobile
+3078870,Ilium LT510 Build/MRA58K,unknown,chrome 59.0 for android,unknown,mobile
+3079235,Moto E (4) Plus Build/NMA26.42-69,unknown,chrome generic,unknown,mobile
+3080225,Windows,Windows 7,chrome 63.0,1360x768,desktop
+3080252,MacOS,Mac OS X 10_12_6,safari generic,1440x900,desktop
+3081435,iOS Device,iOS 10.2.0,mobile safari 10.0,2208x1242,mobile
+3081583,Windows,Windows 7,firefox 57.0,1600x900,desktop
+3081735,SAMSUNG SM-G950U Build/NRD90M,Android 7.0,samsung browser 6.2,2220x1080,mobile
+3083251,Windows,unknown,chrome 63.0,unknown,desktop
+3083538,Windows,Windows 10,chrome 63.0,3440x1440,desktop
+3083864,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3083959,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3084267,Windows,Windows 7,chrome 62.0,1920x1080,desktop
+3085777,Windows,Windows 7,chrome 63.0,1920x1200,desktop
+3085799,Windows,Windows 7,chrome 63.0,1920x1200,desktop
+3086802,MacOS,Mac OS X 10_10_5,chrome 63.0,1280x800,desktop
+3086825,Trident/7.0,Windows 10,ie 11.0 for desktop,1920x1080,desktop
+3087486,iOS Device,iOS 11.2.1,mobile safari 11.0,2436x1125,mobile
+3087548,ZTE Blade L5 Build/LMY47I,unknown,chrome 60.0 for android,unknown,mobile
+3087605,ZTE Blade L5 Build/LMY47I,unknown,chrome 60.0 for android,unknown,mobile
+3087613,ZTE Blade L5 Build/LMY47I,unknown,chrome 60.0 for android,unknown,mobile
+3087647,ZTE Blade L5 Build/LMY47I,unknown,chrome 60.0 for android,unknown,mobile
+3087652,ZTE Blade L5 Build/LMY47I,unknown,chrome 60.0 for android,unknown,mobile
+3087672,ZTE Blade L5 Build/LMY47I,unknown,chrome 60.0 for android,unknown,mobile
+3087743,ZTE Blade L5 Build/LMY47I,unknown,chrome 60.0 for android,unknown,mobile
+3087822,MacOS,Mac OS X 10_10_5,safari generic,1280x800,desktop
+3088788,ZTE Blade L5 Build/LMY47I,unknown,chrome 60.0 for android,unknown,mobile
+3088949,MacOS,Mac OS X 10_11_6,safari generic,1440x900,desktop
+3089258,unknown,unknown,unknown,unknown,unknown
+3090826,Windows,Windows 10,edge 15.0,1920x1080,desktop
+3091950,iOS Device,iOS 11.2.1,mobile safari 11.0,2436x1125,mobile
+3092419,unknown,unknown,chrome 63.0,unknown,desktop
+3092793,iOS Device,iOS 11.2.1,mobile safari 11.0,2224x1668,mobile
+3094118,MacOS,Mac OS X 10_11_4,safari generic,1280x800,desktop
+3094730,MacOS,Mac OS X 10_12_6,safari generic,1440x900,desktop
+3095915,unknown,Linux,chrome 63.0,unknown,desktop
+3096343,iOS Device,iOS 10.2.0,mobile safari 10.0,1334x750,mobile
+3097293,SAMSUNG SM-J730GM Build/NRD90M,unknown,samsung browser 6.2,unknown,mobile
+3099130,unknown,unknown,unknown,unknown,unknown
+3099575,Trident/7.0,Windows 10,ie 11.0 for desktop,unknown,desktop
+3099578,iOS Device,iOS 11.2.1,mobile safari 11.0,2048x1536,mobile
+3099750,Trident/7.0,Windows 10,ie 11.0 for desktop,1366x768,desktop
+3099865,Windows,unknown,chrome 63.0,unknown,desktop
+3102555,Windows,unknown,chrome 63.0,unknown,desktop
+3103282,Windows,Windows 10,firefox 57.0,1920x1080,desktop
+3103726,5080A Build/MRA58K,unknown,chrome 63.0 for android,unknown,mobile
+3104922,unknown,unknown,unknown,unknown,unknown
+3105031,5080A Build/MRA58K,unknown,chrome 63.0 for android,unknown,mobile
+3105149,Windows,unknown,chrome 63.0,unknown,desktop
+3105761,Windows,Windows 7,chrome 63.0,1360x768,desktop
+3107995,iOS Device,iOS 11.2.1,mobile safari 11.0,2208x1242,mobile
+3109837,MacOS,Mac,chrome 62.0,1920x1080,desktop
+3112405,Windows,unknown,chrome 63.0,unknown,desktop
+3113247,Windows,unknown,chrome 63.0,unknown,desktop
+3113745,iOS Device,iOS 11.2.1,mobile safari 11.0,2208x1242,mobile
+3114222,Windows,Windows 7,chrome 63.0,1360x768,desktop
+3116058,rv:11.0,unknown,ie 11.0 for desktop,unknown,desktop
+3116388,unknown,unknown,unknown,unknown,unknown
+3117007,iOS Device,iOS 11.2.1,mobile safari 11.0,1334x750,mobile
+3118964,MacOS,Mac OS X 10_13_2,safari generic,2560x1440,desktop
+3119793,unknown,unknown,mobile safari 11.0,unknown,mobile
+3119975,Windows,Windows 7,chrome 63.0,1366x768,desktop
+3120994,Trident/7.0,Windows 7,ie 11.0 for desktop,unknown,desktop
+3121617,iOS Device,iOS 11.2.1,mobile safari 11.0,2436x1125,mobile
+3121653,Windows,Windows 10,chrome 60.0,1600x900,desktop
+3121654,Windows,Windows 10,chrome 60.0,1600x900,desktop
+3121740,Windows,Windows 10,chrome 60.0,1600x900,desktop
+3121765,Windows,Windows 10,chrome 60.0,1600x900,desktop
+3121778,Windows,Windows 10,chrome 60.0,1600x900,desktop
+3122967,LG-K410 Build/LRX22G,unknown,chrome 63.0 for android,unknown,mobile
+3123023,LG-K410 Build/LRX22G,unknown,chrome 63.0 for android,unknown,mobile
+3125210,LG-K410 Build/LRX22G,unknown,chrome 63.0 for android,unknown,mobile
+3125214,LG-K410 Build/LRX22G,unknown,chrome 63.0 for android,unknown,mobile
+3128905,Windows,unknown,chrome 63.0,unknown,desktop
+3135192,MacOS,Mac OS X 10_12_6,chrome 63.0,2880x1800,desktop
+3137978,iOS Device,iOS 11.2.1,mobile safari 11.0,2208x1242,mobile
+3138351,iOS Device,iOS 9.3.5,mobile safari 9.0,1024x768,mobile
+3147680,Windows,Windows 7,chrome 63.0,1680x1050,desktop
+3147914,MacOS,Mac OS X 10_12_6,chrome 63.0,2560x1600,desktop
+3150138,Windows,Windows 10,chrome 63.0,1600x900,desktop
+3155462,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3155463,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3155508,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3155516,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3155524,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3155538,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3164170,unknown,unknown,mobile safari 11.0,unknown,mobile
+3166999,iOS Device,iOS 9.3.5,mobile safari 9.0,1024x768,mobile
+3174800,Windows,unknown,chrome 63.0,unknown,desktop
+3176883,unknown,unknown,chrome 63.0,unknown,desktop
+3184681,unknown,Android,chrome 63.0,1280x720,mobile
+3184683,unknown,Android,chrome 63.0,1280x720,mobile
+3184770,unknown,Android,chrome 63.0,1280x720,mobile
+3184779,unknown,Android,chrome 63.0,1280x720,mobile
+3185167,Trident/7.0,unknown,ie 11.0 for desktop,unknown,desktop
+3189049,Trident/7.0,unknown,ie 11.0 for desktop,unknown,desktop
+3189958,Windows,Windows 10,chrome 63.0,1920x1080,desktop
+3191366,Windows,unknown,chrome 63.0,unknown,desktop
+3210098,Windows,Windows 10,edge 15.0,1366x768,desktop
+3222430,MacOS,Mac OS X 10_11_6,chrome 63.0,1440x900,desktop
+3225360,unknown,unknown,unknown,unknown,unknown
+3225369,unknown,unknown,unknown,unknown,unknown
+3227718,unknown,unknown,mobile safari generic,unknown,mobile
+3230270,Windows,unknown,chrome 63.0,unknown,desktop
+3230363,Windows,unknown,chrome 63.0,unknown,desktop
+3230393,Windows,unknown,chrome 63.0,unknown,desktop
+3230409,Windows,unknown,chrome 63.0,unknown,desktop
+3230493,Windows,unknown,chrome 63.0,unknown,desktop
+3237339,MacOS,Mac OS X 10_10_5,safari generic,1440x900,desktop
+3237387,MacOS,Mac OS X 10_10_5,safari generic,1440x900,desktop
+3244254,unknown,unknown,chrome 63.0,unknown,desktop
+3264883,SM-G531H Build/LMY48B,unknown,chrome 63.0 for android,unknown,mobile
+3266021,Windows,unknown,chrome 64.0,unknown,desktop
+3266022,Windows,unknown,chrome 64.0,unknown,desktop
+3281953,SM-G950F Build/NRD90M,unknown,chrome 64.0 for android,unknown,mobile
+3282178,SM-G950F Build/NRD90M,unknown,chrome 64.0 for android,unknown,mobile
+3282542,iOS Device,iOS 11.2.2,mobile safari generic,1334x750,mobile
+3282661,iOS Device,iOS 11.2.2,mobile safari generic,1334x750,mobile
+3285143,Windows,unknown,chrome 64.0,unknown,desktop
+3285152,Windows,unknown,chrome 64.0,unknown,desktop
+3285177,Windows,unknown,chrome 64.0,unknown,desktop
+3285211,Windows,unknown,chrome 64.0,unknown,desktop
+3289577,unknown,unknown,mobile safari generic,unknown,mobile
+3292160,iOS Device,iOS 11.2.5,mobile safari generic,1136x640,mobile
+3295566,Windows,unknown,firefox 58.0,unknown,desktop
+3295579,unknown,unknown,chrome 64.0,unknown,desktop
+3302993,Windows,unknown,chrome 55.0,unknown,desktop
+3305566,SAMSUNG SM-G900F Build/MMB29M,unknown,samsung browser 6.2,unknown,mobile
+3305634,SAMSUNG SM-G900F Build/MMB29M,unknown,samsung browser 6.2,unknown,mobile
+3307219,Windows,unknown,chrome 63.0,unknown,desktop
+3307244,Windows,unknown,chrome 63.0,unknown,desktop
+3307245,Windows,unknown,chrome 63.0,unknown,desktop
+3309431,SM-G950F Build/NRD90M,unknown,chrome 64.0 for android,unknown,mobile
+3309839,unknown,unknown,chrome 64.0,unknown,desktop
+3309908,unknown,unknown,chrome 64.0,unknown,desktop
+3311844,MotoE2(4G-LTE,unknown,chrome generic,unknown,desktop
+3313487,unknown,unknown,chrome 64.0,unknown,desktop
+3316685,Windows,unknown,chrome 64.0,unknown,desktop
+3316755,Windows,unknown,chrome 64.0,unknown,desktop
+3322019,unknown,unknown,chrome 64.0,unknown,desktop
+3322692,unknown,unknown,chrome 64.0,unknown,desktop
+3322716,unknown,unknown,chrome 63.0,unknown,desktop
+3323111,Windows,Windows 10,edge 16.0,1920x1080,desktop
+3324490,Windows,unknown,chrome 64.0,unknown,desktop
+3326030,unknown,unknown,chrome,unknown,desktop
+3328963,Windows,Windows 7,firefox 58.0,1366x768,desktop
+3330430,SM-G950F Build/NRD90M,unknown,chrome 64.0 for android,unknown,mobile
+3330698,Windows,Windows 10,chrome 64.0,1680x1050,desktop
+3330702,Windows,Windows 10,chrome 64.0,1680x1050,desktop
+3330761,Windows,Windows 10,chrome 64.0,1680x1050,desktop
+3342487,Windows,Windows 10,edge 14.0,1920x1080,desktop
+3347315,Windows,unknown,chrome 64.0,unknown,desktop
+3351763,Windows,unknown,chrome 64.0,unknown,desktop
+3357070,unknown,unknown,chrome 64.0,unknown,desktop
+3357075,unknown,unknown,chrome 64.0,unknown,desktop
+3357102,unknown,unknown,chrome 64.0,unknown,desktop
+3362873,Windows,Windows 7,firefox 58.0,1366x768,desktop
+3364287,Windows,unknown,chrome 64.0,unknown,desktop
+3368735,unknown,unknown,chrome 64.0,unknown,desktop
+3368736,unknown,unknown,chrome 64.0,unknown,desktop
+3368763,unknown,unknown,chrome 64.0,unknown,desktop
+3374563,Windows,unknown,chrome 64.0,unknown,desktop
+3374623,Windows,unknown,chrome 64.0,unknown,desktop
+3374642,Windows,unknown,chrome 64.0,unknown,desktop
+3374650,Windows,unknown,chrome 64.0,unknown,desktop
+3381003,Windows,Windows 10,chrome generic,1920x1080,desktop
+3381749,Windows,Windows 7,chrome 64.0,1440x900,desktop
+3385561,Trident/7.0,unknown,ie 11.0 for desktop,unknown,desktop
+3389674,Windows,Windows 7,firefox 59.0,1366x768,desktop
+3390612,Windows,Windows 10,chrome 64.0,1680x1050,desktop
+3397310,MacOS,Mac OS X 10_10_5,chrome 65.0,1280x800,desktop
+3400334,Trident/7.0,unknown,ie 11.0 for tablet,unknown,desktop
+3400385,Trident/7.0,unknown,ie 11.0 for tablet,unknown,desktop
+3400395,Trident/7.0,unknown,ie 11.0 for tablet,unknown,desktop
+3400406,Trident/7.0,unknown,ie 11.0 for tablet,unknown,desktop
+3400436,Trident/7.0,unknown,ie 11.0 for tablet,unknown,desktop
+3400451,Trident/7.0,unknown,ie 11.0 for tablet,unknown,desktop
+3400494,Trident/7.0,unknown,ie 11.0 for tablet,unknown,desktop
+3400552,Trident/7.0,unknown,ie 11.0 for tablet,unknown,desktop
+3433977,unknown,unknown,mobile safari generic,unknown,mobile
+3438059,Windows,Windows 10,edge 16.0,1366x767,desktop
+3450629,Windows,Windows 10,chrome 65.0,1920x1080,desktop
+3464869,Trident/7.0,Windows 8.1,ie 11.0 for desktop,1680x1050,desktop
+3476682,Trident/7.0,Windows 7,ie 11.0 for desktop,1920x1080,desktop
+3478561,SM-G935F Build/NRD90M,Android 7.0,chrome 62.0 for android,1920x1080,mobile
+3483187,Trident/7.0,Windows 7,ie 11.0 for desktop,1600x900,desktop
+3483198,unknown,unknown,unknown,unknown,desktop
+3492086,MacOS,Mac OS X 10_13_4,safari generic,1440x900,desktop
+3497063,Windows,Windows 10,chrome generic,1680x1050,desktop
+3503878,Windows,other,chrome 61.0,1280x720,desktop
+3506725,Windows,Windows 10,edge 16.0,1366x768,desktop
+3507659,Windows,Windows 10,firefox 59.0,1600x900,desktop
+3507660,Windows,Windows 10,firefox 59.0,1600x900,desktop
+3507672,Windows,Windows 10,firefox 59.0,1600x900,desktop
+3509359,Trident/7.0,Windows 10,ie 11.0 for desktop,1920x1080,desktop
+3519858,MacOS,Mac OS X 10_13_3,chrome 66.0,1600x900,desktop
+3523199,iOS Device,iOS 9.3.5,mobile safari 9.0,1024x768,mobile
+3526826,Windows,unknown,chrome 66.0,unknown,desktop
+3534820,Windows,unknown,edge 16.0,unknown,desktop
+3537664,unknown,unknown,chrome 66.0,unknown,desktop
+3539034,unknown,Android,chrome 66.0,1280x720,mobile
+3540380,Windows,unknown,chrome 66.0,unknown,desktop
+3544645,BLADE A520 Build/NRD90M,unknown,chrome 55.0 for android,unknown,mobile
+3545271,unknown,unknown,chrome 66.0 for ios,unknown,mobile
+3545283,unknown,unknown,chrome 66.0 for ios,unknown,mobile
+3545290,unknown,unknown,chrome 66.0 for ios,unknown,mobile
+3545367,Windows,unknown,chrome 66.0,unknown,desktop
+3545398,Windows,unknown,chrome 66.0,unknown,desktop
+3545489,iOS Device,iOS 9.3.5,mobile safari 9.0,1024x768,mobile
+3558054,unknown,unknown,chrome 66.0,unknown,desktop
+3581141,unknown,unknown,unknown,unknown,desktop
+3583227,unknown,unknown,firefox 47.0,unknown,desktop
+3583368,SM-G610F Build/NRD90M,unknown,chrome 66.0 for android,unknown,mobile

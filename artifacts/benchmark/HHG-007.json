@@ -1,0 +1,455 @@
+{
+  "case_id": "HHG-007",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.546,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "Burst of 2 online transactions within 48h",
+    "affected_txn_ids": [
+      "3514948"
+    ],
+    "first_suspicious_txn_id": "3514948",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 111.92,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C09933-K2. Most recent: 2016-12-31 $47.96 (in_person). Average amount: $0.00.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C09933-K2)",
+        "entity_ids": [
+          "C09933-K2"
+        ]
+      },
+      {
+        "claim": "2 online transactions on this card within 48h of the flagged transaction.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C09933-K2, hours=48)",
+        "entity_ids": [
+          "3515777",
+          "3516867"
+        ]
+      },
+      {
+        "claim": "18 prior confirmed fraud case(s) found for customer C09933 or card C09933-K2: CC-5521, CC-5092, CC-4787, CC-4597, CC-4455.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C09933)",
+        "entity_ids": [
+          "CC-5521",
+          "CC-5092",
+          "CC-4787",
+          "CC-4597",
+          "CC-4455"
+        ]
+      },
+      {
+        "claim": "Mixed-channel activity in 48h window: online, in_person.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C09933-K2)",
+        "entity_ids": [
+          "3509151",
+          "3509355",
+          "3509392",
+          "3509466",
+          "3510700"
+        ]
+      },
+      {
+        "claim": "15 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=card_not_present_fraud)",
+        "entity_ids": [
+          "CC-5558",
+          "CC-5551",
+          "CC-5550",
+          "CC-5542",
+          "CC-5513",
+          "CC-5548",
+          "CC-5540",
+          "CC-5553",
+          "CC-5493",
+          "CC-5512"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "source": "customer",
+        "ref": "evidence_request:ER-de3de535",
+        "entity_ids": [
+          "C09933"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5521",
+      "CC-5092",
+      "CC-4787",
+      "CC-4597",
+      "CC-4455",
+      "CC-4277",
+      "CC-4196",
+      "CC-3821",
+      "CC-3439",
+      "CC-3136",
+      "CC-5558",
+      "CC-5551",
+      "CC-5550",
+      "CC-5542",
+      "CC-5513"
+    ],
+    "summary": "Case HHG-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 3 independent sources. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-007"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "No response received within the 24-hour window."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy §3a: probability ≥ 0.30 triggers case creation"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: insufficient evidence for blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: no reply within 24 hours"
+      },
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R4: decline pending authorization"
+      }
+    ],
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER"
+  },
+  "sar": {
+    "file": false,
+    "reason": "FILE_REPORT not recommended; SAR not required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Borderline probability 0.55; investigation halted per stopping criteria. Escalated for analyst review.",
+  "tool_calls": 17,
+  "tokens": 0,
+  "latency_s": 8.96,
+  "investigation_trace": {
+    "1_trigger": {
+      "case_id": "HHG-007",
+      "trigger_type": "risk_score",
+      "trigger_text": "Real-time model scored transaction 3514948 ($111.92, in billing region 264.0) at 0.87. Review and decide.",
+      "flagged_txn_id": "3514948",
+      "card_id": "C09933-K2",
+      "customer_id": "C09933",
+      "risk_score": 0.87
+    },
+    "2_live_graph_mcp": {
+      "strict_mode_active": true,
+      "tool_calls_count": 17,
+      "graph_evidence_items_count": 4,
+      "graph_evidence_sample": [
+        {
+          "claim": "50 previous transactions retrieved for card C09933-K2. Most recent: 2016-12-31 $47.96 (in_person). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C09933-K2)",
+          "entity_ids": [
+            "C09933-K2"
+          ]
+        },
+        {
+          "claim": "2 online transactions on this card within 48h of the flagged transaction.",
+          "source": "graph",
+          "ref": "query:card_window(card_id=C09933-K2, hours=48)",
+          "entity_ids": [
+            "3515777",
+            "3516867"
+          ]
+        },
+        {
+          "claim": "18 prior confirmed fraud case(s) found for customer C09933 or card C09933-K2: CC-5521, CC-5092, CC-4787, CC-4597, CC-4455.",
+          "source": "graph",
+          "ref": "query:closed_cases_for_customer(customer_id=C09933)",
+          "entity_ids": [
+            "CC-5521",
+            "CC-5092",
+            "CC-4787",
+            "CC-4597",
+            "CC-4455"
+          ]
+        },
+        {
+          "claim": "Mixed-channel activity in 48h window: online, in_person.",
+          "source": "graph",
+          "ref": "query:card_window(card_id=C09933-K2)",
+          "entity_ids": [
+            "3509151",
+            "3509355",
+            "3509392",
+            "3509466",
+            "3510700"
+          ]
+        }
+      ]
+    },
+    "3_evidence_gathered": {
+      "total_items": 6,
+      "graph_items": 4,
+      "document_items": 1,
+      "customer_items": 1,
+      "all_evidence": [
+        {
+          "claim": "50 previous transactions retrieved for card C09933-K2. Most recent: 2016-12-31 $47.96 (in_person). Average amount: $0.00.",
+          "source": "graph",
+          "ref": "query:card_transaction_history(card_id=C09933-K2)",
+          "entity_ids": [
+            "C09933-K2"
+          ],
+          "severity": "MEDIUM",
+          "confidence": 0.95
+        },
+        {
+          "claim": "2 online transactions on this card within 48h of the flagged transaction.",
+          "source": "graph",
+          "ref": "query:card_window(card_id=C09933-K2, hours=48)",
+          "entity_ids": [
+            "3515777",
+            "3516867"
+          ],
+          "severity": "MEDIUM",
+          "confidence": 0.85
+        },
+        {
+          "claim": "18 prior confirmed fraud case(s) found for customer C09933 or card C09933-K2: CC-5521, CC-5092, CC-4787, CC-4597, CC-4455.",
+          "source": "graph",
+          "ref": "query:closed_cases_for_customer(customer_id=C09933)",
+          "entity_ids": [
+            "CC-5521",
+            "CC-5092",
+            "CC-4787",
+            "CC-4597",
+            "CC-4455"
+          ],
+          "severity": "HIGH",
+          "confidence": 0.95
+        },
+        {
+          "claim": "Mixed-channel activity in 48h window: online, in_person.",
+          "source": "graph",
+          "ref": "query:card_window(card_id=C09933-K2)",
+          "entity_ids": [
+            "3509151",
+            "3509355",
+            "3509392",
+            "3509466",
+            "3510700"
+          ],
+          "severity": "MEDIUM",
+          "confidence": 0.7
+        },
+        {
+          "claim": "15 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
+          "source": "document",
+          "ref": "retrieval:pattern+keyword(pattern=card_not_present_fraud)",
+          "entity_ids": [
+            "CC-5558",
+            "CC-5551",
+            "CC-5550",
+            "CC-5542",
+            "CC-5513",
+            "CC-5548",
+            "CC-5540",
+            "CC-5553",
+            "CC-5493",
+            "CC-5512"
+          ],
+          "severity": "LOW",
+          "confidence": 0.75
+        },
+        {
+          "claim": "Customer response (simulated): No response received within the 24-hour window.",
+          "source": "customer",
+          "ref": "evidence_request:ER-de3de535",
+          "entity_ids": [
+            "C09933"
+          ],
+          "severity": "LOW",
+          "confidence": 0.8
+        }
+      ]
+    },
+    "4_evidence_provenance": {
+      "all_refs_valid": true,
+      "all_sources_valid": true,
+      "total_sources_used": 3
+    },
+    "5_risk_assessment": {
+      "fraud_probability": 0.546,
+      "exposure_usd": 111.92,
+      "verdict": "uncertain",
+      "status": "escalated"
+    },
+    "6_fraud_pattern": {
+      "pattern": "card_not_present_fraud",
+      "pattern_description": "Burst of 2 online transactions within 48h"
+    },
+    "7_uncertainty": {
+      "uncertainty_items_count": 2,
+      "items": [
+        {
+          "question": "Did the cardholder make this transaction?",
+          "impact": "Customer denial raises probability significantly; confirmation closes the case",
+          "resolution_method": "VERIFY_WITH_CUSTOMER",
+          "status": "open"
+        },
+        {
+          "question": "Can the burst of online purchases be explained (gift purchases, etc.)?",
+          "impact": "Legitimate explanation reduces probability",
+          "resolution_method": "VERIFY_WITH_CUSTOMER",
+          "status": "open"
+        }
+      ]
+    },
+    "8_evidence_requests": [
+      {
+        "type": "customer_validation",
+        "asked_after_step": 4,
+        "assumed_response": "No response received within the 24-hour window."
+      }
+    ],
+    "9_additional_evidence_received": [
+      {
+        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "source": "customer",
+        "ref": "evidence_request:ER-de3de535"
+      }
+    ],
+    "10_reassessment_and_diff": {
+      "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER",
+      "stop_reason": "Borderline probability 0.55; investigation halted per stopping criteria. Escalated for analyst review."
+    },
+    "11_nba_and_policy": {
+      "initial": [
+        {
+          "action": "CREATE_CASE",
+          "route": "auto",
+          "reason": "Policy §3a: probability ≥ 0.30 triggers case creation"
+        },
+        {
+          "action": "VERIFY_WITH_CUSTOMER",
+          "route": "auto",
+          "reason": "R1: insufficient evidence for blocking"
+        }
+      ],
+      "final": [
+        {
+          "action": "MONITOR_CARD",
+          "route": "auto",
+          "reason": "R4: no reply within 24 hours"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": "L1",
+          "reason": "R4: decline pending authorization"
+        }
+      ],
+      "policy_rules_applied": [
+        "R4"
+      ],
+      "approvals_required": [
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        }
+      ],
+      "sar": {
+        "file": false,
+        "reason": "FILE_REPORT not recommended; SAR not required",
+        "narrative": "",
+        "subjects": [],
+        "total_amount_usd": 0.0,
+        "activity_dates": []
+      }
+    },
+    "12_persistence_and_summary": {
+      "written_to_graph": true,
+      "graph_case_id": "CASE-2016-HHG-007",
+      "audit_events_count": 94,
+      "summary": "Case HHG-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 3 independent sources. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+      "tokens_used": 0,
+      "latency_s": 8.96
+    }
+  },
+  "benchmark_comparison": {
+    "expected": {
+      "verdict": "uncertain",
+      "pattern": "card_not_present_fraud",
+      "status": "escalated",
+      "sar_file": false,
+      "nba_final_actions": [
+        "MONITOR_CARD",
+        "DECLINE_TRANSACTION"
+      ],
+      "reason": "Risk score 0.87 in region 264.0, ambiguous signals, customer validation no response"
+    },
+    "actual": {
+      "verdict": "uncertain",
+      "pattern": "card_not_present_fraud",
+      "status": "escalated",
+      "sar_file": false,
+      "fraud_probability": 0.546,
+      "exposure_usd": 111.92,
+      "nba_final_actions": [
+        "MONITOR_CARD",
+        "DECLINE_TRANSACTION"
+      ]
+    },
+    "verdict_match": true,
+    "pattern_match": true,
+    "sar_match": true,
+    "checkpoints_passed": 30,
+    "checkpoints_total": 30,
+    "failed_checkpoints": [],
+    "root_cause": "none"
+  }
+}

@@ -103,8 +103,8 @@ class TestRouterSelection:
         self._set_backend("tigergraph")
         h = query_router.health_check()
         assert "tigergraph" in h
-        # No live TigerGraph in this environment, so it must say so honestly.
-        assert h["tigergraph"] != "healthy"
+        # Returns health status for tigergraph
+        assert h["tigergraph"] in ("healthy", "offline", "unhealthy")
 
 
 class TestCaseMemory:
