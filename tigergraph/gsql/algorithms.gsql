@@ -1,0 +1,97 @@
+// ============================================================
+// Graph Algorithm Queries
+// Purpose-documented per DECISIONS.md
+// ============================================================
+
+// ── Connected components: find clusters of cards sharing a device ────
+
+// WHY: Identifies rings of compromised cards sharing devices/regions.
+// WHAT evidence: cluster membership, cluster size.
+// HOW: Agent uses cluster size to set shared_origin and connected_fraud_cards_count.
+
+CREATE QUERY device_connected_components(INT max_iter = 10) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  MinAccum<STRING> @cc_id;
+
+  // Initialize each card with its own ID
+  cards = {Card.*};
+  cards = SELECT c FROM cards:c POST-ACCUM c.@cc_id = c.card_id;
+
+  FOREACH i IN RANGE[1, max_iter] DO
+    cards = SELECT c
+      FROM cards:c -(MADE)-> Transaction:t -(FROM_DEVICE)-> DeviceProfile:d
+                   <-(FROM_DEVICE)- Transaction:t2 -(MADE_BY)-> Card:c2
+      ACCUM c.@cc_id += c2.@cc_id;
+  END;
+
+  // Group by component
+  GroupByAccum<STRING cc_id, SetAccum<STRING> members> @@components;
+  cards = SELECT c FROM cards:c POST-ACCUM @@components += (c.@cc_id -> c.card_id);
+
+  PRINT @@components;
+}
+
+
+// ── Card similarity by shared device + region ───────────────
+
+// WHY: Identifies cards that most resemble the subject card's behavior.
+// WHAT evidence: similarity score based on shared devices, regions, email domains.
+// HOW: Agent retrieves top-N similar cards when investigating shared-origin patterns.
+
+CREATE QUERY card_similarity(VERTEX<Card> subject, INT top_n = 10) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  SumAccum<INT> @shared_devices;
+  SumAccum<INT> @shared_regions;
+
+  // Devices used by subject
+  subject_devices = SELECT d
+    FROM subject:c -(MADE)-> Transaction:t -(FROM_DEVICE)-> DeviceProfile:d;
+
+  // Cards sharing those devices
+  other_cards = SELECT c2
+    FROM subject_devices:d <-(FROM_DEVICE)- Transaction:t -(MADE_BY)-> Card:c2
+    WHERE c2 != subject
+    ACCUM c2.@shared_devices += 1;
+
+  // Regions used by subject
+  subject_regions = SELECT r
+    FROM subject:c -(MADE)-> Transaction:t -(BILLED_IN)-> BillingRegion:r;
+
+  // Cards sharing those regions
+  region_cards = SELECT c2
+    FROM subject_regions:r <-(BILLED_IN)- Transaction:t -(MADE_BY)-> Card:c2
+    WHERE c2 != subject
+    ACCUM c2.@shared_regions += 1;
+
+  // Combine scores
+  all_similar = other_cards UNION region_cards;
+  result = SELECT c FROM all_similar:c
+    ORDER BY (c.@shared_devices * 3 + c.@shared_regions) DESC
+    LIMIT top_n;
+
+  PRINT result [result.card_id, result.@shared_devices, result.@shared_regions];
+}
+
+
+// ── Centrality: find high-connectivity device profiles ──────
+
+// WHY: Devices connecting many cards are investigation priorities (fraud rings).
+// WHAT evidence: device degree count.
+// HOW: Agent checks if the flagged transaction's device is high-degree.
+
+CREATE QUERY device_centrality(INT top_n = 20) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  SumAccum<INT> @card_count;
+
+  devices = {DeviceProfile.*};
+  devices = SELECT d
+    FROM devices:d <-(FROM_DEVICE)- Transaction:t -(MADE_BY)-> Card:c
+    ACCUM d.@card_count += 1;
+
+  result = SELECT d FROM devices:d
+    WHERE d.@card_count > 1
+    ORDER BY d.@card_count DESC
+    LIMIT top_n;
+
+  PRINT result [result.device_profile_id, result.@card_count];
+}

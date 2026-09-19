@@ -1,0 +1,279 @@
+{
+  "case_id": "HHG-011",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.897,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "Burst of 59 online transactions within 48h; amount is well above card average",
+    "affected_txn_ids": [
+      "3583101",
+      "3582327",
+      "3582375",
+      "3583199",
+      "3582671",
+      "3582738",
+      "3583494",
+      "3580815",
+      "3584706",
+      "3583140",
+      "3580765",
+      "3580544",
+      "3585345",
+      "3584155",
+      "3582178",
+      "3583348",
+      "3583411",
+      "3583368",
+      "3583406",
+      "3584401",
+      "3582107",
+      "3580712",
+      "3584153",
+      "3583435",
+      "3584859",
+      "3584460",
+      "3582338",
+      "3580776",
+      "3583415",
+      "3584003",
+      "3582897",
+      "3580951",
+      "3582413",
+      "3584516",
+      "3584693",
+      "3580933",
+      "3581345",
+      "3583670",
+      "3585064",
+      "3581048",
+      "3582602",
+      "3580992",
+      "3582142",
+      "3585055",
+      "3583229",
+      "3582624",
+      "3582868",
+      "3582082",
+      "3582175",
+      "3583417",
+      "3580821",
+      "3583914",
+      "3580478",
+      "3583866",
+      "3583968",
+      "3583644",
+      "3584962",
+      "3580907",
+      "3584985"
+    ],
+    "first_suspicious_txn_id": "3580478",
+    "connected_card_ids": [
+      "C00073-K2",
+      "C00222-K1",
+      "C00259-K1",
+      "C00294-K1",
+      "C00294-K2",
+      "C00362-K1",
+      "C00405-K2",
+      "C00426-K1",
+      "C00426-K2",
+      "C00466-K1"
+    ],
+    "connected_device_profiles": [
+      "SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown"
+    ],
+    "exposure_usd": 2761.2,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C11923-K2. Most recent: 2016-12-29 $41.30 (online). Average amount: $39.47.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C11923-K2)",
+        "entity_ids": [
+          "C11923-K2"
+        ]
+      },
+      {
+        "claim": "59 online transactions on this card within 48h of the flagged transaction.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C11923-K2, hours=48)",
+        "entity_ids": [
+          "3580478",
+          "3580544",
+          "3580712",
+          "3580765",
+          "3580776",
+          "3580815",
+          "3580821",
+          "3580907",
+          "3580933",
+          "3580951"
+        ]
+      },
+      {
+        "claim": "Device marked 'New' for this account: SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown.",
+        "source": "graph",
+        "ref": "query:transaction_identity(txn_id=3583368)",
+        "entity_ids": [
+          "3583368"
+        ]
+      },
+      {
+        "claim": "Device profile shared across 20 other card(s): C00073-K2, C00222-K1, C00259-K1, C00294-K1, C00294-K2.",
+        "source": "graph",
+        "ref": "query:accounts_sharing_device(device=SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown)",
+        "entity_ids": [
+          "C00073-K2",
+          "C00222-K1",
+          "C00259-K1",
+          "C00294-K1",
+          "C00294-K2",
+          "C00362-K1",
+          "C00405-K2",
+          "C00426-K1",
+          "C00426-K2",
+          "C00466-K1"
+        ]
+      },
+      {
+        "claim": "10 prior confirmed fraud case(s) found for customer C11923 or card C11923-K2: CC-4501, CC-3905, CC-3206, CC-3039, CC-2799.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C11923)",
+        "entity_ids": [
+          "CC-4501",
+          "CC-3905",
+          "CC-3206",
+          "CC-3039",
+          "CC-2799"
+        ]
+      },
+      {
+        "claim": "Customer C11923 reported: \"Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368.\"",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "C11923",
+          "C11923-K2"
+        ]
+      },
+      {
+        "claim": "20 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=card_not_present_fraud)",
+        "entity_ids": [
+          "CC-5558",
+          "CC-5551",
+          "CC-5550",
+          "CC-5542",
+          "CC-5513",
+          "CC-5548",
+          "CC-5540",
+          "CC-5553",
+          "CC-5493",
+          "CC-5512"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
+        "source": "customer",
+        "ref": "evidence_request:ER-3ed46c37",
+        "entity_ids": [
+          "C11923"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4743",
+      "CC-4501",
+      "CC-3905",
+      "CC-3206",
+      "CC-3039",
+      "CC-2799",
+      "CC-2673",
+      "CC-2247",
+      "CC-1056",
+      "CC-0290",
+      "CC-5558",
+      "CC-5551",
+      "CC-5550",
+      "CC-5542",
+      "CC-5513"
+    ],
+    "summary": "Case HHG-011 investigated card_not_present_fraud activity on card C11923-K2 (customer C11923) around transaction 3583368 ($131.30, online). Assessed fraud probability 0.90 (CRITICAL risk) from 8 evidence items across 3 independent sources. Key signals: new device for this account; 59 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-011"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Customer reiterates they did not make this purchase and requests it be investigated."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R6: shared device/region/email across multiple cards"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R6: shared origin requires report"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2: exposure > $1,000 or shared device/region"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: shared origin detected"
+      }
+    ],
+    "what_changed": "Added: BLOCK_CARD"
+  },
+  "sar": {
+    "file": true,
+    "reason": "R2: confirmed fraud with exposure > $1,000",
+    "narrative": "Between 2016-12-28 and 2016-12-29, customer C11923 and card C11923-K2, connected cards C00073-K2, C00222-K1, C00259-K1, device profile 'SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown' were involved in 60 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $2761.20. The flagged transaction 3583368 of $131.30 (online, product C) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.90. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+    "subjects": [
+      "C00294-K1",
+      "C00222-K1",
+      "C00294-K2",
+      "C11923-K2",
+      "C00259-K1",
+      "C00073-K2",
+      "C11923",
+      "SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown"
+    ],
+    "total_amount_usd": 2761.2,
+    "activity_dates": [
+      "2016-12-28",
+      "2016-12-29"
+    ]
+  },
+  "stop_reason": "Fraud probability 0.90 ≥ 0.85 with 3 independent evidence sources.",
+  "tool_calls": 20,
+  "tokens": 0,
+  "latency_s": 0.87
+}

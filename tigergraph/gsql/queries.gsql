@@ -1,0 +1,297 @@
+// ============================================================
+// GSQL Queries for Fraud Investigation
+// ============================================================
+
+// ── Transaction history for a card ──────────────────────────
+
+CREATE QUERY card_transaction_history(VERTEX<Card> card, INT limit_n = 30) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  result = SELECT t
+    FROM card:c -(MADE)-> Transaction:t
+    ORDER BY t.ts DESC
+    LIMIT limit_n;
+
+  PRINT result;
+}
+
+// ── Transactions in a time window around a card ─────────────
+
+CREATE QUERY card_window(VERTEX<Card> card, DATETIME center_ts, INT hours = 48) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  DATETIME lo = datetime_sub(center_ts, INTERVAL hours HOUR);
+  DATETIME hi = datetime_add(center_ts, INTERVAL hours HOUR);
+
+  result = SELECT t
+    FROM card:c -(MADE)-> Transaction:t
+    WHERE t.ts >= lo AND t.ts <= hi
+    ORDER BY t.ts;
+
+  PRINT result;
+}
+
+// ── Accounts sharing a device profile ───────────────────────
+
+CREATE QUERY device_neighbors(VERTEX<DeviceProfile> dp, INT limit_n = 20) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  cards = SELECT c
+    FROM dp:d <-(FROM_DEVICE)- Transaction:t -(MADE_BY)-> Card:c
+    LIMIT limit_n;
+
+  PRINT cards;
+}
+
+// ── Historical cases for a customer ─────────────────────────
+
+CREATE QUERY customer_closed_cases(VERTEX<Customer> cust) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  cases = SELECT cc
+    FROM cust:cu -(OWNS)-> Card:c <-(CC_ON_CARD)- ClosedCase:cc
+    ORDER BY cc.opened_at DESC;
+
+  PRINT cases;
+}
+
+// ── Historical cases for a card ─────────────────────────────
+
+CREATE QUERY card_closed_cases(VERTEX<Card> card) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  cases = SELECT cc
+    FROM card:c <-(CC_ON_CARD)- ClosedCase:cc
+    ORDER BY cc.opened_at DESC;
+
+  PRINT cases;
+}
+
+// ── Card-testing detection: small online txns in window ─────
+
+CREATE QUERY tiny_txn_sequence(VERTEX<Card> card, DATETIME center_ts,
+                               DOUBLE hours = 2.0, DOUBLE threshold = 10.0) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  DATETIME lo = datetime_sub(center_ts, INTERVAL hours HOUR);
+  DATETIME hi = datetime_add(center_ts, INTERVAL hours HOUR);
+
+  tiny = SELECT t
+    FROM card:c -(MADE)-> Transaction:t
+    WHERE t.ts >= lo AND t.ts <= hi
+      AND t.channel == "online"
+      AND t.amount <= threshold
+    ORDER BY t.ts;
+
+  PRINT tiny;
+}
+
+// ── Region history for a card ───────────────────────────────
+
+CREATE QUERY card_region_history(VERTEX<Card> card) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  regions = SELECT r
+    FROM card:c -(MADE)-> Transaction:t -(BILLED_IN)-> BillingRegion:r;
+
+  PRINT regions;
+}
+
+// ── 2-hop neighborhood ──────────────────────────────────────
+
+CREATE QUERY entity_neighborhood(VERTEX<Transaction> start_txn, INT hops = 2) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  Seed = {start_txn};
+
+  FOREACH i IN RANGE[1, hops] DO
+    Seed = SELECT t
+      FROM Seed:s -(:e)-> :t;
+  END;
+
+  PRINT Seed;
+}
+
+// ── Transaction velocity ────────────────────────────────────
+
+CREATE QUERY card_velocity(VERTEX<Card> card, DATETIME center_ts, DOUBLE hours = 24.0) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  DATETIME lo = datetime_sub(center_ts, INTERVAL hours HOUR);
+  DATETIME hi = datetime_add(center_ts, INTERVAL hours HOUR);
+
+  SumAccum<DOUBLE> @@total_amt;
+  SumAccum<INT> @@count;
+
+  txns = SELECT t
+    FROM card:c -(MADE)-> Transaction:t
+    WHERE t.ts >= lo AND t.ts <= hi
+    ACCUM @@total_amt += t.amount, @@count += 1;
+
+  PRINT @@total_amt AS total_amount, @@count AS n_transactions;
+}
+
+// ============================================================
+// Supplementary queries used by backend/graph/tg_adapter.py
+// ============================================================
+
+// ── Single transaction ───────────────────────────────────────
+CREATE QUERY txn_by_id(STRING txn_id) FOR GRAPH fraud_investigation SYNTAX V2 {
+  Seed = {Transaction.*.* WHERE t_id(txn_id) == txn_id};
+  result = SELECT t FROM Seed:t;
+  PRINT result;
+}
+
+// ── Identity/device record for a transaction ────────────────
+CREATE QUERY txn_identity(STRING txn_id) FOR GRAPH fraud_investigation SYNTAX V2 {
+  result = SELECT d
+    FROM Transaction:t -(FROM_DEVICE)-> DeviceProfile:d
+    WHERE t_id(t) == txn_id;
+  PRINT result;
+}
+
+// ── Device profile label for a transaction ─────────────────
+CREATE QUERY txn_device_profile(STRING txn_id) FOR GRAPH fraud_investigation SYNTAX V2 {
+  result = SELECT d
+    FROM Transaction:t -(FROM_DEVICE)-> DeviceProfile:d
+    WHERE t_id(t) == txn_id;
+  PRINT result [d.device_info, d.os, d.browser, d.screen];
+}
+
+// ── Cards owned by a customer ───────────────────────────────
+CREATE QUERY customer_cards(VERTEX<Customer> cust) FOR GRAPH fraud_investigation SYNTAX V2 {
+  cards = SELECT c FROM cust:cu -(OWNS)-> Card:c;
+  PRINT cards;
+}
+
+// ── Email domains used on a card ────────────────────────────
+CREATE QUERY card_email_history(VERTEX<Card> card) FOR GRAPH fraud_investigation SYNTAX V2 {
+  emails = SELECT e
+    FROM card:c -(MADE)-> Transaction:t -(PURCHASER_EMAIL)-> EmailDomain:e;
+  PRINT emails;
+}
+
+// ── Product codes used on a card ────────────────────────────
+CREATE QUERY card_product_history(VERTEX<Card> card) FOR GRAPH fraud_investigation SYNTAX V2 {
+  prods = SELECT t FROM card:c -(MADE)-> Transaction:t;
+  PRINT prods [t.product_cd];
+}
+
+// ── Amount statistics for a card ────────────────────────────
+CREATE QUERY card_amount_stats(VERTEX<Card> card) FOR GRAPH fraud_investigation SYNTAX V2 {
+  MinAccum<DOUBLE> @@min_amt;
+  MaxAccum<DOUBLE> @@max_amt;
+  SumAccum<DOUBLE> @@sum_amt;
+  SumAccum<INT> @@n;
+
+  all_ = SELECT t FROM card:c -(MADE)-> Transaction:t
+    POST-ACCUM @@min_amt += t.amount, @@max_amt += t.amount,
+                @@sum_amt += t.amount, @@n += 1;
+
+  PRINT @@min_amt AS min_amt, @@max_amt AS max_amt,
+        (@@sum_amt / @@n) AS avg_amt, @@n AS n;
+}
+
+// ── Device profiles used by a card ──────────────────────────
+CREATE QUERY card_device_history(VERTEX<Card> card) FOR GRAPH fraud_investigation SYNTAX V2 {
+  devices = SELECT d
+    FROM card:c -(MADE)-> Transaction:t -(FROM_DEVICE)-> DeviceProfile:d;
+  PRINT devices;
+}
+
+// ── Closed cases naming a transaction ───────────────────────
+CREATE QUERY cases_involving_txn(STRING txn_id) FOR GRAPH fraud_investigation SYNTAX V2 {
+  cases = SELECT cc
+    FROM ClosedCase:cc -(CC_INVOLVES)-> Transaction:t
+    WHERE t_id(t) == txn_id;
+  PRINT cases;
+}
+
+// ── Closed cases naming a device profile ────────────────────
+CREATE QUERY cases_by_device(STRING device_label, INT limit_n = 10) FOR GRAPH fraud_investigation SYNTAX V2 {
+  cases = SELECT cc
+    FROM ClosedCase:cc -(CC_INVOLVES)-> Transaction:t -(FROM_DEVICE)-> DeviceProfile:d
+    WHERE d.device_info == device_label OR d.os == device_label
+    LIMIT limit_n;
+  PRINT cases;
+}
+
+// ── Closed cases by pattern ─────────────────────────────────
+CREATE QUERY cases_by_pattern(STRING pattern, INT limit_n = 15) FOR GRAPH fraud_investigation SYNTAX V2 {
+  cases = SELECT cc
+    FROM ClosedCase:cc
+    WHERE cc.pattern == pattern
+    ORDER BY cc.closed_at DESC
+    LIMIT limit_n;
+  PRINT cases;
+}
+
+// ── Keyword search over closed-case notes (BM25 substitute) ─
+CREATE QUERY search_case_notes(STRING query, INT limit_n = 5) FOR GRAPH fraud_investigation SYNTAX V2 {
+  // tokenise on whitespace, match any token in analyst_notes
+  ListAccum<STRING> @@tokens;
+  @@tokens = split(query, " ");
+
+  cases = SELECT cc FROM ClosedCase:cc
+    WHERE ANY tok IN @@tokens
+      OVER cc.analyst_notes LIKE ("%" + tok + "%")
+    ORDER BY cc.closed_at DESC
+    LIMIT limit_n;
+
+  PRINT cases;
+}
+
+// ── Cases connected to any of a set of cards ────────────────
+CREATE QUERY connected_card_cases(SetAccum<STRING> card_ids) FOR GRAPH fraud_investigation SYNTAX V2 {
+  cases = SELECT cc
+    FROM ClosedCase:cc -(CC_CONNECTED_TO)-> Card:c
+    WHERE c.card_id IN card_ids;
+  PRINT cases;
+}
+
+// ── Cards transacting in a region within a window ───────────
+CREATE QUERY cards_in_region_window(STRING region, DATETIME center_ts,
+                                    DOUBLE days = 3.0, INT limit_n = 30)
+FOR GRAPH fraud_investigation SYNTAX V2 {
+  DATETIME lo = datetime_sub(center_ts, INTERVAL days DAY);
+  DATETIME hi = datetime_add(center_ts, INTERVAL days DAY);
+
+  cards = SELECT DISTINCT c
+    FROM BillingRegion:r <-(BILLED_IN)- Transaction:t -(MADE_BY)-> Card:c
+    WHERE r.region_code == region AND t.ts >= lo AND t.ts <= hi
+    LIMIT limit_n;
+
+  PRINT cards;
+}
+
+// ── Cards sharing a purchaser email domain ──────────────────
+CREATE QUERY cards_in_email_domain(STRING domain) FOR GRAPH fraud_investigation SYNTAX V2 {
+  cards = SELECT DISTINCT c
+    FROM EmailDomain:e <-(PURCHASER_EMAIL)- Transaction:t -(MADE_BY)-> Card:c
+    WHERE e.domain == domain;
+  PRINT cards;
+}
+
+// ── Investigation case memory (written by the agent) ────────
+CREATE QUERY investigation_cases_for_customer(VERTEX<Customer> cust, INT limit_n = 10)
+FOR GRAPH fraud_investigation SYNTAX V2 {
+  cases = SELECT ic
+    FROM cust:cu <-(IC_FOR_CUSTOMER)- InvestigationCase:ic
+    ORDER BY ic.opened_at DESC
+    LIMIT limit_n;
+
+  PRINT cases;
+}
+
+CREATE QUERY investigation_cases_by_device(STRING device_label, INT limit_n = 10)
+FOR GRAPH fraud_investigation SYNTAX V2 {
+  cases = SELECT ic
+    FROM DeviceProfile:d <-(IC_ON_DEVICE)- InvestigationCase:ic
+    WHERE d.device_info == device_label
+    ORDER BY ic.opened_at DESC
+    LIMIT limit_n;
+
+  PRINT cases;
+}
+
+CREATE QUERY investigation_cases_involving_txn(STRING txn_id, INT limit_n = 10)
+FOR GRAPH fraud_investigation SYNTAX V2 {
+  cases = SELECT ic
+    FROM InvestigationCase:ic -(IC_INVOLVES)-> Transaction:t
+    WHERE t_id(t) == txn_id
+    ORDER BY ic.opened_at DESC
+    LIMIT limit_n;
+
+  PRINT cases;
+}

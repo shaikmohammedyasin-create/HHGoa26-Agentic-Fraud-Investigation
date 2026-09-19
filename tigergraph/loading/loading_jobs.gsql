@@ -1,0 +1,97 @@
+// ============================================================
+// TigerGraph Loading Jobs
+//
+// Loads data from prepared CSVs into the fraud_investigation graph.
+// Run after schema installation.
+// ============================================================
+
+USE GRAPH fraud_investigation
+
+// ── Customers and Cards from transactions ───────────────────
+
+CREATE LOADING JOB load_transactions FOR GRAPH fraud_investigation {
+  DEFINE FILENAME txn_file;
+
+  LOAD txn_file
+    TO VERTEX Customer VALUES ($"customer_id", $"ts", $"ts")
+       USING SEPARATOR=",", HEADER="true", EOL="\n",
+
+    TO VERTEX Transaction VALUES (
+       $"TransactionID", $"ts", $"TransactionAmt", $"ProductCD",
+       $"channel", $"addr1", $"addr2", $"risk_score",
+       $"P_emaildomain", $"R_emaildomain"
+    ) USING SEPARATOR=",", HEADER="true", EOL="\n",
+
+    TO VERTEX BillingRegion VALUES ($"addr1", $"addr2")
+       USING SEPARATOR=",", HEADER="true", EOL="\n",
+
+    TO VERTEX EmailDomain VALUES ($"P_emaildomain")
+       WHERE $"P_emaildomain" != ""
+       USING SEPARATOR=",", HEADER="true", EOL="\n",
+
+    TO EDGE BILLED_IN VALUES ($"TransactionID", $"addr1")
+       WHERE $"addr1" != ""
+       USING SEPARATOR=",", HEADER="true", EOL="\n",
+
+    TO EDGE PURCHASER_EMAIL VALUES ($"TransactionID", $"P_emaildomain")
+       WHERE $"P_emaildomain" != ""
+       USING SEPARATOR=",", HEADER="true", EOL="\n";
+}
+
+// Note: Card vertex and OWNS/MADE edges require card_id derivation
+// which is done by the prepare_data script. A second loading job
+// loads from prepared data:
+
+CREATE LOADING JOB load_cards FOR GRAPH fraud_investigation {
+  DEFINE FILENAME card_file;
+  // card_file is a pre-extracted CSV with: card_id, customer_id, card4, card6
+  LOAD card_file
+    TO VERTEX Card VALUES ($"card_id", $"customer_id", $"card4", $"card6")
+       USING SEPARATOR=",", HEADER="true", EOL="\n",
+
+    TO EDGE OWNS VALUES ($"customer_id", $"card_id")
+       USING SEPARATOR=",", HEADER="true", EOL="\n";
+}
+
+CREATE LOADING JOB load_made_edges FOR GRAPH fraud_investigation {
+  DEFINE FILENAME made_file;
+  // made_file: card_id, TransactionID
+  LOAD made_file
+    TO EDGE MADE VALUES ($"card_id", $"TransactionID")
+       USING SEPARATOR=",", HEADER="true", EOL="\n";
+}
+
+
+// ── Identity / Device Profiles ──────────────────────────────
+
+CREATE LOADING JOB load_identity FOR GRAPH fraud_investigation {
+  DEFINE FILENAME id_file;
+
+  LOAD id_file
+    TO VERTEX DeviceProfile VALUES (
+       CONCAT($"DeviceInfo", " | ", $"id_30", " | ", $"id_31", " | ", $"id_33"),
+       $"DeviceInfo", $"id_30", $"id_31", $"id_33", $"DeviceType"
+    ) USING SEPARATOR=",", HEADER="true", EOL="\n",
+
+    TO EDGE FROM_DEVICE VALUES (
+       $"TransactionID",
+       CONCAT($"DeviceInfo", " | ", $"id_30", " | ", $"id_31", " | ", $"id_33")
+    ) USING SEPARATOR=",", HEADER="true", EOL="\n";
+}
+
+
+// ── Closed Cases ────────────────────────────────────────────
+
+CREATE LOADING JOB load_closed_cases FOR GRAPH fraud_investigation {
+  DEFINE FILENAME cc_file;
+
+  LOAD cc_file
+    TO VERTEX ClosedCase VALUES (
+       $"case_id", $"customer_id", $"card_id",
+       $"opened_at", $"closed_at", $"outcome", $"pattern",
+       $"exposure_usd", $"n_txns", $"report_filed", $"analyst_notes"
+    ) USING SEPARATOR=",", HEADER="true", EOL="\n",
+
+    TO EDGE CC_ON_CARD VALUES ($"case_id", $"card_id")
+       USING SEPARATOR=",", HEADER="true", EOL="\n";
+}

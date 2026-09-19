@@ -1,0 +1,168 @@
+{
+  "case_id": "HHG-018",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.833,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "Burst of 12 online transactions within 48h",
+    "affected_txn_ids": [
+      "3491361"
+    ],
+    "first_suspicious_txn_id": "3488570",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 39.08,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C02354-K2. Most recent: 2016-11-27 $311.99 (in_person). Average amount: $141.11.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C02354-K2)",
+        "entity_ids": [
+          "C02354-K2"
+        ]
+      },
+      {
+        "claim": "12 online transactions on this card within 48h of the flagged transaction.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C02354-K2, hours=48)",
+        "entity_ids": [
+          "3488570",
+          "3489428",
+          "3489904",
+          "3491794",
+          "3491872",
+          "3492105",
+          "3492168",
+          "3493830",
+          "3494313",
+          "3495379"
+        ]
+      },
+      {
+        "claim": "19 prior confirmed fraud case(s) found for customer C02354 or card C02354-K2: CC-5558, CC-5441, CC-4942, CC-4721, CC-4436.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C02354)",
+        "entity_ids": [
+          "CC-5558",
+          "CC-5441",
+          "CC-4942",
+          "CC-4721",
+          "CC-4436"
+        ]
+      },
+      {
+        "claim": "Mixed-channel activity in 48h window: in_person, online.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C02354-K2)",
+        "entity_ids": [
+          "3487905",
+          "3487973",
+          "3487985",
+          "3487994",
+          "3488000"
+        ]
+      },
+      {
+        "claim": "Customer C02354 reported: \"Customer C02354 message: 'I never made this $39.08 purchase. Please check my card.' Refers to 3491361.\"",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "C02354",
+          "C02354-K2"
+        ]
+      },
+      {
+        "claim": "20 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=card_not_present_fraud)",
+        "entity_ids": [
+          "CC-5558",
+          "CC-5551",
+          "CC-5550",
+          "CC-5542",
+          "CC-5513",
+          "CC-5548",
+          "CC-5540",
+          "CC-5553",
+          "CC-5493",
+          "CC-5512"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
+        "source": "customer",
+        "ref": "evidence_request:ER-06a42f7b",
+        "entity_ids": [
+          "C02354"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5558",
+      "CC-5441",
+      "CC-4942",
+      "CC-4721",
+      "CC-4436",
+      "CC-4070",
+      "CC-3899",
+      "CC-3634",
+      "CC-3537",
+      "CC-3085",
+      "CC-5551",
+      "CC-5550",
+      "CC-5542",
+      "CC-5513",
+      "CC-5548"
+    ],
+    "summary": "Case HHG-018 investigated card_not_present_fraud activity on card C02354-K2 (customer C02354) around transaction 3491361 ($39.08, in_person). Assessed fraud probability 0.83 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 12 online transactions in 48h window; 19 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-018"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Customer reiterates they did not make this purchase and requests it be investigated."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy §3a: probability ≥ 0.30 triggers case creation"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: insufficient evidence for blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Added: BLOCK_CARD; Removed: VERIFY_WITH_CUSTOMER"
+  },
+  "sar": {
+    "file": false,
+    "reason": "FILE_REPORT not recommended; SAR not required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Customer denial settled the question; final actions applied.",
+  "tool_calls": 17,
+  "tokens": 0,
+  "latency_s": 0.28
+}

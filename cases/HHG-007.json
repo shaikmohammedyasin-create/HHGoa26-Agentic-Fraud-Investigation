@@ -1,0 +1,151 @@
+{
+  "case_id": "HHG-007",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.546,
+    "pattern": "card_not_present_fraud",
+    "pattern_description": "Burst of 2 online transactions within 48h",
+    "affected_txn_ids": [
+      "3514948"
+    ],
+    "first_suspicious_txn_id": "3514948",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 111.92,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C09933-K2. Most recent: 2016-12-05 $225.96 (in_person). Average amount: $123.86.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C09933-K2)",
+        "entity_ids": [
+          "C09933-K2"
+        ]
+      },
+      {
+        "claim": "2 online transactions on this card within 48h of the flagged transaction.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C09933-K2, hours=48)",
+        "entity_ids": [
+          "3515777",
+          "3516867"
+        ]
+      },
+      {
+        "claim": "18 prior confirmed fraud case(s) found for customer C09933 or card C09933-K2: CC-5521, CC-5092, CC-4787, CC-4597, CC-4455.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C09933)",
+        "entity_ids": [
+          "CC-5521",
+          "CC-5092",
+          "CC-4787",
+          "CC-4597",
+          "CC-4455"
+        ]
+      },
+      {
+        "claim": "Mixed-channel activity in 48h window: in_person, online.",
+        "source": "graph",
+        "ref": "query:card_window(card_id=C09933-K2)",
+        "entity_ids": [
+          "3511937",
+          "3512302",
+          "3512690",
+          "3512716",
+          "3513073"
+        ]
+      },
+      {
+        "claim": "20 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=card_not_present_fraud)",
+        "entity_ids": [
+          "CC-5558",
+          "CC-5551",
+          "CC-5550",
+          "CC-5542",
+          "CC-5513",
+          "CC-5548",
+          "CC-5540",
+          "CC-5553",
+          "CC-5493",
+          "CC-5512"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "source": "customer",
+        "ref": "evidence_request:ER-7c4c7f3c",
+        "entity_ids": [
+          "C09933"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-5521",
+      "CC-5092",
+      "CC-4787",
+      "CC-4597",
+      "CC-4455",
+      "CC-4277",
+      "CC-4196",
+      "CC-3821",
+      "CC-3439",
+      "CC-3136",
+      "CC-5558",
+      "CC-5551",
+      "CC-5550",
+      "CC-5542",
+      "CC-5513"
+    ],
+    "summary": "Case HHG-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 3 independent sources. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-007"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "No response received within the 24-hour window."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy §3a: probability ≥ 0.30 triggers case creation"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: insufficient evidence for blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: no reply within 24 hours"
+      },
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R4: decline pending authorization"
+      }
+    ],
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
+  },
+  "sar": {
+    "file": false,
+    "reason": "FILE_REPORT not recommended; SAR not required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Borderline probability 0.55; investigation halted per stopping criteria. Escalated for analyst review.",
+  "tool_calls": 17,
+  "tokens": 0,
+  "latency_s": 0.17
+}

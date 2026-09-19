@@ -1,0 +1,130 @@
+{
+  "case_id": "HHG-003",
+  "case": {
+    "status": "open",
+    "verdict": "uncertain",
+    "fraud_probability": 0.763,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3530164"
+    ],
+    "first_suspicious_txn_id": "3530164",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 49.0,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C08623-K2. Most recent: 2016-12-10 $116.97 (in_person). Average amount: $129.31.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C08623-K2)",
+        "entity_ids": [
+          "C08623-K2"
+        ]
+      },
+      {
+        "claim": "5 prior confirmed fraud case(s) found for customer C08623 or card C08623-K2: CC-4957, CC-3682, CC-3327, CC-2935, CC-2817.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C08623)",
+        "entity_ids": [
+          "CC-4957",
+          "CC-3682",
+          "CC-3327",
+          "CC-2935",
+          "CC-2817"
+        ]
+      },
+      {
+        "claim": "Customer C08623 reported: \"Customer C08623 message: 'I never made this $49.00 purchase. Please check my card.' Refers to 3530164.\"",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "C08623",
+          "C08623-K2"
+        ]
+      },
+      {
+        "claim": "5 prior closed case(s) retrieved by pattern (none) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=none)",
+        "entity_ids": [
+          "CC-5559",
+          "CC-5558",
+          "CC-5556",
+          "CC-5563",
+          "CC-5555"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
+        "source": "customer",
+        "ref": "evidence_request:ER-fe85f426",
+        "entity_ids": [
+          "C08623"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4957",
+      "CC-3682",
+      "CC-3327",
+      "CC-2935",
+      "CC-2817",
+      "CC-1589",
+      "CC-5559",
+      "CC-5558",
+      "CC-5556",
+      "CC-5563",
+      "CC-5555"
+    ],
+    "summary": "Case HHG-003 investigated none activity on card C08623-K2 (customer C08623) around transaction 3530164 ($49.00, in_person). Assessed fraud probability 0.76 (CRITICAL risk) from 5 evidence items across 3 independent sources. Key signals: 5 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-003"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Customer reiterates they did not make this purchase and requests it be investigated."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy §3a: probability ≥ 0.30 triggers case creation"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: insufficient evidence for blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      }
+    ],
+    "what_changed": "Added: BLOCK_CARD; Removed: VERIFY_WITH_CUSTOMER"
+  },
+  "sar": {
+    "file": false,
+    "reason": "FILE_REPORT not recommended; SAR not required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Customer denial settled the question; final actions applied.",
+  "tool_calls": 16,
+  "tokens": 0,
+  "latency_s": 0.1
+}

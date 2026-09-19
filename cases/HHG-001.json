@@ -1,0 +1,118 @@
+{
+  "case_id": "HHG-001",
+  "case": {
+    "status": "escalated",
+    "verdict": "uncertain",
+    "fraud_probability": 0.429,
+    "pattern": "none",
+    "pattern_description": "",
+    "affected_txn_ids": [
+      "3514030"
+    ],
+    "first_suspicious_txn_id": "3514030",
+    "connected_card_ids": [],
+    "connected_device_profiles": [],
+    "exposure_usd": 77.07,
+    "evidence": [
+      {
+        "claim": "50 previous transactions retrieved for card C12382-K1. Most recent: 2016-12-04 $38.92 (in_person). Average amount: $115.60.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C12382-K1)",
+        "entity_ids": [
+          "C12382-K1"
+        ]
+      },
+      {
+        "claim": "4 prior confirmed fraud case(s) found for customer C12382 or card C12382-K1: CC-3587, CC-2964, CC-1673, CC-1066.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C12382)",
+        "entity_ids": [
+          "CC-3587",
+          "CC-2964",
+          "CC-1673",
+          "CC-1066"
+        ]
+      },
+      {
+        "claim": "5 prior closed case(s) retrieved by pattern (none) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=none)",
+        "entity_ids": [
+          "CC-5559",
+          "CC-5558",
+          "CC-5556",
+          "CC-5563",
+          "CC-5555"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "source": "customer",
+        "ref": "evidence_request:ER-89dfe7e5",
+        "entity_ids": [
+          "C12382"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-3587",
+      "CC-2964",
+      "CC-1673",
+      "CC-1066",
+      "CC-5559",
+      "CC-5558",
+      "CC-5556",
+      "CC-5563",
+      "CC-5555"
+    ],
+    "summary": "Case HHG-001 investigated none activity on card C12382-K1 (customer C12382) around transaction 3514030 ($77.07, in_person). Assessed fraud probability 0.43 (MEDIUM risk) from 4 evidence items across 3 independent sources. Key signals: 4 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-HHG-001"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "No response received within the 24-hour window."
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "Policy §3a: probability ≥ 0.30 triggers case creation"
+      },
+      {
+        "action": "VERIFY_WITH_CUSTOMER",
+        "route": "auto",
+        "reason": "R1: insufficient evidence for blocking"
+      }
+    ],
+    "final": [
+      {
+        "action": "MONITOR_CARD",
+        "route": "auto",
+        "reason": "R4: no reply within 24 hours"
+      },
+      {
+        "action": "DECLINE_TRANSACTION",
+        "route": "L1",
+        "reason": "R4: decline pending authorization"
+      }
+    ],
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
+  },
+  "sar": {
+    "file": false,
+    "reason": "FILE_REPORT not recommended; SAR not required",
+    "narrative": "",
+    "subjects": [],
+    "total_amount_usd": 0.0,
+    "activity_dates": []
+  },
+  "stop_reason": "Borderline probability 0.43; investigation halted per stopping criteria. Escalated for analyst review.",
+  "tool_calls": 16,
+  "tokens": 0,
+  "latency_s": 0.08
+}
