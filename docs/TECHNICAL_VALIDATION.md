@@ -77,8 +77,8 @@ tests/unit/test_policy_engine.py ...........                            [100%]
 
 - **Cluster:** TigerGraph Savanna Cloud (`fraud_investigation` graph)
 - **Schema Topology:**
-  - **8 Vertices:** `Customer`, `Card`, `Transaction`, `Device`, `EmailDomain`, `BillingRegion`, `ClosedCase`, `InvestigationCase`
-  - **14 Edges:** `HAS_CARD`, `PERFORMED_TRANSACTION`, `USED_DEVICE`, `ASSOCIATED_EMAIL`, `ASSOCIATED_REGION`, `SIMILAR_TO`, `RESOLVED_AS`, `HAS_CASE`, etc.
+  - **8 Vertices:** `Customer`, `Card`, `Transaction`, `DeviceProfile`, `EmailDomain`, `BillingRegion`, `ClosedCase`, `InvestigationCase`
+  - **14 Edges:** `OWNS`, `MADE`, `MADE_BY`, `FROM_DEVICE`, `PURCHASER_EMAIL`, `RECIPIENT_EMAIL`, `BILLED_IN`, `NEXT_TXN`, `CC_INVOLVES`, `CC_ON_CARD`, `CC_CONNECTED_TO`, `IC_INVOLVES`, `IC_ON_CARD`, `IC_FOR_CUSTOMER`, `IC_ON_DEVICE`.
 - **Installed Queries:**
   - `device_neighbors`: 2-hop graph traversal to discover co-used devices across cards
   - `cases_by_device`: Historical lookup connecting devices to prior confirmed fraud cases
