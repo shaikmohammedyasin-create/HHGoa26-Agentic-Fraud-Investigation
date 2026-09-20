@@ -299,10 +299,39 @@ def get_investigation_subgraph(case_id: str):
     card_id = payload.get("card_id") or (payload.get("trigger") or {}).get("card_id")
     flagged_txn_id = payload.get("flagged_txn_id") or (payload.get("trigger") or {}).get("flagged_txn_id")
 
+    # Map evidence IDs to entity IDs for cross-referencing
+    evidence_items = payload.get("evidence", [])
+    entity_ev_map: dict[str, list[str]] = {}
+    for ev in evidence_items:
+        ev_id = ev.get("evidence_id")
+        if ev_id:
+            for ent in ev.get("entity_ids", []):
+                entity_ev_map.setdefault(str(ent), []).append(ev_id)
+
     if cust_id:
-        add_node(cust_id, f"Customer: {cust_id}", "Customer", {"customer_id": cust_id})
+        add_node(
+            cust_id,
+            f"Customer: {cust_id}",
+            "Customer",
+            {
+                "customer_id": cust_id,
+                "role": "Cardholder Account Owner",
+                "relevance": f"Customer identity anchor for card {card_id}; past investigation and dispute history attached here.",
+                "evidence_ids": entity_ev_map.get(cust_id, []),
+            }
+        )
     if card_id:
-        add_node(card_id, f"Card: {card_id}", "Card", {"card_id": card_id})
+        add_node(
+            card_id,
+            f"Card: {card_id}",
+            "Card",
+            {
+                "card_id": card_id,
+                "role": "Payment Instrument",
+                "relevance": f"Primary card under review; used in flagged transaction #{flagged_txn_id} and 48h activity window.",
+                "evidence_ids": entity_ev_map.get(card_id, []),
+            }
+        )
     if cust_id and card_id:
         add_link(cust_id, card_id, "OWNS")
 
@@ -318,6 +347,9 @@ def get_investigation_subgraph(case_id: str):
                 "amount": trigger_meta.get("amount") or payload.get("exposure_usd"),
                 "risk_score": trigger_meta.get("risk_score"),
                 "is_flagged": True,
+                "role": "Trigger Alert Transaction",
+                "relevance": f"Suspicious transaction #{flagged_txn_id} triggered the alert (Risk Score: {trigger_meta.get('risk_score', 'N/A')}).",
+                "evidence_ids": entity_ev_map.get(flagged_txn_id, []),
             }
         )
         if card_id:
@@ -327,26 +359,72 @@ def get_investigation_subgraph(case_id: str):
     for txn_id in payload.get("affected_txn_ids", []):
         t_id = str(txn_id)
         if t_id != flagged_txn_id:
-            add_node(t_id, f"Txn: #{t_id}", "Transaction", {"txn_id": t_id, "affected": True})
+            add_node(
+                t_id,
+                f"Txn: #{t_id}",
+                "Transaction",
+                {
+                    "txn_id": t_id,
+                    "affected": True,
+                    "role": "Related Suspicious Transaction",
+                    "relevance": f"Correlated transaction within the 48h fraudulent activity burst.",
+                    "evidence_ids": entity_ev_map.get(t_id, []),
+                }
+            )
             if card_id:
                 add_link(card_id, t_id, "MADE")
 
     # Connected Device Profiles
+    first_dp_id = None
     for dp in payload.get("connected_device_profiles", []):
         if dp:
             dp_id = f"DEV-{dp[:32]}"
-            add_node(dp_id, f"Device: {dp[:28]}...", "DeviceProfile", {"full_device": dp})
+            if not first_dp_id:
+                first_dp_id = dp_id
+            add_node(
+                dp_id,
+                f"Device: {dp[:24]}...",
+                "DeviceProfile",
+                {
+                    "full_device": dp,
+                    "role": "Client Hardware Fingerprint",
+                    "relevance": f"Hardware & OS fingerprint captured during transaction: {dp}.",
+                    "evidence_ids": entity_ev_map.get(dp, []),
+                }
+            )
             if flagged_txn_id:
                 add_link(flagged_txn_id, dp_id, "FROM_DEVICE")
 
-    # Connected Cards (e.g. from shared devices or multi-card fraud)
+    # Connected Cards (from shared devices or multi-card fraud ring)
     for c_id in payload.get("connected_card_ids", []):
         if c_id and c_id != card_id:
-            add_node(c_id, f"Connected: {c_id}", "ConnectedCard", {"card_id": c_id})
+            add_node(
+                c_id,
+                f"Connected: {c_id}",
+                "ConnectedCard",
+                {
+                    "card_id": c_id,
+                    "role": "Syndicate / Shared Device Card",
+                    "relevance": f"Card linked through shared device or cross-entity transaction patterns.",
+                    "evidence_ids": entity_ev_map.get(c_id, []),
+                }
+            )
+            if first_dp_id:
+                add_link(first_dp_id, c_id, "SHARED_DEVICE")
 
     # Closed Cases (Historical memory links)
     for cc_id in payload.get("similar_prior_cases", [])[:5]:
-        add_node(cc_id, f"Prior Case: {cc_id}", "ClosedCase", {"case_id": cc_id})
+        add_node(
+            cc_id,
+            f"Prior Case: {cc_id}",
+            "ClosedCase",
+            {
+                "case_id": cc_id,
+                "role": "Historical Fraud Precedent",
+                "relevance": f"Historical confirmed fraud case {cc_id} establishing behavioural precedent in TigerGraph memory.",
+                "evidence_ids": entity_ev_map.get(cc_id, []),
+            }
+        )
         if cust_id:
             add_link(cc_id, cust_id, "CC_ON_CUSTOMER")
         if card_id:
@@ -363,6 +441,9 @@ def get_investigation_subgraph(case_id: str):
             "verdict": payload.get("verdict"),
             "probability": payload.get("fraud_probability"),
             "written_to_graph": payload.get("written_to_graph", False),
+            "role": "Durable Graph Investigation Record",
+            "relevance": f"Official TigerGraph InvestigationCase vertex tracking verdict ({payload.get('verdict')}), probability ({payload.get('fraud_probability')}), and audit trail.",
+            "evidence_ids": [ev.get("evidence_id") for ev in evidence_items if ev.get("evidence_id")],
         }
     )
     if card_id:

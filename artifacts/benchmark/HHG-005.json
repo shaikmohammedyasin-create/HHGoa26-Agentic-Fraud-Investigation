@@ -11,16 +11,16 @@
     ],
     "first_suspicious_txn_id": "3523199",
     "connected_card_ids": [
-      "C12748-K2",
-      "C11496-K2",
+      "C08299-K1",
+      "C04117-K2",
+      "C03047-K2",
+      "C06279-K1",
       "C06708-K2",
-      "C11522-K2",
-      "C02231-K1",
-      "C02716-K2",
-      "C01982-K2",
-      "C00329-K2",
-      "C02780-K2",
-      "C03273-K1"
+      "C13058-K2",
+      "C07847-K2",
+      "C07552-K1",
+      "C06835-K2",
+      "C04513-K1"
     ],
     "connected_device_profiles": [
       "iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768"
@@ -36,20 +36,20 @@
         ]
       },
       {
-        "claim": "Device profile shared across 20 other card(s): C12748-K2, C11496-K2, C06708-K2, C11522-K2, C02231-K1.",
+        "claim": "Device profile shared across 20 other card(s): C08299-K1, C04117-K2, C03047-K2, C06279-K1, C06708-K2.",
         "source": "graph",
         "ref": "query:accounts_sharing_device(device=iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768)",
         "entity_ids": [
-          "C12748-K2",
-          "C11496-K2",
+          "C08299-K1",
+          "C04117-K2",
+          "C03047-K2",
+          "C06279-K1",
           "C06708-K2",
-          "C11522-K2",
-          "C02231-K1",
-          "C02716-K2",
-          "C01982-K2",
-          "C00329-K2",
-          "C02780-K2",
-          "C03273-K1"
+          "C13058-K2",
+          "C07847-K2",
+          "C07552-K1",
+          "C06835-K2",
+          "C04513-K1"
         ]
       },
       {
@@ -95,7 +95,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-1bb9ed25",
+        "ref": "evidence_request:ER-00a0a3f6",
         "entity_ids": [
           "C02923"
         ]
@@ -169,20 +169,20 @@
         "reason": "R6: shared origin detected"
       }
     ],
-    "what_changed": "Added: MONITOR_CONNECTED_CARDS, BLOCK_CARD; Removed: ESCALATE_TO_ANALYST"
+    "what_changed": "Added: BLOCK_CARD, MONITOR_CONNECTED_CARDS; Removed: ESCALATE_TO_ANALYST"
   },
   "sar": {
     "file": true,
     "reason": "R6: confirmed fraud connected to shared device profile or card",
-    "narrative": "Between 2016-12-07 and 2016-12-07, customer C02923 and card C02923-K1, connected cards C12748-K2, C11496-K2, C06708-K2, device profile 'iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768' were involved in 2 transaction(s) assessed as fraud (undocumented pattern) with total exposure $200.14. The flagged transaction 3523199 of $100.07 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 6 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the undocumented pattern with assessed fraud probability 0.90. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+    "narrative": "Between 2016-12-07 and 2016-12-07, customer C02923 and card C02923-K1, connected cards C08299-K1, C04117-K2, C03047-K2, device profile 'iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768' were involved in 2 transaction(s) assessed as fraud (undocumented pattern) with total exposure $200.14. The flagged transaction 3523199 of $100.07 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 6 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the undocumented pattern with assessed fraud probability 0.90. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
     "subjects": [
       "C02923-K1",
-      "C12748-K2",
-      "C02231-K1",
-      "C11522-K2",
+      "C03047-K2",
+      "C06279-K1",
+      "C08299-K1",
       "C02923",
+      "C04117-K2",
       "C06708-K2",
-      "C11496-K2",
       "iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768"
     ],
     "total_amount_usd": 200.14,
@@ -194,7 +194,7 @@
   "stop_reason": "Fraud probability 0.90 ≥ 0.85 with 3 independent evidence sources.",
   "tool_calls": 20,
   "tokens": 0,
-  "latency_s": 19.75,
+  "latency_s": 19.61,
   "investigation_trace": {
     "1_trigger": {
       "case_id": "HHG-005",
@@ -219,20 +219,20 @@
           ]
         },
         {
-          "claim": "Device profile shared across 20 other card(s): C12748-K2, C11496-K2, C06708-K2, C11522-K2, C02231-K1.",
+          "claim": "Device profile shared across 20 other card(s): C08299-K1, C04117-K2, C03047-K2, C06279-K1, C06708-K2.",
           "source": "graph",
           "ref": "query:accounts_sharing_device(device=iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768)",
           "entity_ids": [
-            "C12748-K2",
-            "C11496-K2",
+            "C08299-K1",
+            "C04117-K2",
+            "C03047-K2",
+            "C06279-K1",
             "C06708-K2",
-            "C11522-K2",
-            "C02231-K1",
-            "C02716-K2",
-            "C01982-K2",
-            "C00329-K2",
-            "C02780-K2",
-            "C03273-K1"
+            "C13058-K2",
+            "C07847-K2",
+            "C07552-K1",
+            "C06835-K2",
+            "C04513-K1"
           ]
         },
         {
@@ -278,20 +278,20 @@
           "confidence": 0.95
         },
         {
-          "claim": "Device profile shared across 20 other card(s): C12748-K2, C11496-K2, C06708-K2, C11522-K2, C02231-K1.",
+          "claim": "Device profile shared across 20 other card(s): C08299-K1, C04117-K2, C03047-K2, C06279-K1, C06708-K2.",
           "source": "graph",
           "ref": "query:accounts_sharing_device(device=iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768)",
           "entity_ids": [
-            "C12748-K2",
-            "C11496-K2",
+            "C08299-K1",
+            "C04117-K2",
+            "C03047-K2",
+            "C06279-K1",
             "C06708-K2",
-            "C11522-K2",
-            "C02231-K1",
-            "C02716-K2",
-            "C01982-K2",
-            "C00329-K2",
-            "C02780-K2",
-            "C03273-K1"
+            "C13058-K2",
+            "C07847-K2",
+            "C07552-K1",
+            "C06835-K2",
+            "C04513-K1"
           ],
           "severity": "HIGH",
           "confidence": 0.8
@@ -345,7 +345,7 @@
         {
           "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
           "source": "customer",
-          "ref": "evidence_request:ER-1bb9ed25",
+          "ref": "evidence_request:ER-00a0a3f6",
           "entity_ids": [
             "C02923"
           ],
@@ -384,11 +384,11 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-1bb9ed25"
+        "ref": "evidence_request:ER-00a0a3f6"
       }
     ],
     "10_reassessment_and_diff": {
-      "what_changed": "Added: MONITOR_CONNECTED_CARDS, BLOCK_CARD; Removed: ESCALATE_TO_ANALYST",
+      "what_changed": "Added: BLOCK_CARD, MONITOR_CONNECTED_CARDS; Removed: ESCALATE_TO_ANALYST",
       "stop_reason": "Fraud probability 0.90 ≥ 0.85 with 3 independent evidence sources."
     },
     "11_nba_and_policy": {
@@ -475,20 +475,30 @@
           "action": "FILE_REPORT",
           "route": null,
           "status": "pending"
+        },
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "FILE_REPORT",
+          "route": null,
+          "status": "pending"
         }
       ],
       "sar": {
         "file": true,
         "reason": "R6: confirmed fraud connected to shared device profile or card",
-        "narrative": "Between 2016-12-07 and 2016-12-07, customer C02923 and card C02923-K1, connected cards C12748-K2, C11496-K2, C06708-K2, device profile 'iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768' were involved in 2 transaction(s) assessed as fraud (undocumented pattern) with total exposure $200.14. The flagged transaction 3523199 of $100.07 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 6 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the undocumented pattern with assessed fraud probability 0.90. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+        "narrative": "Between 2016-12-07 and 2016-12-07, customer C02923 and card C02923-K1, connected cards C08299-K1, C04117-K2, C03047-K2, device profile 'iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768' were involved in 2 transaction(s) assessed as fraud (undocumented pattern) with total exposure $200.14. The flagged transaction 3523199 of $100.07 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 6 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the undocumented pattern with assessed fraud probability 0.90. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
         "subjects": [
           "C02923-K1",
-          "C12748-K2",
-          "C02231-K1",
-          "C11522-K2",
+          "C03047-K2",
+          "C06279-K1",
+          "C08299-K1",
           "C02923",
+          "C04117-K2",
           "C06708-K2",
-          "C11496-K2",
           "iOS Device | iOS 9.3.5 | mobile safari 9.0 | 1024x768"
         ],
         "total_amount_usd": 200.14,
@@ -501,10 +511,10 @@
     "12_persistence_and_summary": {
       "written_to_graph": true,
       "graph_case_id": "CASE-2016-HHG-005",
-      "audit_events_count": 82,
+      "audit_events_count": 100,
       "summary": "Case HHG-005 investigated undocumented activity on card C02923-K1 (customer C02923) around transaction 3523199 ($100.07, online). Assessed fraud probability 0.90 (CRITICAL risk) from 6 evidence items across 3 independent sources. Key signals: 13 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
       "tokens_used": 0,
-      "latency_s": 19.75
+      "latency_s": 19.61
     }
   },
   "benchmark_comparison": {

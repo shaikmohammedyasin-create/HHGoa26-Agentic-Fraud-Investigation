@@ -22,7 +22,7 @@
       <div class="brand-icon">TG</div>
       <div>
         <div class="brand-title">HHGoa '26 Agentic Fraud Investigation</div>
-        <div class="brand-subtitle">Analyst Command Center &bull; Task #3</div>
+        <div class="brand-subtitle">Analyst Command Center &bull; Task #3 &bull; D.6 Prototype</div>
       </div>
     </div>
 
@@ -36,15 +36,15 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="5 3 19 12 5 21 5 3"></polygon>
         </svg>
-        Start Live Investigation
+        <span>Start Live Investigation</span>
       </button>
 
       <div class="system-status">
-        <div class="status-badge" title="TigerGraph Savanna Cloud Status">
+        <div class="status-badge" id="btnTgStatus" title="Click for TigerGraph diagnostics" role="button" tabindex="0">
           <span class="status-dot healthy" id="tgStatusDot"></span>
           <span id="tgStatusText">TG: connected</span>
         </div>
-        <div class="status-badge" title="Durable State DB Status">
+        <div class="status-badge" id="btnDbStatus" title="Click for DB diagnostics" role="button" tabindex="0">
           <span class="status-dot healthy" id="dbStatusDot"></span>
           <span id="dbStatusText">DB: healthy</span>
         </div>
@@ -55,20 +55,24 @@
   <!-- ── Primary Workspace ───────────────────────────────────────────────── -->
   <main class="workspace" id="mainWorkspace">
 
-    <!-- ── Left Panel: Context & Live Progression Stepper ─────────────────── -->
+    <!-- ── Left Panel: Context & Investigation Story Ribbon ─────────────── -->
     <aside class="panel-left" id="panelLeft">
       <div class="panel-header">
         <h3>Trigger Context</h3>
+        <span class="header-tag" id="triggerTag">ALERT INGESTED</span>
       </div>
 
       <div class="card-box" id="triggerCard">
-        <span class="trigger-type-pill" id="triggerTypeBadge">RISK SCORE</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span class="trigger-type-pill" id="triggerTypeBadge">RISK SCORE</span>
+          <span class="meta-label" id="triggerChannelBadge">CARD TRANSACTION</span>
+        </div>
         <div class="trigger-text" id="triggerText">Loading case trigger details...</div>
 
         <div class="meta-grid">
           <div class="meta-item">
             <div class="meta-label">Flagged Txn</div>
-            <div class="meta-val" id="metaTxnId">—</div>
+            <div class="meta-val highlight-val" id="metaTxnId">—</div>
           </div>
           <div class="meta-item">
             <div class="meta-label">Card ID</div>
@@ -80,77 +84,103 @@
           </div>
           <div class="meta-item">
             <div class="meta-label">Trigger Score</div>
-            <div class="meta-val" id="metaRiskScore">—</div>
+            <div class="meta-val score-val" id="metaRiskScore">—</div>
           </div>
         </div>
       </div>
 
-      <div class="panel-header">
-        <h3>Investigation Progression</h3>
+      <div class="panel-header" style="margin-top:16px;">
+        <h3>Investigation Story</h3>
+        <span class="header-tag">CAUSAL CHAIN</span>
       </div>
 
-      <div class="timeline-stepper" id="timelineStepper">
-        <div class="step-item active">
+      <!-- P0: The 11-Stage Investigation Story Chain -->
+      <div class="timeline-stepper" id="timelineStepper" title="Click any stage to inspect related evidence">
+        <div class="step-item active" data-step="trigger" title="Ingested alert and transaction details">
           <div class="step-icon">1</div>
           <div class="step-content">
             <div class="step-title">Trigger Ingested</div>
-            <div class="step-desc">Alert accepted, initial record verified</div>
+            <div class="step-desc">Alert accepted, baseline risk registered</div>
           </div>
         </div>
 
-        <div class="step-item">
+        <div class="step-item" data-step="memory" title="Durable state tracking in TigerGraph">
           <div class="step-icon">2</div>
           <div class="step-content">
-            <div class="step-title">Graph Memory Created</div>
-            <div class="step-desc">InvestigationCase created in open state</div>
+            <div class="step-title">Graph Memory Initialized</div>
+            <div class="step-desc">InvestigationCase vertex created in open state</div>
           </div>
         </div>
 
-        <div class="step-item">
+        <div class="step-item" data-step="traversal" title="Live GSQL queries to TigerGraph">
           <div class="step-icon">3</div>
           <div class="step-content">
             <div class="step-title">Live TigerGraph Traversal</div>
-            <div class="step-desc">History, 48h windows, tiny sequences, accounts</div>
+            <div class="step-desc">History, 48h bursts, device neighbors & cases</div>
           </div>
         </div>
 
-        <div class="step-item">
+        <div class="step-item" data-step="evidence" title="Multi-source GraphRAG evidence assembled">
           <div class="step-icon">4</div>
           <div class="step-content">
             <div class="step-title">Evidence & Provenance</div>
-            <div class="step-desc">Multi-source GraphRAG evidence assembled</div>
+            <div class="step-desc">Graph observations, closed cases, entity links</div>
           </div>
         </div>
 
-        <div class="step-item">
+        <div class="step-item" data-step="pattern" title="Multi-candidate fraud pattern detection">
           <div class="step-icon">5</div>
           <div class="step-content">
-            <div class="step-title">Uncertainty Assessment</div>
-            <div class="step-desc">Risk scoring, ambiguity and confidence evaluation</div>
+            <div class="step-title">Pattern Reasoning</div>
+            <div class="step-desc">Primary & secondary candidate tiebreaking</div>
           </div>
         </div>
 
-        <div class="step-item">
+        <div class="step-item" data-step="risk" title="Noisy-OR independent channel risk evaluation">
           <div class="step-icon">6</div>
           <div class="step-content">
-            <div class="step-title">Additional Evidence Request</div>
-            <div class="step-desc">Targeted customer validation or analyst query</div>
+            <div class="step-title">Risk Assessment</div>
+            <div class="step-desc">Noisy-OR channel probability breakdown</div>
           </div>
         </div>
 
-        <div class="step-item">
+        <div class="step-item" data-step="uncertainty" title="Decision-relevant ambiguities identified">
           <div class="step-icon">7</div>
           <div class="step-content">
-            <div class="step-title">NBA & Policy Routing</div>
-            <div class="step-desc">Permission gating: Auto vs L1 Analyst vs L2 Compliance</div>
+            <div class="step-title">Uncertainty Evaluated</div>
+            <div class="step-desc">Identified key decision ambiguities to resolve</div>
           </div>
         </div>
 
-        <div class="step-item">
+        <div class="step-item" data-step="request" title="Targeted evidence request dispatched">
           <div class="step-icon">8</div>
           <div class="step-content">
-            <div class="step-title">Graph Case Persistence</div>
-            <div class="step-desc">Final verdict, SAR narrative, TigerGraph upsert</div>
+            <div class="step-title">Additional Evidence Request</div>
+            <div class="step-desc">Targeted cardholder verification / check</div>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="reassessment" title="Probability update & resolution impact">
+          <div class="step-icon">9</div>
+          <div class="step-content">
+            <div class="step-title">Reassessment Delta</div>
+            <div class="step-desc">Probability & action delta from received evidence</div>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="nba" title="Governed Next Best Actions & approval routing">
+          <div class="step-icon">10</div>
+          <div class="step-content">
+            <div class="step-title">Governed Policy & NBA</div>
+            <div class="step-desc">Auto-execute vs L1 Analyst vs L2 Compliance</div>
+          </div>
+        </div>
+
+        <div class="step-item" data-step="persistence" title="Durable case upsert and FinCEN SAR filing">
+          <div class="step-icon">11</div>
+          <div class="step-content">
+            <div class="step-title">Persistence & SAR</div>
+            <div class="step-desc">Final verdict written to TigerGraph memory</div>
           </div>
         </div>
       </div>
@@ -164,21 +194,30 @@
         <div class="prob-metric">
           <div class="prob-header">
             <span>FRAUD PROBABILITY</span>
-            <span id="probVal">0.00</span>
+            <span class="prob-num" id="probVal">0.000</span>
           </div>
           <div class="prob-bar-track">
             <div class="prob-bar-fill" id="probBar"></div>
           </div>
         </div>
 
-        <div class="stat-pill">
+        <div class="stat-pill" id="patternPill" title="Detected Fraud Pattern">
           <div class="stat-pill-label">Detected Pattern</div>
           <div class="stat-pill-value" id="patternVal">—</div>
+          <div class="stat-pill-sub" id="patternSecondaryVal">Secondary: none</div>
         </div>
 
-        <div class="stat-pill">
+        <div class="stat-pill" title="Total Financial Exposure at Risk">
           <div class="stat-pill-label">Exposure</div>
           <div class="stat-pill-value" id="exposureVal">$0.00</div>
+          <div class="stat-pill-sub" id="exposureSub">1 Flagged Transaction</div>
+        </div>
+
+        <div class="banner-action-col">
+          <button id="btnDecomposeScore" class="btn-subtle" title="Inspect Noisy-OR channel breakdown">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+            Score Channels
+          </button>
         </div>
       </div>
 
@@ -190,6 +229,7 @@
           <div class="legend-item"><span class="legend-color" style="background:#6366f1;"></span> Card</div>
           <div class="legend-item"><span class="legend-color" style="background:#38bdf8;"></span> Customer</div>
           <div class="legend-item"><span class="legend-color" style="background:#06b6d4;"></span> Device Profile</div>
+          <div class="legend-item"><span class="legend-color" style="background:#14b8a6;"></span> Connected Card</div>
           <div class="legend-item"><span class="legend-color" style="background:#a855f7;"></span> Prior Case</div>
           <div class="legend-item"><span class="legend-color" style="background:#10b981;"></span> Graph Case</div>
         </div>
@@ -199,59 +239,113 @@
           <button id="btnZoomOut" class="btn-icon" title="Zoom Out">&minus;</button>
           <button id="btnResetView" class="btn-icon" title="Reset Graph View">&#x21ba;</button>
         </div>
+
+        <!-- P1: Interactive Graph Node Inspector Drawer -->
+        <div class="graph-inspector" id="graphInspector" style="display:none;">
+          <div class="inspector-header">
+            <div class="inspector-title-wrap">
+              <span class="inspector-type-pill" id="inspNodeType">CARD</span>
+              <span class="inspector-node-id" id="inspNodeId">C12382-K1</span>
+            </div>
+            <button class="btn-close-inspector" id="btnCloseInspector" title="Close inspector">&times;</button>
+          </div>
+          <div class="inspector-body">
+            <div class="inspector-relevance" id="inspNodeRelevance">Payment instrument under review.</div>
+            <div class="inspector-meta-grid" id="inspNodeMeta"></div>
+            <div class="inspector-actions">
+              <button class="btn-filter-ev" id="btnFilterEvidence">Filter Related Evidence</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ── Right Panel: Inspector Tabs ───────────────────────────────────── -->
     <aside class="panel-right" id="panelRight">
       <nav class="tab-nav">
-        <button class="tab-btn active" data-tab="tabEvidence">
+        <button class="tab-btn active" data-tab="tabEvidence" id="btnTabEvidence">
           Evidence <span class="tab-badge" id="evCount">0</span>
         </button>
-        <button class="tab-btn" data-tab="tabUncertainty">
-          Uncertainty <span class="tab-badge" id="uncCount">0</span>
+        <button class="tab-btn" data-tab="tabUncertainty" id="btnTabUncertainty">
+          Uncertainty Loop <span class="tab-badge" id="uncCount">0</span>
         </button>
-        <button class="tab-btn" data-tab="tabAddEvidence">
-          Add'l Evidence
+        <button class="tab-btn" data-tab="tabNba" id="btnTabNba">
+          Governed NBA <span class="tab-badge" id="aprCount">0</span>
         </button>
-        <button class="tab-btn" data-tab="tabNbaDiff">
-          NBA Diff
-        </button>
-        <button class="tab-btn" data-tab="tabApprovals">
-          Approvals <span class="tab-badge" id="aprCount">0</span>
-        </button>
-        <button class="tab-btn" data-tab="tabPersistence">
-          Case Memory
+        <button class="tab-btn" data-tab="tabPersistence" id="btnTabPersistence">
+          Case Memory & SAR
         </button>
       </nav>
 
       <div class="tab-content-area">
-        <!-- Tab 1: Evidence & Provenance -->
+        <!-- Tab 1: Evidence & Provenance + Noisy-OR Decomposition -->
         <div class="tab-pane active" id="tabEvidence">
+          <!-- Collapsible Noisy-OR Decomposition Box -->
+          <div class="score-breakdown-card" id="scoreBreakdownCard">
+            <div class="breakdown-header" id="toggleBreakdown">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
+                <span style="font-weight:700; font-size:0.75rem;">Noisy-OR Risk Score Decomposition</span>
+              </div>
+              <span class="breakdown-arrow">&#9662;</span>
+            </div>
+            <div class="breakdown-content" id="breakdownContent">
+              <div class="breakdown-table-wrap">
+                <table class="breakdown-table">
+                  <thead>
+                    <tr>
+                      <th>Signal / Channel</th>
+                      <th>Type</th>
+                      <th>Weight</th>
+                      <th>Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody id="breakdownTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="evidence-filter-bar" id="evFilterBar" style="display:none;">
+            <span>Filtered by: <strong id="filterEntityName">None</strong></span>
+            <button class="btn-clear-filter" id="btnClearEvFilter">Clear Filter</button>
+          </div>
+
           <div id="evidenceList"></div>
         </div>
 
-        <!-- Tab 2: Uncertainty -->
+        <!-- Tab 2: The Uncertainty & Reassessment Lifecycle (P0) -->
         <div class="tab-pane" id="tabUncertainty">
-          <div id="uncertaintyList"></div>
+          <div id="uncertaintyCycleContent"></div>
         </div>
 
-        <!-- Tab 3: Additional Evidence -->
-        <div class="tab-pane" id="tabAddEvidence">
-          <div id="addEvidenceList"></div>
+        <!-- Tab 3: Governed NBA & Policy Matrix (P1) -->
+        <div class="tab-pane" id="tabNba">
+          <div class="governance-banner">
+            <div class="governance-step">
+              <div class="gov-step-label">1. AGENT</div>
+              <div class="gov-step-desc">Proposes actions</div>
+            </div>
+            <div class="gov-arrow">&rarr;</div>
+            <div class="gov-step">
+              <div class="gov-step-label">2. POLICY ENGINE</div>
+              <div class="gov-step-desc">Rules & boundaries</div>
+            </div>
+            <div class="gov-arrow">&rarr;</div>
+            <div class="gov-step">
+              <div class="gov-step-label">3. PERMISSION</div>
+              <div class="gov-step-desc">Auto / L1 / L2</div>
+            </div>
+            <div class="gov-arrow">&rarr;</div>
+            <div class="gov-step">
+              <div class="gov-step-label">4. APPROVAL</div>
+              <div class="gov-step-desc">Human authorized</div>
+            </div>
+          </div>
+          <div id="nbaGovernanceContent"></div>
         </div>
 
-        <!-- Tab 4: NBA Diff -->
-        <div class="tab-pane" id="tabNbaDiff">
-          <div id="nbaDiffContent"></div>
-        </div>
-
-        <!-- Tab 5: Approvals Console -->
-        <div class="tab-pane" id="tabApprovals">
-          <div id="approvalsList"></div>
-        </div>
-
-        <!-- Tab 6: Case Memory & SAR -->
+        <!-- Tab 4: Case Memory & SAR -->
         <div class="tab-pane" id="tabPersistence">
           <div id="persistenceContent"></div>
         </div>
@@ -259,6 +353,45 @@
     </aside>
 
   </main>
+
+  <!-- ── Non-Blocking Toast Notification Container ───────────────────────── -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- ── Diagnostic System Health Modal ──────────────────────────────────── -->
+  <div class="modal-overlay" id="healthModal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>System Diagnostics & Connectivity</h3>
+        <button class="btn-close-modal" id="btnCloseHealthModal">&times;</button>
+      </div>
+      <div class="modal-body" id="healthModalBody">
+        <div class="diag-section">
+          <h4>TigerGraph Savanna Cloud</h4>
+          <div class="diag-grid" id="tgDiagGrid">
+            <div class="diag-item"><span class="diag-label">Host</span><span class="diag-val" id="diagTgHost">tg-f02a8385...i.tgcloud.io</span></div>
+            <div class="diag-item"><span class="diag-label">Graph</span><span class="diag-val" id="diagTgGraph">fraud_investigation</span></div>
+            <div class="diag-item"><span class="diag-label">Mode</span><span class="diag-val" id="diagTgMode">Strict Fail-Closed</span></div>
+            <div class="diag-item"><span class="diag-label">Health</span><span class="diag-val" id="diagTgStatus">Healthy</span></div>
+          </div>
+        </div>
+        <div class="diag-section">
+          <h4>Application SQLite State DB</h4>
+          <div class="diag-grid" id="dbDiagGrid">
+            <div class="diag-item"><span class="diag-label">Path</span><span class="diag-val">data/app/app.db</span></div>
+            <div class="diag-item"><span class="diag-label">State</span><span class="diag-val" id="diagDbStatus">Healthy</span></div>
+            <div class="diag-item"><span class="diag-label">Tables</span><span class="diag-val">investigations, approvals, audit</span></div>
+          </div>
+        </div>
+        <div class="diag-section">
+          <h4>LLM Reasoning Provider</h4>
+          <div class="diag-grid">
+            <div class="diag-item"><span class="diag-label">Provider</span><span class="diag-val" id="diagLlmProvider">Deterministic Fallback</span></div>
+            <div class="diag-item"><span class="diag-label">Honesty Flag</span><span class="diag-val">Active (Audit Safe)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ── Scripts ───────────────────────────────────────────────────────── -->
   <script src="js/api.js"></script>

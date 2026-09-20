@@ -33,7 +33,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-36c87205",
+        "ref": "evidence_request:ER-ad2e125c",
         "entity_ids": [
           "C05876"
         ]
@@ -87,5 +87,5 @@
   "stop_reason": "Borderline probability 0.23; investigation halted per stopping criteria. Escalated for analyst review.",
   "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 8.19
+  "latency_s": 8.13
 }

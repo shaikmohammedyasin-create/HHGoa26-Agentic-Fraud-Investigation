@@ -65,7 +65,7 @@
         ]
       },
       {
-        "claim": "Mixed-channel activity in 48h window: online, in_person.",
+        "claim": "Mixed-channel activity in 48h window: in_person, online.",
         "source": "graph",
         "ref": "query:card_window(card_id=C07987-K2)",
         "entity_ids": [
@@ -95,7 +95,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-fe6bc39e",
+        "ref": "evidence_request:ER-8efc878e",
         "entity_ids": [
           "C07987"
         ]
@@ -176,12 +176,12 @@
     "reason": "R6: confirmed fraud connected to shared device profile or card",
     "narrative": "Between 2016-12-01 and 2016-12-01, customer C07987 and card C07987-K2, connected cards C11309-K1, C01983-K1, C06224-K2, device profile 'Windows | other | chrome 61.0 | 1280x720' were involved in 2 transaction(s) assessed as fraud (account_takeover pattern) with total exposure $199.84. The flagged transaction 3503878 of $99.92 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the account_takeover pattern with assessed fraud probability 0.92. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
     "subjects": [
-      "C06224-K2",
-      "C01983-K1",
-      "C01104-K2",
-      "C07987-K2",
       "C11309-K1",
+      "C01983-K1",
+      "C07987-K2",
       "C07987",
+      "C06224-K2",
+      "C01104-K2",
       "Windows | other | chrome 61.0 | 1280x720"
     ],
     "total_amount_usd": 199.84,
@@ -193,5 +193,5 @@
   "stop_reason": "Fraud probability 0.92 ≥ 0.85 with 3 independent evidence sources.",
   "tool_calls": 20,
   "tokens": 0,
-  "latency_s": 19.13
+  "latency_s": 20.51
 }

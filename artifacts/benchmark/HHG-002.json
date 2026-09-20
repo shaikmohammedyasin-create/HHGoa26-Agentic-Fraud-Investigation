@@ -33,7 +33,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-3494f9b0",
+        "ref": "evidence_request:ER-65287919",
         "entity_ids": [
           "C11891"
         ]
@@ -78,7 +78,7 @@
         "reason": "R4: decline pending authorization"
       }
     ],
-    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER"
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -91,7 +91,7 @@
   "stop_reason": "Borderline probability 0.33; investigation halted per stopping criteria. Escalated for analyst review.",
   "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 8.15,
+  "latency_s": 8.1,
   "investigation_trace": {
     "1_trigger": {
       "case_id": "HHG-002",
@@ -154,7 +154,7 @@
         {
           "claim": "Customer response (simulated): No response received within the 24-hour window.",
           "source": "customer",
-          "ref": "evidence_request:ER-3494f9b0",
+          "ref": "evidence_request:ER-65287919",
           "entity_ids": [
             "C11891"
           ],
@@ -185,7 +185,7 @@
           "question": "Did the cardholder make this transaction?",
           "impact": "Customer denial raises probability significantly; confirmation closes the case",
           "resolution_method": "VERIFY_WITH_CUSTOMER",
-          "status": "open"
+          "status": "resolved"
         }
       ]
     },
@@ -200,11 +200,11 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-3494f9b0"
+        "ref": "evidence_request:ER-65287919"
       }
     ],
     "10_reassessment_and_diff": {
-      "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER",
+      "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE",
       "stop_reason": "Borderline probability 0.33; investigation halted per stopping criteria. Escalated for analyst review."
     },
     "11_nba_and_policy": {
@@ -335,6 +335,26 @@
           "action": "DECLINE_TRANSACTION",
           "route": null,
           "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
         }
       ],
       "sar": {
@@ -349,10 +369,10 @@
     "12_persistence_and_summary": {
       "written_to_graph": true,
       "graph_case_id": "CASE-2016-HHG-002",
-      "audit_events_count": 308,
+      "audit_events_count": 372,
       "summary": "Case HHG-002 investigated none activity on card C11891-K1 (customer C11891) around transaction 3478782 ($292.36, online). Assessed fraud probability 0.33 (LOW risk) from 3 evidence items across 2 independent sources. Key signals: 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
       "tokens_used": 0,
-      "latency_s": 8.15
+      "latency_s": 8.1
     }
   },
   "benchmark_comparison": {

@@ -44,7 +44,7 @@
         ]
       },
       {
-        "claim": "Mixed-channel activity in 48h window: online, in_person.",
+        "claim": "Mixed-channel activity in 48h window: in_person, online.",
         "source": "graph",
         "ref": "query:card_window(card_id=C09933-K2)",
         "entity_ids": [
@@ -75,7 +75,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-de3de535",
+        "ref": "evidence_request:ER-d037715c",
         "entity_ids": [
           "C09933"
         ]
@@ -134,7 +134,7 @@
         "reason": "R4: decline pending authorization"
       }
     ],
-    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER"
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -147,7 +147,7 @@
   "stop_reason": "Borderline probability 0.55; investigation halted per stopping criteria. Escalated for analyst review.",
   "tool_calls": 17,
   "tokens": 0,
-  "latency_s": 8.96,
+  "latency_s": 10.9,
   "investigation_trace": {
     "1_trigger": {
       "case_id": "HHG-007",
@@ -193,7 +193,7 @@
           ]
         },
         {
-          "claim": "Mixed-channel activity in 48h window: online, in_person.",
+          "claim": "Mixed-channel activity in 48h window: in_person, online.",
           "source": "graph",
           "ref": "query:card_window(card_id=C09933-K2)",
           "entity_ids": [
@@ -248,7 +248,7 @@
           "confidence": 0.95
         },
         {
-          "claim": "Mixed-channel activity in 48h window: online, in_person.",
+          "claim": "Mixed-channel activity in 48h window: in_person, online.",
           "source": "graph",
           "ref": "query:card_window(card_id=C09933-K2)",
           "entity_ids": [
@@ -283,7 +283,7 @@
         {
           "claim": "Customer response (simulated): No response received within the 24-hour window.",
           "source": "customer",
-          "ref": "evidence_request:ER-de3de535",
+          "ref": "evidence_request:ER-d037715c",
           "entity_ids": [
             "C09933"
           ],
@@ -314,13 +314,13 @@
           "question": "Did the cardholder make this transaction?",
           "impact": "Customer denial raises probability significantly; confirmation closes the case",
           "resolution_method": "VERIFY_WITH_CUSTOMER",
-          "status": "open"
+          "status": "resolved"
         },
         {
           "question": "Can the burst of online purchases be explained (gift purchases, etc.)?",
           "impact": "Legitimate explanation reduces probability",
           "resolution_method": "VERIFY_WITH_CUSTOMER",
-          "status": "open"
+          "status": "resolved"
         }
       ]
     },
@@ -335,11 +335,11 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-de3de535"
+        "ref": "evidence_request:ER-d037715c"
       }
     ],
     "10_reassessment_and_diff": {
-      "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER",
+      "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE",
       "stop_reason": "Borderline probability 0.55; investigation halted per stopping criteria. Escalated for analyst review."
     },
     "11_nba_and_policy": {
@@ -400,6 +400,11 @@
           "action": "DECLINE_TRANSACTION",
           "route": null,
           "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
         }
       ],
       "sar": {
@@ -414,10 +419,10 @@
     "12_persistence_and_summary": {
       "written_to_graph": true,
       "graph_case_id": "CASE-2016-HHG-007",
-      "audit_events_count": 94,
+      "audit_events_count": 110,
       "summary": "Case HHG-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 3 independent sources. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
       "tokens_used": 0,
-      "latency_s": 8.96
+      "latency_s": 10.9
     }
   },
   "benchmark_comparison": {

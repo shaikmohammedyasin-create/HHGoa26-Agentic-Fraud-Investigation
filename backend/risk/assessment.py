@@ -59,98 +59,123 @@ class EvidenceSignals:
     independent_evidence_count: int = 0          # distinct source types
 
 
-def compute_fraud_probability(sig: EvidenceSignals) -> float:
+def compute_fraud_probability(sig: EvidenceSignals) -> tuple[float, list[dict]]:
     """
     Heuristic fraud probability 0-1 from evidence signals.
 
+    Returns (probability, score_breakdown) where score_breakdown is a list
+    of per-channel dicts for auditability.
+
     NOT a model output. Documented methodology per DECISIONS.md D7.
-
-    Aggregation is a noisy-OR over independent evidence channels rather than a
-    raw weighted sum: P(fraud) = 1 - prod_i (1 - q_i).  This keeps the score
-    sub-additive, so each additional signal raises the probability by less than
-    the last and the score does not saturate at the clamp the moment two strong
-    signals co-occur.  Discrimination between fraud cases is preserved, which
-    matters because the README scores this field for calibration.
-
-    Clearing signals are applied multiplicatively (they reduce the probability
-    that the positive evidence indicates fraud), not by subtracting a constant.
     """
     # q_i — the probability that channel i alone would produce this evidence
-    channels: list[float] = []
+    channels: list[tuple[float, str, str]] = []  # (weight, channel_key, label)
 
-    # ── Base from trigger ────────────────────────────────────────────────────
+    # ── Base from trigger ─────────────────────────────────────────────────────────
     if sig.trigger_type == "customer_report":
-        channels.append(0.25)                  # customer already flagged it
+        channels.append((0.25, "trigger_customer_report", "Customer reported transaction as fraudulent"))
     elif sig.trigger_risk_score is not None:
-        # Risk score is correlated, not definitive (README §0)
-        channels.append(min(0.20, sig.trigger_risk_score * 0.20))
+        w = min(0.20, sig.trigger_risk_score * 0.20)
+        channels.append((w, "trigger_risk_score", f"ML risk score {sig.trigger_risk_score:.2f} (weight {w:.2f})"))
 
-    # ── Pattern signals ──────────────────────────────────────────────────────
+    # ── Pattern signals ─────────────────────────────────────────────────────────
     if sig.card_testing_sequence:
-        channels.append(0.50)
+        channels.append((0.50, "card_testing_sequence", "Card-testing sequence detected (≥3 sub-$10 online authorizations)"))
     if sig.new_device:
-        channels.append(0.20)
+        channels.append((0.20, "new_device", "Device marked New for this account"))
     if sig.proxy_used:
-        channels.append(0.12)
+        channels.append((0.12, "proxy_used", "Proxy or anonymous connection used"))
     if sig.new_region and not sig.region_streak:
-        channels.append(0.22)
+        channels.append((0.22, "new_region", "Transaction in billing region with no prior history"))
     if sig.mixed_channel:
-        channels.append(0.14)
+        channels.append((0.14, "mixed_channel", "Mixed online/in-person activity in 48h window"))
     if sig.match_flag_anomaly:
-        channels.append(0.12)
+        channels.append((0.12, "match_flag_anomaly", "Match-flag anomaly on flagged transaction"))
 
-    # Burst of online transactions (CNP burst)
+    # Burst of online transactions
     if sig.burst_online >= 3:
-        channels.append(0.18)
+        channels.append((0.18, "burst_online_3plus", f"{sig.burst_online} online transactions in 48h window"))
     elif sig.burst_online == 2:
-        channels.append(0.09)
+        channels.append((0.09, "burst_online_2", "2 online transactions in 48h window"))
 
     # Amount anomaly
     if sig.avg_card_amount > 0 and sig.txn_amount > 3 * sig.avg_card_amount:
-        channels.append(0.15)
+        channels.append((0.15, "amount_anomaly", f"Transaction amount ${sig.txn_amount:.2f} > 3x card average ${sig.avg_card_amount:.2f}"))
 
-    # ── Historical signals ────────────────────────────────────────────────────
+    # ── Historical signals ─────────────────────────────────────────────────────────
     if sig.prior_fraud_cases > 0:
-        channels.append(min(0.35, 0.15 + sig.prior_fraud_cases * 0.05))
+        w = min(0.35, 0.15 + sig.prior_fraud_cases * 0.05)
+        channels.append((w, "prior_fraud_cases", f"{sig.prior_fraud_cases} prior confirmed fraud case(s) on card/customer"))
     if sig.device_linked_fraud > 0:
-        channels.append(min(0.35, 0.15 + sig.device_linked_fraud * 0.08))
+        w = min(0.35, 0.15 + sig.device_linked_fraud * 0.08)
+        channels.append((w, "device_linked_fraud", f"Device appears in {sig.device_linked_fraud} confirmed fraud case(s)"))
     if sig.connected_card_fraud > 0:
-        channels.append(min(0.25, 0.10 + sig.connected_card_fraud * 0.05))
+        w = min(0.25, 0.10 + sig.connected_card_fraud * 0.05)
+        channels.append((w, "connected_card_fraud", f"{sig.connected_card_fraud} confirmed fraud case(s) on connected cards"))
 
-    # ── Customer interaction ──────────────────────────────────────────────────
+    # ── Customer interaction ────────────────────────────────────────────────────────
     if sig.customer_denied:
-        channels.append(0.55)
+        channels.append((0.55, "customer_denied", "Cardholder denied making the transaction"))
 
-    # ── Shared origin ─────────────────────────────────────────────────────────
+    # ── Shared origin ──────────────────────────────────────────────────────────────
     if sig.shared_device_count > 1:
-        channels.append(min(0.22, 0.10 + sig.shared_device_count * 0.03))
+        w = min(0.22, 0.10 + sig.shared_device_count * 0.03)
+        channels.append((w, "shared_device", f"Device shared across {sig.shared_device_count} other card(s)"))
 
-    # ── Noisy-OR aggregation ────────────────────────────────────────────────
+    # ── Noisy-OR aggregation ────────────────────────────────────────────────────────
     not_fraud = 1.0
-    for q in channels:
+    for q, _, _ in channels:
         not_fraud *= (1.0 - q)
 
-    # ── Clearing signals, multiplicative ──────────────────────────────────────
+    # ── Clearing signals, multiplicative ────────────────────────────────────────────
+    clearing: list[tuple[float, str, str]] = []
     if sig.customer_confirmed:
-        not_fraud *= 0.60                       # strong clearing signal
+        not_fraud *= 0.60
+        clearing.append((0.60, "customer_confirmed", "Cardholder confirmed the transaction (strong clearing signal)"))
     if sig.region_streak:
-        not_fraud *= 1.30                       # multi-day new region ≈ a trip
+        not_fraud *= 1.30
+        clearing.append((1.30, "region_streak", "Multi-day new-region purchases consistent with legitimate travel"))
     if sig.prior_cleared_cases > 0:
-        not_fraud *= (1.0 + min(0.25, sig.prior_cleared_cases * 0.08))
+        factor = 1.0 + min(0.25, sig.prior_cleared_cases * 0.08)
+        not_fraud *= factor
+        clearing.append((factor, "prior_cleared_cases",
+                         f"{sig.prior_cleared_cases} prior cleared case(s) support legitimate use"))
 
     prob = 1.0 - not_fraud
 
-    # A cardholder confirmation settles the primary question (policy R3:
     # customer confirms → CLOSE_NO_FRAUD).  The risk model score is "a reason
     # to look, never a verdict" (README §0), so it cannot outweigh a
     # confirmation on its own.  Cap the probability in the low band unless hard
-    # contradictory evidence (a denial-corroborating pattern signal) is present.
     if sig.customer_confirmed and not (
         sig.card_testing_sequence or sig.device_linked_fraud or sig.connected_card_fraud
     ):
         prob = min(prob, 0.15)
 
-    return max(0.05, min(0.97, round(prob, 3)))
+    final_prob = max(0.05, min(0.97, round(prob, 3)))
+
+    breakdown: list[dict] = []
+    for q, key, label in channels:
+        breakdown.append({
+            "channel": key,
+            "contribution": round(q, 3),
+            "label": label,
+            "type": "fraud_signal",
+        })
+    for factor, key, label in clearing:
+        breakdown.append({
+            "channel": key,
+            "contribution": round(factor, 3),
+            "label": label,
+            "type": "clearing_signal",
+        })
+    breakdown.append({
+        "channel": "total",
+        "contribution": final_prob,
+        "label": f"Combined fraud probability ({final_prob:.3f})",
+        "type": "total",
+    })
+
+    return final_prob, breakdown
 
 
 def classify_risk(probability: float) -> RiskLevel:
@@ -211,7 +236,7 @@ def identify_uncertainties(sig: EvidenceSignals, probability: float) -> list[Unc
 
 
 def build_risk_assessment(sig: EvidenceSignals) -> RiskAssessment:
-    prob = compute_fraud_probability(sig)
+    prob, breakdown = compute_fraud_probability(sig)
     risk = classify_risk(prob)
     conf = compute_confidence(sig, prob)
     unc = identify_uncertainties(sig, prob)
@@ -242,6 +267,7 @@ def build_risk_assessment(sig: EvidenceSignals) -> RiskAssessment:
         confidence=conf,
         key_signals=signals,
         uncertainty_items=unc,
+        score_breakdown=breakdown,
     )
 
 

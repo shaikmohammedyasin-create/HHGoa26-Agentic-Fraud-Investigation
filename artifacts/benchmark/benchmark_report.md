@@ -2,8 +2,8 @@
 **TigerGraph Agentic Fraud Investigation — HHGoa '26 Task #3**
 
 - **Execution Mode:** LIVE TigerGraph Savanna Cloud (`fraud_investigation`) in Strict Mode (`STRICT_GRAPH_BACKEND=1`)
-- **Date & Time:** 2026-09-19T18:19:34Z
-- **Total Execution Time:** 385.23s (avg 19.26s/case)
+- **Date & Time:** 2026-09-20T02:29:27Z
+- **Total Execution Time:** 359.52s (avg 17.98s/case)
 - **Total Cases Executed:** 20/20 (100% completion)
 
 ---

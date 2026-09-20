@@ -33,7 +33,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-36c87205",
+        "ref": "evidence_request:ER-ad2e125c",
         "entity_ids": [
           "C05876"
         ]
@@ -87,7 +87,7 @@
   "stop_reason": "Borderline probability 0.23; investigation halted per stopping criteria. Escalated for analyst review.",
   "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 8.19,
+  "latency_s": 8.13,
   "investigation_trace": {
     "1_trigger": {
       "case_id": "HHG-012",
@@ -150,7 +150,7 @@
         {
           "claim": "Customer response (simulated): No response received within the 24-hour window.",
           "source": "customer",
-          "ref": "evidence_request:ER-36c87205",
+          "ref": "evidence_request:ER-ad2e125c",
           "entity_ids": [
             "C05876"
           ],
@@ -181,7 +181,7 @@
           "question": "Did the cardholder make this transaction?",
           "impact": "Customer denial raises probability significantly; confirmation closes the case",
           "resolution_method": "VERIFY_WITH_CUSTOMER",
-          "status": "open"
+          "status": "resolved"
         }
       ]
     },
@@ -196,7 +196,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-36c87205"
+        "ref": "evidence_request:ER-ad2e125c"
       }
     ],
     "10_reassessment_and_diff": {
@@ -256,6 +256,11 @@
           "action": "DECLINE_TRANSACTION",
           "route": null,
           "status": "pending"
+        },
+        {
+          "action": "DECLINE_TRANSACTION",
+          "route": null,
+          "status": "pending"
         }
       ],
       "sar": {
@@ -270,10 +275,10 @@
     "12_persistence_and_summary": {
       "written_to_graph": true,
       "graph_case_id": "CASE-2016-HHG-012",
-      "audit_events_count": 103,
+      "audit_events_count": 119,
       "summary": "Case HHG-012 investigated none activity on card C05876-K2 (customer C05876) around transaction 3553342 ($30.91, in_person). Assessed fraud probability 0.23 (LOW risk) from 3 evidence items across 2 independent sources. Key signals: 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
       "tokens_used": 0,
-      "latency_s": 8.19
+      "latency_s": 8.13
     }
   },
   "benchmark_comparison": {

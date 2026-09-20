@@ -85,7 +85,24 @@ def _simulate_customer_response(
 def _ev(case_id: str, claim: str, source: EvidenceSource, ref: str,
         entity_ids: list[str] | None = None,
         severity: RiskLevel = RiskLevel.medium,
-        confidence: float = 0.7) -> EvidenceItem:
+        confidence: float = 0.7,
+        provenance: dict | None = None,
+        step: int = 0,
+        claim_type: str = "observed_fact") -> EvidenceItem:
+    """
+    Build an evidence item with full provenance.
+
+    claim_type: observed_fact | derived_inference | model_score
+    """
+    prov = provenance or {}
+    if "step" not in prov:
+        prov["step"] = step
+    if "claim_type" not in prov:
+        prov["claim_type"] = claim_type
+    if "query" not in prov and ref:
+        # Extract query name from ref string (e.g. "query:card_window(...)" -> "card_window")
+        raw = ref.split(":", 1)[-1].split("(")[0]
+        prov["query"] = raw
     return EvidenceItem(
         case_id=case_id,
         claim=claim,
@@ -94,6 +111,7 @@ def _ev(case_id: str, claim: str, source: EvidenceSource, ref: str,
         entity_ids=entity_ids or [],
         severity=severity,
         confidence=confidence,
+        provenance=prov,
     )
 
 
@@ -512,12 +530,15 @@ def run_investigation(case_id: str, force: bool = False) -> InvestigationCase:
         case.risk_level = risk.risk_level
         case.uncertainty = risk.uncertainty_items
 
-        # Pattern detection
+        # Pattern detection — store primary, secondary, and full candidate list
         pat_result = detect_pattern(sig, case.trigger.trigger_type.value)
         case.pattern = pat_result.pattern
         case.pattern_description = (
             pat_result.description if pat_result.pattern != FraudPattern.none else ""
         )
+        case.pattern_candidates = pat_result.candidates
+        if pat_result.secondary is not None:
+            case.pattern_secondary = pat_result.secondary.value
 
         # ── STEP 9b: Retrieval (GraphRAG evidence layer) ──────────────────────
         # Prior cases are retrieved two ways and merged with the graph traversal
@@ -610,15 +631,32 @@ def run_investigation(case_id: str, force: bool = False) -> InvestigationCase:
             case.evidence = [*evidence, cust_ev]
 
             # Reassess
+            prob_before_reassess = risk.fraud_probability
             _transition(case, InvestigationState.reassessing)
             sig.evidence_count = len(case.evidence)
             sig.independent_evidence_count = len({ev.source for ev in case.evidence})
             risk = build_risk_assessment(sig)
+            prob_after_reassess = risk.fraud_probability
             case.fraud_probability = risk.fraud_probability
             case.risk_level = risk.risk_level
             case.uncertainty = risk.uncertainty_items
 
+            # Resolve uncertainty items that customer evidence addressed
+            resolution_impact = (
+                f"Customer response changed fraud probability "
+                f"{prob_before_reassess:.2f} \u2192 {prob_after_reassess:.2f}"
+            )
+            for item in case.uncertainty:
+                if item.status == "open" and item.resolution_method in (
+                    "VERIFY_WITH_CUSTOMER", "STEP_UP_AUTH or VERIFY_WITH_CUSTOMER"
+                ):
+                    if denied or confirmed or no_reply:
+                        item.status = "resolved"
+                        item.resolved_by = req.request_id
+                        item.resolution_impact = resolution_impact
+
         # ── STEP 11: Construct initial NBA (before additional evidence) ────────
+        ev_ids_initial = [ev.evidence_id for ev in evidence[:10]]
         pol_input_initial = PolicyInput(
             fraud_probability=case.risk_before.fraud_probability if case.risk_before else risk.fraud_probability,
             exposure_usd=flagged_txn.amount,
@@ -633,10 +671,12 @@ def run_investigation(case_id: str, force: bool = False) -> InvestigationCase:
             undocumented_coordinated=case.pattern == FraudPattern.undocumented,
             connected_fraud_cards_count=connected_fraud_count,
             evidence_count=len(evidence),
+            evidence_ids=ev_ids_initial,
         )
         case.nba_initial = build_recommendations(pol_input_initial)
 
         # ── STEP 12: Final NBA (after additional evidence) ────────────────────
+        ev_ids_final = [ev.evidence_id for ev in case.evidence[:10]]
         pol_input_final = PolicyInput(
             fraud_probability=risk.fraud_probability,
             exposure_usd=flagged_txn.amount,
@@ -650,6 +690,7 @@ def run_investigation(case_id: str, force: bool = False) -> InvestigationCase:
             undocumented_coordinated=case.pattern == FraudPattern.undocumented,
             connected_fraud_cards_count=connected_fraud_count,
             evidence_count=len(case.evidence),
+            evidence_ids=ev_ids_final,
         )
         final_actions = build_recommendations(pol_input_final)
         case.nba_final = final_actions

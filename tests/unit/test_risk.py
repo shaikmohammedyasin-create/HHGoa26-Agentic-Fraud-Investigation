@@ -11,17 +11,17 @@ from backend.models import FraudPattern, RiskLevel
 class TestFraudProbability:
     def test_low_base(self):
         sig = EvidenceSignals(trigger_risk_score=0.1, trigger_type="risk_score")
-        prob = compute_fraud_probability(sig)
+        prob, _ = compute_fraud_probability(sig)
         assert 0.05 <= prob <= 0.15
 
     def test_card_testing_raises(self):
         sig = EvidenceSignals(card_testing_sequence=True, small_online_count=4)
-        prob = compute_fraud_probability(sig)
+        prob, _ = compute_fraud_probability(sig)
         assert prob >= 0.35
 
     def test_customer_denied_raises(self):
         sig = EvidenceSignals(customer_denied=True)
-        prob = compute_fraud_probability(sig)
+        prob, _ = compute_fraud_probability(sig)
         assert prob >= 0.30
 
     def test_customer_confirmed_lowers(self):
@@ -29,21 +29,21 @@ class TestFraudProbability:
             trigger_risk_score=0.8, trigger_type="risk_score",
             customer_confirmed=True,
         )
-        prob = compute_fraud_probability(sig)
+        prob, _ = compute_fraud_probability(sig)
         assert prob < 0.20
 
     def test_new_device_proxy_raises(self):
         sig = EvidenceSignals(new_device=True, proxy_used=True,
                               burst_online=3)
-        prob = compute_fraud_probability(sig)
+        prob, _ = compute_fraud_probability(sig)
         assert prob >= 0.30
 
     def test_region_streak_lowers(self):
         sig = EvidenceSignals(new_region=True, region_streak=True)
-        prob = compute_fraud_probability(sig)
+        prob, _ = compute_fraud_probability(sig)
         # Region streak dampens the new_region signal
         sig2 = EvidenceSignals(new_region=True, region_streak=False)
-        prob2 = compute_fraud_probability(sig2)
+        prob2, _ = compute_fraud_probability(sig2)
         assert prob < prob2
 
 

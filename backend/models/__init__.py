@@ -3,6 +3,13 @@ Pydantic v2 data contracts.
 
 These are the internal rich models.  The answer-file schema (README Answer Format)
 is a strict subset exported by backend.evaluation.exporter.
+
+Phase D.5 additions (all backward-compatible, all fields have defaults):
+- PatternCandidate — scored pattern with supporting/contradicting signals
+- ActionRecommendation.evidence_ids / alternatives_rejected / expected_impact
+- UncertaintyItem.resolved_by / resolution_impact
+- RiskAssessment.score_breakdown
+- InvestigationCase.pattern_candidates / pattern_secondary
 """
 from __future__ import annotations
 
@@ -217,6 +224,20 @@ class EvidenceItem(BaseModel):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Pattern reasoning
+# ─────────────────────────────────────────────────────────────────────────────
+
+class PatternCandidate(BaseModel):
+    """A scored fraud pattern candidate from the pattern reasoning layer."""
+    pattern: "FraudPattern"
+    score: float                                      # 0-1 raw score before normalisation
+    confidence: float                                 # 0-1 calibrated confidence
+    supporting_signals: list[str] = Field(default_factory=list)
+    contradicting_signals: list[str] = Field(default_factory=list)
+    description: str = ""
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Uncertainty
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -225,6 +246,9 @@ class UncertaintyItem(BaseModel):
     impact: str        # what changes if resolved
     resolution_method: str
     status: str = "open"   # open | resolved | waived
+    # D.5: resolution provenance
+    resolved_by: str = ""          # evidence request ID that resolved this
+    resolution_impact: str = ""    # e.g. "Customer denial raised probability 0.43→0.76"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -254,6 +278,8 @@ class RiskAssessment(BaseModel):
     key_signals: list[str] = Field(default_factory=list)
     uncertainty_items: list[UncertaintyItem] = Field(default_factory=list)
     note: str = ""
+    # D.5: per-channel contribution breakdown for probability auditability
+    score_breakdown: list[dict] = Field(default_factory=list)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -264,6 +290,10 @@ class ActionRecommendation(BaseModel):
     action: Action
     route: ApprovalRoute
     reason: str              # cite the policy rule
+    # D.5: explanation fields
+    evidence_ids: list[str] = Field(default_factory=list)       # which EvidenceItems support this action
+    alternatives_rejected: list[str] = Field(default_factory=list)  # why competing actions were not chosen
+    expected_impact: str = ""                                        # what this action accomplishes
 
 
 class NextBestActions(BaseModel):
@@ -338,6 +368,9 @@ class InvestigationCase(BaseModel):
     status: CaseStatus = CaseStatus.open
     verdict: Verdict = Verdict.uncertain
     fraud_probability: float = 0.0
+    # D.5: multi-candidate pattern reasoning
+    pattern_candidates: list[PatternCandidate] = Field(default_factory=list)
+    pattern_secondary: str = ""   # runner-up pattern name, if any
     risk_level: RiskLevel = RiskLevel.low
     pattern: FraudPattern = FraudPattern.none
     pattern_description: str = ""

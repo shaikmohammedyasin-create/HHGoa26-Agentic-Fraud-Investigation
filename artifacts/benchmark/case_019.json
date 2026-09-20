@@ -5,98 +5,98 @@
     "verdict": "fraud",
     "fraud_probability": 0.921,
     "pattern": "card_testing",
-    "pattern_description": "Three or more sub-$10 online authorizations followed by a larger purchase",
+    "pattern_description": "≥3 sub-$10 online authorizations (3) followed by larger purchase",
     "affected_txn_ids": [
-      "3582107",
-      "3584859",
-      "3583415",
-      "3580219",
-      "3582375",
-      "3579400",
-      "3583435",
-      "3578471",
-      "3580417",
-      "3579576",
-      "3580776",
-      "3580232",
-      "3579407",
-      "3584985",
-      "3582738",
-      "3579597",
-      "3580933",
-      "3582338",
-      "3584460",
-      "3584516",
-      "3582082",
-      "3582142",
-      "3583101",
-      "3583199",
-      "3583914",
-      "3578817",
-      "3583140",
-      "3583417",
-      "3580765",
-      "3585064",
-      "3580821",
       "3583670",
-      "3583411",
-      "3578486",
-      "3582413",
-      "3580202",
-      "3580712",
-      "3578496",
-      "3582175",
-      "3583368",
-      "3580907",
-      "3584401",
-      "3582178",
+      "3583435",
       "3578451",
-      "3585345",
-      "3584706",
-      "3578997",
-      "3582671",
-      "3580815",
-      "3582897",
-      "3581048",
-      "3584153",
-      "3584003",
-      "3580951",
-      "3584962",
-      "3578491",
-      "3584693",
-      "3582868",
-      "3582602",
-      "3583644",
-      "3580348",
       "3583968",
-      "3581345",
-      "3580380",
-      "3580137",
-      "3578475",
-      "3578506",
-      "3578405",
-      "3580992",
-      "3582624",
-      "3580478",
-      "3578995",
-      "3583406",
-      "3580544",
-      "3583494",
-      "3578483",
-      "3585055",
-      "3583348",
-      "3583229",
       "3584155",
-      "3582327",
+      "3581345",
+      "3579597",
+      "3583348",
+      "3578486",
+      "3583368",
+      "3579576",
+      "3580821",
+      "3582624",
+      "3580907",
+      "3578995",
+      "3580951",
+      "3582338",
+      "3579407",
+      "3580478",
+      "3582082",
+      "3580417",
+      "3578471",
+      "3584153",
       "3583866",
+      "3583644",
+      "3584401",
+      "3583101",
+      "3578997",
+      "3584693",
+      "3582327",
+      "3585055",
+      "3584962",
+      "3580219",
+      "3582738",
+      "3582375",
+      "3584706",
+      "3585345",
+      "3583914",
+      "3583229",
+      "3583199",
+      "3582178",
+      "3582671",
+      "3580137",
+      "3582175",
+      "3582868",
+      "3578405",
+      "3583140",
+      "3580712",
+      "3582897",
+      "3582107",
+      "3580933",
+      "3580232",
+      "3584516",
+      "3580202",
+      "3579400",
+      "3583494",
+      "3584460",
+      "3583417",
+      "3583415",
+      "3578496",
+      "3582602",
       "3580403",
-      "3580427"
+      "3580427",
+      "3580380",
+      "3578817",
+      "3583406",
+      "3578506",
+      "3581048",
+      "3580815",
+      "3580992",
+      "3584003",
+      "3585064",
+      "3578475",
+      "3580544",
+      "3582142",
+      "3584985",
+      "3580348",
+      "3578483",
+      "3580765",
+      "3584859",
+      "3583411",
+      "3578491",
+      "3580776",
+      "3582413"
     ],
     "first_suspicious_txn_id": "3578405",
     "connected_card_ids": [
       "C03938-K1",
-      "C05595-K1",
-      "C05678-K1"
+      "C05678-K1",
+      "C05595-K1"
     ],
     "connected_device_profiles": [
       "SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown"
@@ -139,13 +139,13 @@
         ]
       },
       {
-        "claim": "Device profile shared across 3 other card(s): C03938-K1, C05595-K1, C05678-K1.",
+        "claim": "Device profile shared across 3 other card(s): C03938-K1, C05678-K1, C05595-K1.",
         "source": "graph",
         "ref": "query:accounts_sharing_device(device=SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown)",
         "entity_ids": [
           "C03938-K1",
-          "C05595-K1",
-          "C05678-K1"
+          "C05678-K1",
+          "C05595-K1"
         ]
       },
       {
@@ -189,7 +189,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-b9c896b5",
+        "ref": "evidence_request:ER-124c93a7",
         "entity_ids": [
           "C11923"
         ]
@@ -251,7 +251,7 @@
   "stop_reason": "Fraud probability 0.92 ≥ 0.85 with 3 independent evidence sources.",
   "tool_calls": 20,
   "tokens": 0,
-  "latency_s": 46.55,
+  "latency_s": 42.98,
   "investigation_trace": {
     "1_trigger": {
       "case_id": "HHG-011",
@@ -303,13 +303,13 @@
           ]
         },
         {
-          "claim": "Device profile shared across 3 other card(s): C03938-K1, C05595-K1, C05678-K1.",
+          "claim": "Device profile shared across 3 other card(s): C03938-K1, C05678-K1, C05595-K1.",
           "source": "graph",
           "ref": "query:accounts_sharing_device(device=SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown)",
           "entity_ids": [
             "C03938-K1",
-            "C05595-K1",
-            "C05678-K1"
+            "C05678-K1",
+            "C05595-K1"
           ]
         }
       ]
@@ -362,13 +362,13 @@
           "confidence": 0.85
         },
         {
-          "claim": "Device profile shared across 3 other card(s): C03938-K1, C05595-K1, C05678-K1.",
+          "claim": "Device profile shared across 3 other card(s): C03938-K1, C05678-K1, C05595-K1.",
           "source": "graph",
           "ref": "query:accounts_sharing_device(device=SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown)",
           "entity_ids": [
             "C03938-K1",
-            "C05595-K1",
-            "C05678-K1"
+            "C05678-K1",
+            "C05595-K1"
           ],
           "severity": "HIGH",
           "confidence": 0.8
@@ -420,7 +420,7 @@
         {
           "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
           "source": "customer",
-          "ref": "evidence_request:ER-b9c896b5",
+          "ref": "evidence_request:ER-124c93a7",
           "entity_ids": [
             "C11923"
           ],
@@ -442,7 +442,7 @@
     },
     "6_fraud_pattern": {
       "pattern": "card_testing",
-      "pattern_description": "Three or more sub-$10 online authorizations followed by a larger purchase"
+      "pattern_description": "≥3 sub-$10 online authorizations (3) followed by larger purchase"
     },
     "7_uncertainty": {
       "uncertainty_items_count": 0,
@@ -459,7 +459,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-b9c896b5"
+        "ref": "evidence_request:ER-124c93a7"
       }
     ],
     "10_reassessment_and_diff": {
@@ -514,6 +514,11 @@
           "action": "BLOCK_CARD",
           "route": null,
           "status": "pending"
+        },
+        {
+          "action": "BLOCK_CARD",
+          "route": null,
+          "status": "pending"
         }
       ],
       "sar": {
@@ -528,10 +533,10 @@
     "12_persistence_and_summary": {
       "written_to_graph": true,
       "graph_case_id": "CASE-2016-HHG-011",
-      "audit_events_count": 76,
+      "audit_events_count": 91,
       "summary": "Case HHG-011 investigated card_testing activity on card C11923-K2 (customer C11923) around transaction 3583368 ($131.30, online). Assessed fraud probability 0.92 (CRITICAL risk) from 8 evidence items across 3 independent sources. Key signals: card-testing sequence detected; 84 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD.",
       "tokens_used": 0,
-      "latency_s": 46.55
+      "latency_s": 42.98
     }
   },
   "benchmark_comparison": {
