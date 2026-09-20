@@ -70,7 +70,7 @@ This guide outlines the exact demonstration sequence for judges to experience th
 - **Narrative**:
   > *"Every completed investigation is persisted as an InvestigationCase vertex back into the TigerGraph schema. This serves as organizational memory: future investigations automatically retrieve this case during GraphRAG retrieval."*
 - **Wrap-up**:
-  > *"In the official 20-case benchmark, this system passed 600/600 IEEE checkpoints, achieved 90% verdict accuracy, and persisted 20/20 cases to live TigerGraph, backed by a 221-test passing suite."*
+  > *"In the official 20-case benchmark, this system passed 600/600 IEEE checkpoints, achieved 95% verdict accuracy, 90% primary pattern accuracy, and persisted 20/20 cases to live TigerGraph, backed by a 228-test passing suite."*
 
 ---
 
