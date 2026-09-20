@@ -32,7 +32,7 @@ This guide outlines the exact demonstration sequence for judges to experience th
 ---
 
 ### Phase 2: Live Investigation Demonstration (0:45 – 2:00)
-- **Select Case**: From the Case Selector dropdown, select **`HHG-001`**.
+- **Select Case**: From the Case Selector dropdown, select **`HHG-014`**.
 - **Action**: Click the **`Start Live Investigation`** button.
 - **Narrative**:
   > *"Watch the 8-stage causal story ribbon as the agent executes. It ingests the flagged transaction, initializes graph memory, runs live TigerGraph queries—including 2-hop device co-usage traversals—and synthesizes concrete evidence."*
@@ -49,9 +49,9 @@ This guide outlines the exact demonstration sequence for judges to experience th
 - **Visual**: Scroll to the **Risk Analysis** and **Uncertainty Loop** cards.
 - **Narrative**:
   > *"Rather than outputting a black-box score, our engine decomposes fraud probability mathematically using Noisy-OR channel aggregation across Velocity, Network Linkage, Device Profile, and Geolocation, balanced against clearing signals."*
-  > *"Because HHG-001 falls in the borderline uncertainty zone (probability 0.43), the agent does NOT guess. It identifies the missing evidence, issues a structured customer verification request, and reassesses the case upon response."*
+  > *"Because HHG-014 falls in the borderline uncertainty zone (probability 0.528), the agent does NOT guess. It identifies the missing evidence, issues a structured customer verification request, and reassesses the case upon response."*
 - **Highlight**:
-  - Show **Initial vs. Final Assessment**: Probability and recommended actions dynamically update upon receiving simulated customer response.
+  - Show **Initial vs. Final Assessment**: Probability and recommended actions dynamically update after the simulated customer-validation evidence request reaches its response state.
 
 ---
 
@@ -66,7 +66,7 @@ This guide outlines the exact demonstration sequence for judges to experience th
 ---
 
 ### Phase 5: Auditability & Graph Persistence (4:30 – 5:00)
-- **Visual**: Point to the **Graph Case ID** badge (`CASE-2016-HHG-001`).
+- **Visual**: Point to the **Graph Case ID** badge (`CASE-2016-HHG-014`).
 - **Narrative**:
   > *"Every completed investigation is persisted as an InvestigationCase vertex back into the TigerGraph schema. This serves as organizational memory: future investigations automatically retrieve this case during GraphRAG retrieval."*
 - **Wrap-up**:
