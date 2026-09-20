@@ -13,7 +13,7 @@
 - **Backend Server:** FastAPI on Uvicorn (`http://127.0.0.1:8000`)
 - **TigerGraph Cloud:** Live Savanna Cloud instance (`fraud_investigation` graph)
 - **Backend Status:** `{"status": "healthy", "graph": {"local": "healthy", "tigergraph": "healthy"}, "app_db": "healthy"}`
-- **Repository Commit:** `f3f7b75` (*"HHGOA'26 frozen agentic fraud investigation prototype"*)
+- **Repository Commit:** `b2d1dcb3d4cb26d8bd59741591cea8c567f1b24e` (*latest main*)
 - **Working Tree State:** Clean (Zero uncommitted code changes)
 
 ---
@@ -137,32 +137,16 @@ The system exhibits an extraordinary level of auditability:
 
 ## 12. Official Scoring Categories
 
-### 1. Investigation Accuracy (Score: 23 / 25)
-- **Evidence**: 18/20 verdict accuracy (90%), 18/20 SAR accuracy (90%), 11/20 primary pattern match (55%), 18/20 candidate recall (90%). 600/600 IEEE checkpoints passed.
-- **Strengths**: Authoritative graph facts; dual-tier pattern reasoning catches ambiguous fraud topologies.
-- **Weaknesses**: Primary pattern match is conservative on complex blended multi-card account takeovers.
+### Current verified evidence relevant to the official scoring categories
 
-### 2. Next Best Action (NBA) (Score: 23 / 25)
-- **Evidence**: 15/20 NBA accuracy (75%). Structured justifications with rejected alternatives and policy citations.
-- **Strengths**: Full separation between AI recommendation, policy rules, and human-in-the-loop approval levels (`auto`, `L1`, `L2`).
-- **Weaknesses**: Borderline cases default to monitoring when customer response is absent.
+This section intentionally reports measured evidence rather than assigning a subjective judge score.
 
-### 3. Summary / Explainability (Score: 10 / 10)
-- **Evidence**: Noisy-OR channel decomposition widget; Claim type pills (`OBSERVED FACT`, `DERIVED INFERENCE`, `MODEL SCORE`); Causal story ribbon.
-- **Strengths**: World-class explainability; zero "black box" decisions.
-
-### 4. Agentic Design / Engineering (Score: 14 / 15)
-- **Evidence**: Multi-agent GraphRAG pipeline; strict fail-closed graph mode; 221/221 pytest suite passing in 44s.
-- **Strengths**: Solid software architecture, clean separation of concerns, idempotent case persistence.
-- **Weaknesses**: Python 3.14 datetime deprecation warnings in upstream libraries.
-
-### 5. Innovation (Score: 14 / 15)
-- **Evidence**: Live TigerGraph `device_neighbors` 2-hop GSQL query integration; Uncertainty & Reassessment loop with simulated customer feedback.
-- **Strengths**: Reassessment loop dynamically updates probability and changes recommended actions before/after evidence.
-
-### 6. Demo & Command Center UI (Score: 10 / 10)
-- **Evidence**: Glassmorphism design system; interactive D3 graph canvas; real-time toast notification system; responsive layouts.
-- **Strengths**: Immediate visual impact ("WOW" factor); intuitive for non-technical judges.
+- **Investigation Accuracy:** 19/20 verdict accuracy (95%), 18/20 primary pattern match (90%), 18/20 candidate recall (90%), 18/20 SAR accuracy (90%), and 600/600 IEEE checkpoints.
+- **Next Best Action:** 15/20 NBA accuracy (75%), with policy citations, rejected alternatives, and approval routes.
+- **Summary / Explainability:** Noisy-OR decomposition, causal story ribbon, and `OBSERVED FACT` / `DERIVED INFERENCE` / `MODEL SCORE` provenance labels.
+- **Agentic Design / Engineering:** Live TigerGraph integration, strict fail-closed mode, GraphRAG evidence grounding, policy separation, InvestigationCase persistence, and 228/228 automated tests.
+- **Innovation:** Live 2-hop device-neighbor investigation plus uncertainty/evidence-request/reassessment lifecycle.
+- **Demo / UI:** Live investigation flow, interactive D3 graph, evidence provenance, governed NBA, approval routing, and responsive layouts.
 
 ---
 
@@ -173,7 +157,7 @@ E2E browser testing confirmed that all features are fully functional. In accorda
 ---
 
 ## 14. Regression Results
-- **Pytest Suite**: 221 / 221 passed (100%).
+- **Pytest Suite**: 228 / 228 passed (100%).
 - **E2E Browser Scenarios**: 100% pass across all 4 visual phases.
 
 ---
