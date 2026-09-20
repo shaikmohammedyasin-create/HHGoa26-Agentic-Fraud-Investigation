@@ -1,13 +1,20 @@
 {
   "case_id": "HHG-004",
   "case": {
-    "status": "open",
-    "verdict": "uncertain",
-    "fraud_probability": 0.837,
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.889,
     "pattern": "card_not_present_fraud",
-    "pattern_description": "Burst of 8 online transactions within 48h",
+    "pattern_description": "Burst of 8 online transactions within 48h; amount is well above card average",
     "affected_txn_ids": [
-      "3583227"
+      "3580804",
+      "3583499",
+      "3585446",
+      "3583227",
+      "3583503",
+      "3584017",
+      "3585726",
+      "3587858"
     ],
     "first_suspicious_txn_id": "3580804",
     "connected_card_ids": [
@@ -20,10 +27,10 @@
     "connected_device_profiles": [
       "unknown | unknown | firefox 47.0 | unknown"
     ],
-    "exposure_usd": 128.33,
+    "exposure_usd": 512.76,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C08106-K1. Most recent: 2016-12-30 $18.09 (online). Average amount: $0.00.",
+        "claim": "50 previous transactions retrieved for card C08106-K1. Most recent: 2016-12-30 $18.09 (online). Average amount: $35.52.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C08106-K1)",
         "entity_ids": [
@@ -43,6 +50,14 @@
           "3585446",
           "3585726",
           "3587858"
+        ]
+      },
+      {
+        "claim": "Device marked 'New' for this account: unknown | unknown | firefox 47.0 | unknown.",
+        "source": "graph",
+        "ref": "query:transaction_identity(txn_id=3583227)",
+        "entity_ids": [
+          "3583227"
         ]
       },
       {
@@ -96,7 +111,7 @@
       {
         "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
         "source": "customer",
-        "ref": "evidence_request:ER-bf155e24",
+        "ref": "evidence_request:ER-f1db310b",
         "entity_ids": [
           "C08106"
         ]
@@ -119,7 +134,7 @@
       "CC-5512",
       "CC-5524"
     ],
-    "summary": "Case HHG-004 investigated card_not_present_fraud activity on card C08106-K1 (customer C08106) around transaction 3583227 ($128.33, online). Assessed fraud probability 0.84 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 8 online transactions in 48h window; 3 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case HHG-004 investigated card_not_present_fraud activity on card C08106-K1 (customer C08106) around transaction 3583227 ($128.33, online). Assessed fraud probability 0.89 (CRITICAL risk) from 8 evidence items across 3 independent sources. Key signals: new device for this account; 8 online transactions in 48h window; 3 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-004"
   },
@@ -174,26 +189,26 @@
   },
   "sar": {
     "file": true,
-    "reason": "R8/R9: strongly suspected; regulator disclosure warranted",
-    "narrative": "Between 2016-12-29 and 2016-12-29, customer C08106 and card C08106-K1, connected cards C04248-K2, C02222-K1, C03095-K2, device profile 'unknown | unknown | firefox 47.0 | unknown' were involved in 1 transaction(s) assessed as uncertain (card_not_present_fraud pattern) with total exposure $128.33. The flagged transaction 3583227 of $128.33 (online, product C) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.84. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+    "reason": "R6: confirmed fraud connected to shared device profile or card",
+    "narrative": "Between 2016-12-28 and 2016-12-30, customer C08106 and card C08106-K1, connected cards C04248-K2, C02222-K1, C03095-K2, device profile 'unknown | unknown | firefox 47.0 | unknown' were involved in 9 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $512.76. The flagged transaction 3583227 of $128.33 (online, product C) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.89. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
     "subjects": [
       "C08106",
-      "C08106-K1",
+      "C07518-K2",
       "C04248-K2",
+      "C08106-K1",
+      "C02222-K1",
       "C03095-K2",
       "C05031-K2",
-      "C07518-K2",
-      "C02222-K1",
       "unknown | unknown | firefox 47.0 | unknown"
     ],
-    "total_amount_usd": 128.33,
+    "total_amount_usd": 512.76,
     "activity_dates": [
-      "2016-12-29",
-      "2016-12-29"
+      "2016-12-28",
+      "2016-12-30"
     ]
   },
-  "stop_reason": "Customer denial settled the question; final actions applied.",
+  "stop_reason": "Fraud probability 0.89 ≥ 0.85 with 3 independent evidence sources.",
   "tool_calls": 20,
   "tokens": 0,
-  "latency_s": 21.62
+  "latency_s": 28.11
 }

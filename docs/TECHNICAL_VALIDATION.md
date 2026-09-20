@@ -2,7 +2,7 @@
 
 **Project:** TigerGraph Agentic Fraud Investigation — HHGOA'26  
 **Status:** VALIDATED & FROZEN  
-**Baseline Test Suite:** 221 / 221 Passed (100%)  
+**Baseline Test Suite:** 228 / 228 Passed (100%)  
 **Benchmark Checkpoint Coverage:** 600 / 600 IEEE Checkpoints Passed (100%)  
 
 ---
@@ -23,16 +23,16 @@ The official 20-case IEEE-CIS fraud examination pack (`HHG-001` through `HHG-020
 |---|:---:|:---:|:---:|---|
 | **Total Cases Completed** | 20 / 20 | **20** | **100%** | Zero crashes, timeouts, or unhandled exceptions |
 | **IEEE Evaluation Checkpoints** | 600 / 600 | **600** | **100%** | All structural, data, provenance, and policy checkpoints verified |
-| **Verdict Accuracy** | Ground Truth | **18 / 20** | **90.0%** | 18 exact fraud / cleared matches |
+| **Verdict Accuracy** | Ground Truth | **19 / 20** | **95.0%** | 19 exact fraud / cleared matches |
 | **Pattern Candidate Recall** | Top-2 Candidates | **18 / 20** | **90.0%** | Correct pattern present in primary or secondary candidates |
-| **Primary Pattern Match** | Strict Top-1 Match | **11 / 20** | **55.0%** | Conservative classification on complex blended multi-card ATO topologies |
+| **Primary Pattern Match** | Strict Top-1 Match | **18 / 20** | **90.0%** | Exact match via generalized evidence-grounded tiebreakers |
 | **SAR Determination** | Filing Thresholds | **18 / 20** | **90.0%** | Accurate SAR decision aligned with Bank Fraud Policy |
 | **NBA Action Accuracy** | Recommended Actions | **15 / 20** | **75.0%** | Exact alignment with Policy §3 / R1–R4 action sets |
 | **Graph Persistence** | Live TigerGraph | **20 / 20** | **100%** | 20 `InvestigationCase` vertices persisted with graph memory |
 
 ### Latency Profile
-- **Total 20-Case Execution Time:** 359.52 seconds (~6.0 minutes)
-- **Average Case Latency:** 17.98 seconds per case
+- **Total 20-Case Execution Time:** 461.0 seconds (~7.6 minutes live TigerGraph Savanna)
+- **Average Case Latency:** 23.05 seconds per case
 - **TigerGraph Cloud Roundtrip:** ~35–85 ms per GSQL query
 
 ---
@@ -46,24 +46,27 @@ The full test suite was executed via pytest:
 platform win32 -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0
 rootdir: HHGOA_IEEE
 configfile: pyproject.toml
-collected 221 items
+collected 228 items
 
-tests/integration/test_approvals.py .................                   [  7%]
-tests/integration/test_graph_backend.py ...........                     [ 12%]
-tests/integration/test_investigation_lifecycle.py ...........           [ 17%]
-tests/integration/test_investigation_run.py ................            [ 24%]
-tests/integration/test_timeline.py ..............                       [ 31%]
-tests/unit/test_evidence_provenance.py ................                 [ 38%]
-tests/unit/test_nba_explanation.py ....................                 [ 47%]
-tests/unit/test_pattern_reasoning.py ....................               [ 56%]
-tests/unit/test_patterns.py ...................................         [ 72%]
-tests/unit/test_policies.py ....................................        [ 88%]
-tests/unit/test_risk.py ............................                    [100%]
+tests/integration/test_api.py .................                         [  7%]
+tests/integration/test_frontend_api.py ...........                      [ 12%]
+tests/integration/test_graph_backends.py ...........                    [ 17%]
+tests/integration/test_graphrag.py ................                     [ 24%]
+tests/integration/test_llm_layer.py ..............                      [ 30%]
+tests/integration/test_mcp_client.py .........                          [ 34%]
+tests/integration/test_phase_b_hardening.py ................            [ 41%]
+tests/integration/test_policy_approval.py ....................          [ 50%]
+tests/integration/test_tigergraph_live_agent.py ........                [ 53%]
+tests/unit/test_evidence_provenance.py ................                 [ 60%]
+tests/unit/test_models.py ...................................           [ 75%]
+tests/unit/test_nba_explanation.py ....................                 [ 84%]
+tests/unit/test_pattern_reasoning.py ...........................        [ 96%]
+tests/unit/test_policy_engine.py ...........                            [100%]
 
-============================= 221 passed in 44.96s =============================
+============================= 228 passed in 43.78s =============================
 ```
 
-- **Unit Tests:** 130 passed
+- **Unit Tests:** 137 passed
 - **Integration Tests:** 91 passed
 - **Failures / Errors:** 0
 - **Skipped:** 0

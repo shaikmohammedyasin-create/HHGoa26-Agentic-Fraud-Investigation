@@ -139,10 +139,10 @@ def _score_all_patterns(
         ato_score += 0.20
         ato_desc_parts.append("match flag anomalies")
         ato_sup.append("Match-status anomaly on flagged transaction (id_34)")
-    if sig.new_device and sig.mixed_channel:
+    if sig.new_device and sig.mixed_channel and sig.match_flag_anomaly:
         ato_score += 0.15
-        ato_desc_parts.append("new device on multi-channel pattern")
-        ato_sup.append("New device combined with mixed-channel activity")
+        ato_desc_parts.append("new device on multi-channel pattern with match anomaly")
+        ato_sup.append("New device combined with mixed-channel activity and credential mismatch")
     if ato_score >= 0.25:
         if not sig.mixed_channel and not sig.match_flag_anomaly:
             ato_con.append("No mixed-channel or match-flag anomaly — ATO signal is weak")
@@ -159,32 +159,69 @@ def _apply_tiebreakers(
     Evidence-grounded tiebreaker rules (generalised, from README definitions).
     These fire on signal combinations, never on case IDs.
     """
-    # Tiebreaker 1: ATO vs CNP-new-device when new_device is the only ATO signal
-    if (FraudPattern.account_takeover in scores
-            and FraudPattern.card_not_present_new_device in scores
-            and sig.new_device
-            and not sig.mixed_channel
-            and not sig.match_flag_anomaly):
+    # Tiebreaker 1: ATO vs CNP-new-device
+    # Principle: A new-device signal strongly favors card_not_present_new_device
+    # when there is no independent credential-theft evidence (e.g. match_flag_anomaly).
+    # Mixed-channel presence alone (in-person + online) is insufficient to override CNP-new-device.
+    if (
+        FraudPattern.account_takeover in scores
+        and FraudPattern.card_not_present_new_device in scores
+        and sig.new_device
+    ):
         ato_s, ato_d, ato_sup, ato_con = scores[FraudPattern.account_takeover]
         nd_s, nd_d, nd_sup, nd_con = scores[FraudPattern.card_not_present_new_device]
-        ato_con = list(ato_con) + [
-            "New device alone is insufficient for ATO — no mixed-channel or match-flag anomaly present"
-        ]
-        nd_sup = list(nd_sup) + [
-            "Tiebreaker: new_device is the dominant signal; ATO requires additional credential-theft evidence"
-        ]
-        scores[FraudPattern.account_takeover] = (min(ato_s, nd_s - 0.05), ato_d, ato_sup, ato_con)
-        scores[FraudPattern.card_not_present_new_device] = (nd_s, nd_d, nd_sup, nd_con)
+        if not sig.match_flag_anomaly:
+            if ato_s >= nd_s:
+                nd_s = ato_s + 0.05
+            ato_con = list(ato_con) + [
+                "New device alone or with ordinary mixed channel is insufficient for ATO without match-flag anomaly"
+            ]
+            nd_sup = list(nd_sup) + [
+                "Tiebreaker: new_device is the dominant signal; ATO requires independent credential-theft evidence"
+            ]
+            scores[FraudPattern.account_takeover] = (min(ato_s, nd_s - 0.05), ato_d, ato_sup, ato_con)
+            scores[FraudPattern.card_not_present_new_device] = (nd_s, nd_d, nd_sup, nd_con)
+        else:
+            if nd_s >= ato_s:
+                ato_s = nd_s + 0.05
+            ato_sup = list(ato_sup) + [
+                "Tiebreaker: match-status anomaly provides independent credential-theft evidence supporting ATO"
+            ]
+            scores[FraudPattern.account_takeover] = (ato_s, ato_d, ato_sup, ato_con)
+            scores[FraudPattern.card_not_present_new_device] = (min(nd_s, ato_s - 0.05), nd_d, nd_sup, nd_con)
 
-    # Tiebreaker 2: CNP-new-device vs CNP-fraud (close scores) when new_device confirmed
-    if (FraudPattern.card_not_present_new_device in scores
-            and FraudPattern.card_not_present_fraud in scores
-            and sig.new_device):
+    # Tiebreaker 2: CNP-new-device vs CNP-fraud
+    # Principle: A burst of 2-4 online txns within 48h defines card_not_present_fraud per README.
+    # Isolated unusual online purchases (< 2) from a new device favor card_not_present_new_device.
+    if (
+        FraudPattern.card_not_present_new_device in scores
+        and FraudPattern.card_not_present_fraud in scores
+        and sig.new_device
+    ):
         nd_s, nd_d, nd_sup, nd_con = scores[FraudPattern.card_not_present_new_device]
         cnp_s, cnp_d, cnp_sup, cnp_con = scores[FraudPattern.card_not_present_fraud]
-        if abs(nd_s - cnp_s) < 0.10:
+        if sig.burst_online >= 2:
+            if cnp_s >= nd_s:
+                scores[FraudPattern.card_not_present_fraud] = (
+                    max(cnp_s, nd_s + 0.05),
+                    cnp_d,
+                    list(cnp_sup) + [
+                        f"Tiebreaker: burst of {sig.burst_online} online txns defines card_not_present_fraud per README"
+                    ],
+                    cnp_con,
+                )
+                scores[FraudPattern.card_not_present_new_device] = (nd_s, nd_d, nd_sup, nd_con)
+            else:
+                scores[FraudPattern.card_not_present_new_device] = (
+                    max(nd_s, cnp_s + 0.05),
+                    nd_d,
+                    list(nd_sup) + ["Tiebreaker: new_device=True differentiates from card_not_present_fraud per README"],
+                    nd_con,
+                )
+        else:
             scores[FraudPattern.card_not_present_new_device] = (
-                nd_s + 0.05, nd_d,
+                max(nd_s, cnp_s + 0.05),
+                nd_d,
                 list(nd_sup) + ["Tiebreaker: new_device=True differentiates from card_not_present_fraud per README"],
                 nd_con,
             )

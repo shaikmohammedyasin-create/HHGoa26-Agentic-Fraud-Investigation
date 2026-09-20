@@ -241,14 +241,19 @@ def _to_txn(v: dict) -> TransactionRecord:
 
 def _to_identity(txn_id: str, dp: dict) -> IdentityRecord:
     a = _vertex_attrs(dp)
+    dev_status = a.get("device_status") or a.get("id_15")
+    proxy = a.get("proxy") or a.get("id_23")
+    match_status = a.get("match_status") or a.get("id_34")
     return IdentityRecord(
         txn_id=txn_id,
-        device_type=str(a.get("device_type")) or None,
-        device_info=str(a.get("device_info")) or None,
-        os=str(a.get("os")) or None,
-        browser=str(a.get("browser")) or None,
-        screen=str(a.get("screen")) or None,
-        device_status=str(a.get("device_status")) or None,
+        device_type=str(a.get("device_type")) if a.get("device_type") is not None and a.get("device_type") != "None" else None,
+        device_info=str(a.get("device_info")) if a.get("device_info") is not None and a.get("device_info") != "None" else None,
+        os=str(a.get("os")) if a.get("os") is not None and a.get("os") != "None" else None,
+        browser=str(a.get("browser")) if a.get("browser") is not None and a.get("browser") != "None" else None,
+        screen=str(a.get("screen")) if a.get("screen") is not None and a.get("screen") != "None" else None,
+        device_status=str(dev_status) if dev_status is not None and dev_status != "None" else None,
+        proxy=str(proxy) if proxy is not None and proxy != "None" else None,
+        match_status=str(match_status) if match_status is not None and match_status != "None" else None,
     )
 
 
@@ -314,7 +319,22 @@ def get_transaction_identity(txn_id: str) -> IdentityRecord | None:
     try:
         res = _run("txn_identity", {"txn_id": txn_id})
         items = res.get("result", []) if isinstance(res, dict) else []
-        return _to_identity(txn_id, items[0]) if items else None
+        idr = _to_identity(txn_id, items[0]) if items else None
+        
+        # Enrich transaction-level identity metadata (id_15, id_23, id_34)
+        from backend.graph import local_store
+        local_idr = local_store.get_transaction_identity(txn_id)
+        if local_idr:
+            if idr is None:
+                idr = local_idr
+            else:
+                if idr.device_status is None and local_idr.device_status:
+                    idr.device_status = local_idr.device_status
+                if idr.proxy is None and local_idr.proxy:
+                    idr.proxy = local_idr.proxy
+                if idr.match_status is None and local_idr.match_status:
+                    idr.match_status = local_idr.match_status
+        return idr
     except Exception as exc:
         raise RuntimeError(f"TigerGraph get_transaction_identity failed: {exc}")
 
@@ -386,12 +406,15 @@ def get_card_product_history(card_id: str) -> list[dict[str, Any]]:
 def get_card_amount_stats(card_id: str) -> dict[str, float]:
     try:
         res = _run("card_amount_stats", {"card": card_id})
-        items = res.get("result", []) if isinstance(res, dict) else []
-        if items:
-            item = items[0]
-            if "attributes" in item:
-                return _vertex_attrs(item)
-            return item
+        if isinstance(res, dict):
+            if "avg_amt" in res or "min_amt" in res:
+                return res
+            items = res.get("result", [])
+            if items:
+                item = items[0]
+                if "attributes" in item:
+                    return _vertex_attrs(item)
+                return item
         return {}
     except Exception as exc:
         raise RuntimeError(f"TigerGraph get_card_amount_stats failed: {exc}")

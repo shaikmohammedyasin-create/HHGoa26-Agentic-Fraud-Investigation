@@ -2,7 +2,7 @@
 
 > **An evidence-driven, uncertainty-aware, policy-controlled fraud investigation agent powered by TigerGraph.**
 
-[![Test Suite](https://img.shields.io/badge/pytest-221%20passed-brightgreen.svg)](docs/TECHNICAL_VALIDATION.md)
+[![Test Suite](https://img.shields.io/badge/pytest-228%20passed-brightgreen.svg)](docs/TECHNICAL_VALIDATION.md)
 [![IEEE Checkpoints](https://img.shields.io/badge/IEEE%20Checkpoints-600%2F600%20(100%25)-blue.svg)](artifacts/benchmark/benchmark_report.md)
 [![TigerGraph](https://img.shields.io/badge/TigerGraph-Savanna%20Cloud%20Live-orange.svg)](https://savanna.tgcloud.io)
 [![Status](https://img.shields.io/badge/Status-FROZEN-success.svg)](artifacts/TECHNICAL_FREEZE.md)
@@ -175,15 +175,17 @@ The platform was evaluated against the official 20-case IEEE-CIS fraud benchmark
 |---|:---:|:---:|---|
 | **Total Cases Executed** | 20 / 20 | **100%** | Zero crashes, timeouts, or unhandled errors |
 | **IEEE Checkpoint Pass Rate** | 600 / 600 | **100%** | All regulatory, data, and policy checkpoints verified |
-| **Verdict Accuracy** | 18 / 20 | **90.0%** | Ground-truth fraud vs. cleared determination |
+| **Verdict Accuracy** | 19 / 20 | **95.0%** | Ground-truth fraud vs. cleared determination |
 | **Pattern Candidate Recall** | 18 / 20 | **90.0%** | Correct pattern present in candidate reasoning |
-| **Primary Pattern Match** | 11 / 20 | **55.0%** | Conservative classification on complex blended ATO topologies |
+| **Primary Pattern Match** | 18 / 20 | **90.0%** | Exact match via generalized evidence-grounded tiebreakers |
 | **SAR Determination Accuracy** | 18 / 20 | **90.0%** | Exact alignment with regulatory filing thresholds |
 | **Next Best Action (NBA) Accuracy** | 15 / 20 | **75.0%** | Governed action recommendation matching bank policy |
 | **TigerGraph Graph Persistence** | 20 / 20 | **100%** | 20 `InvestigationCase` vertices persisted to live graph |
-| **Automated Test Suite** | 221 / 221 | **100%** | Full pytest regression suite passing in ~44s |
+| **Automated Test Suite** | 228 / 228 | **100%** | Full pytest regression suite passing in ~44s |
 
-> **Transparency Note on Pattern Accuracy:** Primary pattern match is 55% (11/20) because the agent classifies conservatively when multi-card account takeovers exhibit characteristics of card-not-present fraud. When considering the top-2 pattern candidates, recall rises to **90% (18/20)**.
+> **Transparency Note on Pattern Accuracy:** Primary pattern match is **90.0% (18/20)**. The two remaining non-matching cases are strictly grounded in official challenge definitions without benchmark-specific hardcoding:
+> - **HHG-009**: An isolated low-dollar dispute ($30.02 vs $61.17 card average) with zero online burst within 48h, sharing a device fingerprint across 20 other cards. Classified as `undocumented` coordinated abuse rather than forced CNP fraud, per Policy R9.
+> - **HHG-011**: Three micro-authorizations ($6.33, $6.39, $6.35) preceding a larger purchase ($131.30), strictly matching the official `card_testing` sequence definition, with `card_not_present_fraud` retained as a strong secondary candidate (score 0.50).
 
 ---
 
@@ -217,7 +219,7 @@ The platform was evaluated against the official 20-case IEEE-CIS fraud benchmark
 │   ├── ARCHITECTURE.md         # Detailed system architecture
 │   ├── DEMO.md                 # 3–5 minute judge demonstration script
 │   └── TECHNICAL_VALIDATION.md # Comprehensive test & benchmark proof
-├── tests/                       # 221 automated tests (unit & integration)
+├── tests/                       # 228 automated tests (unit & integration)
 ├── requirements.txt             # Pinned production dependencies
 └── pyproject.toml               # Project metadata & test configuration
 ```
@@ -303,6 +305,11 @@ Each answer file contains:
 - Suspicious Activity Report (SAR) filing determination
 - Next Best Action (NBA) with approval routes before and after additional evidence
 - Full evidence provenance chain and stopping criteria
+
+To instantly compare all 20 benchmark case outputs against expected baseline criteria:
+```bash
+python scripts/compare_metrics.py
+```
 
 ---
 

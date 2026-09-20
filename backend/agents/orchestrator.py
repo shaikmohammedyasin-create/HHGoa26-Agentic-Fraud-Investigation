@@ -272,6 +272,8 @@ def run_investigation(case_id: str, force: bool = False) -> InvestigationCase:
         _transition(case, InvestigationState.evidence_gathered)
 
         avg_amt = float(amount_stats.get("avg_amt") or 0)
+        if avg_amt <= 0 and card_history:
+            avg_amt = sum(t.amount for t in card_history) / len(card_history)
 
         # Known-region set
         known_regions = {str(r["addr1"]) for r in region_history if r.get("addr1")}

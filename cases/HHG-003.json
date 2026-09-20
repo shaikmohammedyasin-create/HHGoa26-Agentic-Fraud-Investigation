@@ -15,7 +15,7 @@
     "exposure_usd": 49.0,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C08623-K2. Most recent: 2016-12-31 $90.05 (in_person). Average amount: $0.00.",
+        "claim": "50 previous transactions retrieved for card C08623-K2. Most recent: 2016-12-31 $90.05 (in_person). Average amount: $129.31.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C08623-K2)",
         "entity_ids": [
@@ -46,7 +46,7 @@
       {
         "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
         "source": "customer",
-        "ref": "evidence_request:ER-7f101a05",
+        "ref": "evidence_request:ER-ad453632",
         "entity_ids": [
           "C08623"
         ]
@@ -109,5 +109,5 @@
   "stop_reason": "Customer denial settled the question; final actions applied.",
   "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 8.17
+  "latency_s": 8.85
 }

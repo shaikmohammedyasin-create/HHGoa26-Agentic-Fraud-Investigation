@@ -13,14 +13,14 @@
     "connected_card_ids": [
       "C12086-K1",
       "C11597-K2",
-      "C10760-K2",
-      "C02222-K1",
       "C06872-K2",
       "C05307-K2",
+      "C10760-K2",
       "C12645-K1",
       "C11847-K2",
       "C10837-K2",
-      "C02180-K1"
+      "C05307-K1",
+      "C11333-K1"
     ],
     "connected_device_profiles": [
       "unknown | unknown | chrome 66.0 | unknown"
@@ -28,7 +28,7 @@
     "exposure_usd": 55.68,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C13171-K2. Most recent: 2016-12-29 $18.68 (online). Average amount: $0.00.",
+        "claim": "50 previous transactions retrieved for card C13171-K2. Most recent: 2016-12-29 $18.68 (online). Average amount: $54.25.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C13171-K2)",
         "entity_ids": [
@@ -53,20 +53,20 @@
         ]
       },
       {
-        "claim": "Device profile shared across 20 other card(s): C12086-K1, C11597-K2, C10760-K2, C02222-K1, C06872-K2.",
+        "claim": "Device profile shared across 20 other card(s): C12086-K1, C11597-K2, C06872-K2, C05307-K2, C10760-K2.",
         "source": "graph",
         "ref": "query:accounts_sharing_device(device=unknown | unknown | chrome 66.0 | unknown)",
         "entity_ids": [
           "C12086-K1",
           "C11597-K2",
-          "C10760-K2",
-          "C02222-K1",
           "C06872-K2",
           "C05307-K2",
+          "C10760-K2",
           "C12645-K1",
           "C11847-K2",
           "C10837-K2",
-          "C02180-K1"
+          "C05307-K1",
+          "C11333-K1"
         ]
       },
       {
@@ -110,7 +110,7 @@
       {
         "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
         "source": "customer",
-        "ref": "evidence_request:ER-2fd168f2",
+        "ref": "evidence_request:ER-c306d3b0",
         "entity_ids": [
           "C13171"
         ]
@@ -189,15 +189,15 @@
   "sar": {
     "file": true,
     "reason": "R8/R9: strongly suspected; regulator disclosure warranted",
-    "narrative": "Between 2016-12-19 and 2016-12-19, customer C13171 and card C13171-K2, connected cards C12086-K1, C11597-K2, C10760-K2, device profile 'unknown | unknown | chrome 66.0 | unknown' were involved in 1 transaction(s) assessed as uncertain (card_not_present_fraud pattern) with total exposure $55.68. The flagged transaction 3558054 of $55.68 (online, product C) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.85. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+    "narrative": "Between 2016-12-19 and 2016-12-19, customer C13171 and card C13171-K2, connected cards C12086-K1, C11597-K2, C06872-K2, device profile 'unknown | unknown | chrome 66.0 | unknown' were involved in 1 transaction(s) assessed as uncertain (card_not_present_fraud pattern) with total exposure $55.68. The flagged transaction 3558054 of $55.68 (online, product C) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.85. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
     "subjects": [
-      "C13171-K2",
       "C12086-K1",
+      "C06872-K2",
       "C10760-K2",
+      "C13171-K2",
       "C11597-K2",
       "C13171",
-      "C06872-K2",
-      "C02222-K1",
+      "C05307-K2",
       "unknown | unknown | chrome 66.0 | unknown"
     ],
     "total_amount_usd": 55.68,
@@ -209,5 +209,5 @@
   "stop_reason": "Customer denial settled the question; final actions applied.",
   "tool_calls": 20,
   "tokens": 0,
-  "latency_s": 20.58
+  "latency_s": 20.39
 }

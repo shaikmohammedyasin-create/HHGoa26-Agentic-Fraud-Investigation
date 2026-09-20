@@ -15,7 +15,7 @@
     "exposure_usd": 77.07,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C12382-K1. Most recent: 2016-12-31 $76.97 (in_person). Average amount: $0.00.",
+        "claim": "50 previous transactions retrieved for card C12382-K1. Most recent: 2016-12-31 $76.97 (in_person). Average amount: $115.60.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C12382-K1)",
         "entity_ids": [
@@ -36,7 +36,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-bae03d25",
+        "ref": "evidence_request:ER-cd495431",
         "entity_ids": [
           "C12382"
         ]
@@ -84,7 +84,7 @@
         "reason": "R4: decline pending authorization"
       }
     ],
-    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
+    "what_changed": "Added: DECLINE_TRANSACTION, MONITOR_CARD; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -97,5 +97,5 @@
   "stop_reason": "Borderline probability 0.43; investigation halted per stopping criteria. Escalated for analyst review.",
   "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 8.08
+  "latency_s": 8.82
 }

@@ -3,7 +3,7 @@
   "case": {
     "status": "escalated",
     "verdict": "uncertain",
-    "fraud_probability": 0.326,
+    "fraud_probability": 0.427,
     "pattern": "none",
     "pattern_description": "",
     "affected_txn_ids": [
@@ -15,7 +15,7 @@
     "exposure_usd": 292.36,
     "evidence": [
       {
-        "claim": "44 previous transactions retrieved for card C11891-K1. Most recent: 2016-12-15 $26.22 (online). Average amount: $0.00.",
+        "claim": "44 previous transactions retrieved for card C11891-K1. Most recent: 2016-12-15 $26.22 (online). Average amount: $47.46.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C11891-K1)",
         "entity_ids": [
@@ -33,7 +33,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-65287919",
+        "ref": "evidence_request:ER-5169be5e",
         "entity_ids": [
           "C11891"
         ]
@@ -42,7 +42,7 @@
     "similar_prior_cases": [
       "CC-4160"
     ],
-    "summary": "Case HHG-002 investigated none activity on card C11891-K1 (customer C11891) around transaction 3478782 ($292.36, online). Assessed fraud probability 0.33 (LOW risk) from 3 evidence items across 2 independent sources. Key signals: 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "summary": "Case HHG-002 investigated none activity on card C11891-K1 (customer C11891) around transaction 3478782 ($292.36, online). Assessed fraud probability 0.43 (MEDIUM risk) from 3 evidence items across 2 independent sources. Key signals: 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-002"
   },
@@ -78,7 +78,7 @@
         "reason": "R4: decline pending authorization"
       }
     ],
-    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
+    "what_changed": "Added: DECLINE_TRANSACTION, MONITOR_CARD; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -88,8 +88,8 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Borderline probability 0.33; investigation halted per stopping criteria. Escalated for analyst review.",
+  "stop_reason": "Borderline probability 0.43; investigation halted per stopping criteria. Escalated for analyst review.",
   "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 8.1
+  "latency_s": 10.06
 }
