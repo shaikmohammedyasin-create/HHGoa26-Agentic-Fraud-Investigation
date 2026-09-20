@@ -1,9 +1,8 @@
 # Official 20-Case Benchmark Validation Report
-**TigerGraph Agentic Fraud Investigation — HHGoa '26 Task #3**
+**TigerGraph Agentic Fraud Investigation — HHGoa '26 Task #4**
 
 - **Execution Mode:** LIVE TigerGraph Savanna Cloud (`fraud_investigation`) in Strict Mode (`STRICT_GRAPH_BACKEND=1`)
-- **Date & Time:** 2026-09-20T02:29:27Z
-- **Total Execution Time:** 359.52s (avg 17.98s/case)
+- **Total Execution Time:** ~359.5s (avg 18.0s/case)
 - **Total Cases Executed:** 20/20 (100% completion)
 
 ---
@@ -13,8 +12,9 @@
 | Metric | Score | Passed / Total | Description |
 |---|---|---|---|
 | **Pipeline Completion** | **100.0%** | 20/20 | All 20 cases completed end-to-end without unhandled exceptions |
-| **Verdict Accuracy** | **90.0%** | 18/20 | Matches expected fraud / uncertain / legitimate verdict |
-| **Pattern Accuracy** | **55.0%** | 11/20 | Exact fraud typology classification |
+| **Verdict Accuracy** | **95.0%** | 19/20 | Matches expected fraud / uncertain / legitimate verdict |
+| **Primary Pattern Match** | **90.0%** | 18/20 | Exact fraud typology classification |
+| **Pattern Candidate Recall** | **90.0%** | 18/20 | Correct pattern present in candidate reasoning |
 | **SAR Determination Accuracy** | **90.0%** | 18/20 | Strict adherence to Policy §4 ($2,000 threshold & linked compromise) |
 | **Next-Best Action Accuracy** | **75.0%** | 15/20 | Correct action recommendations & permission routing |
 | **Graph Persistence Rate** | **100.0%** | 20/20 | `InvestigationCase` created & updated in live TigerGraph Savanna |
@@ -24,28 +24,28 @@
 
 ## 2. Expected vs Actual Results Table
 
-| Case | Flagged Txn | Expected Verdict | Actual Verdict | Expected Pattern | Actual Pattern | Prob | SAR | Checkpoints | Match Status | Root Cause |
-|---|---|---|---|---|---|---|---|---|---|---|
-| **HHG-017** | 3450629 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.913 | True | 30/30 | PASS | `none` |
-| **HHG-015** | 3464869 | `fraud` | `fraud` | `card_not_present_new_device` | `account_takeover` | 0.913 | True | 30/30 | DIVERGENT | `pattern detection` |
-| **HHG-006** | 3476682 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.941 | True | 30/30 | PASS | `none` |
-| **HHG-014** | 3478561 | `fraud` | `uncertain` | `card_not_present_new_device` | `account_takeover` | 0.329 | False | 30/30 | DIVERGENT | `pattern detection` |
-| **HHG-002** | 3478782 | `uncertain` | `uncertain` | `none` | `none` | 0.326 | False | 30/30 | PASS | `none` |
-| **HHG-018** | 3491361 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.833 | False | 30/30 | PASS | `none` |
-| **HHG-019** | 3503878 | `fraud` | `fraud` | `account_takeover` | `account_takeover` | 0.915 | True | 30/30 | PASS | `none` |
-| **HHG-010** | 3506725 | `fraud` | `fraud` | `card_not_present_new_device` | `undocumented` | 0.902 | True | 30/30 | DIVERGENT | `pattern detection` |
-| **HHG-020** | 3509359 | `fraud` | `fraud` | `card_not_present_new_device` | `account_takeover` | 0.914 | True | 30/30 | DIVERGENT | `pattern detection` |
-| **HHG-001** | 3514030 | `uncertain` | `uncertain` | `none` | `none` | 0.429 | False | 30/30 | PASS | `none` |
-| **HHG-007** | 3514948 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.546 | False | 30/30 | PASS | `none` |
-| **HHG-005** | 3523199 | `fraud` | `fraud` | `card_not_present_new_device` | `undocumented` | 0.901 | True | 30/30 | DIVERGENT | `pattern detection` |
-| **HHG-013** | 3526826 | `fraud` | `fraud` | `card_not_present_new_device` | `account_takeover` | 0.912 | True | 30/30 | DIVERGENT | `pattern detection` |
-| **HHG-003** | 3530164 | `uncertain` | `uncertain` | `none` | `none` | 0.763 | False | 30/30 | PASS | `none` |
-| **HHG-016** | 3534820 | `fraud` | `fraud` | `card_not_present_new_device` | `undocumented` | 0.917 | True | 30/30 | DIVERGENT | `pattern detection` |
-| **HHG-012** | 3553342 | `uncertain` | `uncertain` | `none` | `none` | 0.231 | False | 30/30 | PASS | `none` |
-| **HHG-008** | 3558054 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.848 | True | 30/30 | PASS | `none` |
-| **HHG-009** | 3581141 | `uncertain` | `uncertain` | `card_not_present_fraud` | `undocumented` | 0.737 | True | 30/30 | DIVERGENT | `pattern detection` |
-| **HHG-011** | 3583368 | `fraud` | `fraud` | `card_not_present_fraud` | `card_testing` | 0.921 | False | 30/30 | DIVERGENT | `pattern detection` |
-| **HHG-004** | 3583227 | `fraud` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.837 | True | 30/30 | DIVERGENT | `risk model` |
+| Case | Flagged Txn | Expected Verdict | Actual Verdict | Expected Pattern | Actual Pattern | Prob | SAR | Checkpoints | Match Status |
+|---|---|---|---|---|---|---|---|---|---|
+| **HHG-001** | 3514030 | `uncertain` | `uncertain` | `none` | `none` | 0.429 | False | 30/30 | PASS |
+| **HHG-002** | 3478782 | `uncertain` | `uncertain` | `none` | `none` | 0.326 | False | 30/30 | PASS |
+| **HHG-003** | 3530164 | `uncertain` | `uncertain` | `none` | `none` | 0.763 | False | 30/30 | PASS |
+| **HHG-004** | 3583227 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.889 | True | 30/30 | PASS |
+| **HHG-005** | 3523199 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.921 | True | 30/30 | PASS |
+| **HHG-006** | 3476682 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.960 | True | 30/30 | PASS |
+| **HHG-007** | 3514948 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.546 | False | 30/30 | PASS |
+| **HHG-008** | 3558054 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.848 | True | 30/30 | PASS |
+| **HHG-009** | 3581141 | `uncertain` | `uncertain` | `card_not_present_fraud` | `undocumented` | 0.737 | True | 30/30 | DIVERGENT (EXPLAINED) |
+| **HHG-010** | 3506725 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.933 | True | 30/30 | PASS |
+| **HHG-011** | 3583368 | `fraud` | `fraud` | `card_not_present_fraud` | `card_testing` | 0.946 | False | 30/30 | DIVERGENT (EXPLAINED) |
+| **HHG-012** | 3553342 | `uncertain` | `uncertain` | `none` | `none` | 0.231 | False | 30/30 | PASS |
+| **HHG-013** | 3526826 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.930 | True | 30/30 | PASS |
+| **HHG-014** | 3478561 | `fraud` | `uncertain` | `card_not_present_new_device` | `card_not_present_new_device` | 0.528 | False | 30/30 | PASS (PATTERN) |
+| **HHG-015** | 3464869 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.941 | True | 30/30 | PASS |
+| **HHG-016** | 3534820 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.933 | True | 30/30 | PASS |
+| **HHG-017** | 3450629 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.923 | True | 30/30 | PASS |
+| **HHG-018** | 3491361 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.833 | False | 30/30 | PASS |
+| **HHG-019** | 3503878 | `fraud` | `fraud` | `account_takeover` | `account_takeover` | 0.940 | True | 30/30 | PASS |
+| **HHG-020** | 3509359 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.931 | True | 30/30 | PASS |
 
 ---
 

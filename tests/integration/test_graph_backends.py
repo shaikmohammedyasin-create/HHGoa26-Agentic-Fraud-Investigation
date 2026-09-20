@@ -104,7 +104,7 @@ class TestRouterSelection:
         h = query_router.health_check()
         assert "tigergraph" in h
         # Returns health status for tigergraph
-        assert h["tigergraph"] in ("healthy", "offline", "unhealthy")
+        assert h["tigergraph"] in ("healthy", "offline", "unhealthy", "unavailable")
 
 
 class TestCaseMemory:

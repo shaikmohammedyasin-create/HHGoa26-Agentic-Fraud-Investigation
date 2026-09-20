@@ -7,11 +7,12 @@
 
 ---
 
-## 1. Final Commit
-- **Commit Hash:** `b2d1dcb3d4cb26d8bd59741591cea8c567f1b24e`
-- **Commit Message:** `"feat: finalize fraud investigation benchmark hardening"`
-- **Parent Commit:** `51e87cb714bbeb8d0d7a02593019836bbd49699a` (*"feat: finalize fraud investigation benchmark hardening"*)
-- **Status:** Pushed cleanly to GitHub remote `origin/main`
+## 1. Final Submission State
+- **Release Commit:** Final submission release commit (`release: finalize HHGoa26 Task 4 submission`)
+- **Preceding Commit:** `d096ac40e30a2de224b90f3959a676c7c7d5e433` (*"docs: align demo guide with primary HHG-014 case"*)
+- **Benchmark Hardening Commit:** `51e87cb714bbeb8d0d7a02593019836bbd49699a`
+- **Release Tag:** `hhgoa26-task4-final`
+- **Status:** Release freeze pushed to GitHub remote `origin/main`
 
 ---
 
@@ -128,7 +129,7 @@ All 20 case files in `cases/` were programmatically verified:
 ## 11. GitHub Verification
 - **Remote:** `https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation.git`
 - **Branch:** `main`
-- **Commit:** `51e87cb714bbeb8d0d7a02593019836bbd49699a`
+- **Release Tag:** `hhgoa26-task4-final`
 - **Working Tree:** `nothing to commit, working tree clean`
 - **Synchronization:** Completely synchronized with current `origin/main`.
 

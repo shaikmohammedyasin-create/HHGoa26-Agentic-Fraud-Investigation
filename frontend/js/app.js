@@ -156,7 +156,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       if (cases.length > 0) {
-        selectCase(cases[0].case_id);
+        const defaultCase = cases.find(c => c.case_id === 'HHG-014') || cases[0];
+        selectCase(defaultCase.case_id);
       }
     } catch (e) {
       console.error('Failed to load case pack:', e);

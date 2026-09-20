@@ -1,4 +1,4 @@
-# HHGoa'26 — Agentic Fraud Investigation
+# HHGoa'26 — Agentic Fraud Investigation (Task #4)
 
 > **An evidence-driven, uncertainty-aware, policy-controlled fraud investigation agent powered by TigerGraph.**
 
@@ -288,11 +288,12 @@ The platform connects to a live TigerGraph Savanna Cloud instance configured wit
 
 ## 22. Live Demonstration
 See [docs/DEMO.md](docs/DEMO.md) for the complete 3–5 minute step-by-step presentation script.
-1. Select case **`HHG-001`**.
+1. Select case **`HHG-014`** (Primary Demo Case — Borderline Uncertainty & Additional Evidence Reassessment).
 2. Click **`Start Live Investigation`**.
 3. Observe live GSQL graph traversal, evidence synthesis, and Noisy-OR breakdown.
-4. Inspect the **Uncertainty Loop** and **Governed NBA** recommendations.
+4. Inspect the **Uncertainty Loop** and **Governed NBA** recommendations before and after additional evidence.
 5. Click graph nodes to inspect metadata in the **Graph Inspector**.
+*(Fallback Case: `HHG-018`)*
 
 ---
 

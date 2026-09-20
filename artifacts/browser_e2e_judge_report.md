@@ -13,7 +13,7 @@
 - **Backend Server:** FastAPI on Uvicorn (`http://127.0.0.1:8000`)
 - **TigerGraph Cloud:** Live Savanna Cloud instance (`fraud_investigation` graph)
 - **Backend Status:** `{"status": "healthy", "graph": {"local": "healthy", "tigergraph": "healthy"}, "app_db": "healthy"}`
-- **Repository Commit:** `b2d1dcb3d4cb26d8bd59741591cea8c567f1b24e` (*latest main*)
+- **Repository Commit:** `origin/main` (*final submission release state*)
 - **Working Tree State:** Clean (Zero uncommitted code changes)
 
 ---
