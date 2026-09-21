@@ -92,7 +92,7 @@
       {
         "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
         "source": "customer",
-        "ref": "evidence_request:ER-7aed24fd",
+        "ref": "evidence_request:ER-6242363b",
         "entity_ids": [
           "C02354"
         ]
@@ -164,5 +164,5 @@
   "stop_reason": "Customer denial settled the question; final actions applied.",
   "tool_calls": 17,
   "tokens": 0,
-  "latency_s": 37.49
+  "latency_s": 16.56
 }

@@ -13,16 +13,16 @@
     ],
     "first_suspicious_txn_id": "3450436",
     "connected_card_ids": [
-      "C03096-K1",
-      "C11833-K1",
-      "C04754-K1",
-      "C06835-K2",
-      "C00219-K1",
-      "C08412-K1",
-      "C07862-K1",
-      "C06605-K1",
-      "C05327-K1",
-      "C01109-K2"
+      "C07356-K1",
+      "C07474-K1",
+      "C13180-K1",
+      "C05360-K1",
+      "C05554-K1",
+      "C02942-K1",
+      "C05868-K1",
+      "C11539-K2",
+      "C10640-K1",
+      "C03778-K1"
     ],
     "connected_device_profiles": [
       "Windows | Windows 10 | chrome 65.0 | 1920x1080"
@@ -56,20 +56,20 @@
         ]
       },
       {
-        "claim": "Device profile shared across 19 other card(s): C03096-K1, C11833-K1, C04754-K1, C06835-K2, C00219-K1.",
+        "claim": "Device profile shared across 20 other card(s): C07356-K1, C07474-K1, C13180-K1, C05360-K1, C05554-K1.",
         "source": "graph",
         "ref": "query:accounts_sharing_device(device=Windows | Windows 10 | chrome 65.0 | 1920x1080)",
         "entity_ids": [
-          "C03096-K1",
-          "C11833-K1",
-          "C04754-K1",
-          "C06835-K2",
-          "C00219-K1",
-          "C08412-K1",
-          "C07862-K1",
-          "C06605-K1",
-          "C05327-K1",
-          "C01109-K2"
+          "C07356-K1",
+          "C07474-K1",
+          "C13180-K1",
+          "C05360-K1",
+          "C05554-K1",
+          "C02942-K1",
+          "C05868-K1",
+          "C11539-K2",
+          "C10640-K1",
+          "C03778-K1"
         ]
       },
       {
@@ -116,7 +116,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-84555b3a",
+        "ref": "evidence_request:ER-a35bc270",
         "entity_ids": [
           "C04570"
         ]
@@ -195,15 +195,15 @@
   "sar": {
     "file": true,
     "reason": "R6: confirmed fraud connected to shared device profile or card",
-    "narrative": "Between 2016-11-11 and 2016-11-11, customer C04570 and card C04570-K1, connected cards C03096-K1, C11833-K1, C04754-K1, device profile 'Windows | Windows 10 | chrome 65.0 | 1920x1080' were involved in 4 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $400.23. The flagged transaction 3450629 of $100.09 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.92. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+    "narrative": "Between 2016-11-11 and 2016-11-11, customer C04570 and card C04570-K1, connected cards C07356-K1, C07474-K1, C13180-K1, device profile 'Windows | Windows 10 | chrome 65.0 | 1920x1080' were involved in 4 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $400.23. The flagged transaction 3450629 of $100.09 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.92. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
     "subjects": [
-      "C04754-K1",
-      "C11833-K1",
-      "C04570",
-      "C03096-K1",
-      "C00219-K1",
       "C04570-K1",
-      "C06835-K2",
+      "C04570",
+      "C05360-K1",
+      "C05554-K1",
+      "C07356-K1",
+      "C07474-K1",
+      "C13180-K1",
       "Windows | Windows 10 | chrome 65.0 | 1920x1080"
     ],
     "total_amount_usd": 400.23,
@@ -215,5 +215,5 @@
   "stop_reason": "Fraud probability 0.92 ≥ 0.85 with 3 independent evidence sources.",
   "tool_calls": 20,
   "tokens": 0,
-  "latency_s": 28.2
+  "latency_s": 22.07
 }

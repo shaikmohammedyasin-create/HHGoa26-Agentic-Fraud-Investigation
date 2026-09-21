@@ -11,16 +11,16 @@
     ],
     "first_suspicious_txn_id": "3509359",
     "connected_card_ids": [
-      "C02354-K2",
-      "C10855-K1",
-      "C11709-K2",
-      "C00750-K2",
-      "C12094-K2",
-      "C13328-K1",
-      "C05704-K2",
-      "C12897-K1",
-      "C10390-K1",
-      "C08134-K1"
+      "C01877-K1",
+      "C07062-K1",
+      "C07975-K1",
+      "C11385-K1",
+      "C04225-K1",
+      "C11010-K1",
+      "C05039-K1",
+      "C01918-K1",
+      "C12739-K1",
+      "C11945-K2"
     ],
     "connected_device_profiles": [
       "Trident/7.0 | Windows 10 | ie 11.0 for desktop | 1920x1080"
@@ -44,20 +44,20 @@
         ]
       },
       {
-        "claim": "Device profile shared across 20 other card(s): C02354-K2, C10855-K1, C11709-K2, C00750-K2, C12094-K2.",
+        "claim": "Device profile shared across 20 other card(s): C01877-K1, C07062-K1, C07975-K1, C11385-K1, C04225-K1.",
         "source": "graph",
         "ref": "query:accounts_sharing_device(device=Trident/7.0 | Windows 10 | ie 11.0 for desktop | 1920x1080)",
         "entity_ids": [
-          "C02354-K2",
-          "C10855-K1",
-          "C11709-K2",
-          "C00750-K2",
-          "C12094-K2",
-          "C13328-K1",
-          "C05704-K2",
-          "C12897-K1",
-          "C10390-K1",
-          "C08134-K1"
+          "C01877-K1",
+          "C07062-K1",
+          "C07975-K1",
+          "C11385-K1",
+          "C04225-K1",
+          "C11010-K1",
+          "C05039-K1",
+          "C01918-K1",
+          "C12739-K1",
+          "C11945-K2"
         ]
       },
       {
@@ -116,7 +116,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-c9818cfc",
+        "ref": "evidence_request:ER-6137ef35",
         "entity_ids": [
           "C12265"
         ]
@@ -195,15 +195,15 @@
   "sar": {
     "file": true,
     "reason": "R6: confirmed fraud connected to shared device profile or card",
-    "narrative": "Between 2016-12-03 and 2016-12-03, customer C12265 and card C12265-K2, connected cards C02354-K2, C10855-K1, C11709-K2, device profile 'Trident/7.0 | Windows 10 | ie 11.0 for desktop | 1920x1080' were involved in 2 transaction(s) assessed as fraud (card_not_present_new_device pattern) with total exposure $250.16. The flagged transaction 3509359 of $125.08 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_new_device pattern with assessed fraud probability 0.93. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+    "narrative": "Between 2016-12-03 and 2016-12-03, customer C12265 and card C12265-K2, connected cards C01877-K1, C07062-K1, C07975-K1, device profile 'Trident/7.0 | Windows 10 | ie 11.0 for desktop | 1920x1080' were involved in 2 transaction(s) assessed as fraud (card_not_present_new_device pattern) with total exposure $250.16. The flagged transaction 3509359 of $125.08 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_new_device pattern with assessed fraud probability 0.93. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
     "subjects": [
       "C12265-K2",
-      "C00750-K2",
-      "C12094-K2",
+      "C01877-K1",
       "C12265",
-      "C02354-K2",
-      "C10855-K1",
-      "C11709-K2",
+      "C04225-K1",
+      "C07062-K1",
+      "C11385-K1",
+      "C07975-K1",
       "Trident/7.0 | Windows 10 | ie 11.0 for desktop | 1920x1080"
     ],
     "total_amount_usd": 250.16,
@@ -215,5 +215,5 @@
   "stop_reason": "Fraud probability 0.93 ≥ 0.85 with 3 independent evidence sources.",
   "tool_calls": 20,
   "tokens": 0,
-  "latency_s": 21.71
+  "latency_s": 31.04
 }

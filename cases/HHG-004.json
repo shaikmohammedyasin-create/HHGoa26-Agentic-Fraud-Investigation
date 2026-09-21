@@ -7,13 +7,13 @@
     "pattern": "card_not_present_fraud",
     "pattern_description": "Burst of 8 online transactions within 48h; amount is well above card average",
     "affected_txn_ids": [
-      "3580804",
       "3583499",
-      "3585446",
       "3583227",
       "3583503",
       "3584017",
+      "3585446",
       "3585726",
+      "3580804",
       "3587858"
     ],
     "first_suspicious_txn_id": "3580804",
@@ -111,7 +111,7 @@
       {
         "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
         "source": "customer",
-        "ref": "evidence_request:ER-f1db310b",
+        "ref": "evidence_request:ER-9da1a961",
         "entity_ids": [
           "C08106"
         ]
@@ -192,13 +192,13 @@
     "reason": "R6: confirmed fraud connected to shared device profile or card",
     "narrative": "Between 2016-12-28 and 2016-12-30, customer C08106 and card C08106-K1, connected cards C04248-K2, C02222-K1, C03095-K2, device profile 'unknown | unknown | firefox 47.0 | unknown' were involved in 9 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $512.76. The flagged transaction 3583227 of $128.33 (online, product C) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.89. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
     "subjects": [
-      "C08106",
-      "C07518-K2",
       "C04248-K2",
-      "C08106-K1",
-      "C02222-K1",
-      "C03095-K2",
       "C05031-K2",
+      "C07518-K2",
+      "C08106",
+      "C03095-K2",
+      "C02222-K1",
+      "C08106-K1",
       "unknown | unknown | firefox 47.0 | unknown"
     ],
     "total_amount_usd": 512.76,
@@ -210,5 +210,5 @@
   "stop_reason": "Fraud probability 0.89 ≥ 0.85 with 3 independent evidence sources.",
   "tool_calls": 20,
   "tokens": 0,
-  "latency_s": 28.11
+  "latency_s": 24.07
 }

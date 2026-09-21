@@ -33,7 +33,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-5169be5e",
+        "ref": "evidence_request:ER-808974f0",
         "entity_ids": [
           "C11891"
         ]
@@ -78,7 +78,7 @@
         "reason": "R4: decline pending authorization"
       }
     ],
-    "what_changed": "Added: DECLINE_TRANSACTION, MONITOR_CARD; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -91,5 +91,5 @@
   "stop_reason": "Borderline probability 0.43; investigation halted per stopping criteria. Escalated for analyst review.",
   "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 10.06
+  "latency_s": 8.3
 }
