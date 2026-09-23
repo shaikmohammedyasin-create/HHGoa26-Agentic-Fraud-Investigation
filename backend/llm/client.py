@@ -45,6 +45,36 @@ def _call_openai(prompt: str) -> str:
     return resp.choices[0].message.content.strip()
 
 
+def _call_groq(prompt: str) -> str:
+    import httpx
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {settings.groq_api_key}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": settings.groq_model,
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "You are a professional banking fraud and AML compliance officer. "
+                    "Write clear, concise, objective case summaries (2-4 sentences) or "
+                    "formal Suspicious Activity Report (SAR) narratives strictly based on the provided case facts."
+                ),
+            },
+            {"role": "user", "content": prompt},
+        ],
+        "max_tokens": 512,
+        "temperature": settings.llm_temperature,
+    }
+    with httpx.Client(timeout=settings.llm_timeout_seconds) as client:
+        resp = client.post(url, headers=headers, json=payload)
+        resp.raise_for_status()
+        data = resp.json()
+        return data["choices"][0]["message"]["content"].strip()
+
+
 def _template_summary(prompt_hint: str) -> str:
     return (
         "Investigation complete. Evidence gathered from transaction history, "
@@ -72,6 +102,8 @@ def _provider_available() -> bool:
         return bool(settings.anthropic_api_key)
     if settings.llm_provider == "openai":
         return bool(settings.openai_api_key)
+    if settings.llm_provider == "groq":
+        return bool(settings.groq_api_key)
     return False
 
 
@@ -86,6 +118,8 @@ def generate_summary(prompt: str) -> tuple[str, int, bool]:
     try:
         if settings.llm_provider == "anthropic":
             text = _call_anthropic(prompt)
+        elif settings.llm_provider == "groq":
+            text = _call_groq(prompt)
         else:
             text = _call_openai(prompt)
         return text, len(prompt.split()) + len(text.split()), True
@@ -101,9 +135,12 @@ def generate_sar_narrative(prompt: str) -> tuple[str, int, bool]:
     try:
         if settings.llm_provider == "anthropic":
             text = _call_anthropic(prompt)
+        elif settings.llm_provider == "groq":
+            text = _call_groq(prompt)
         else:
             text = _call_openai(prompt)
         return text, len(prompt.split()) + len(text.split()), True
     except Exception as exc:
         log.warning("llm.sar.fallback", error=str(exc))
     return _template_sar(prompt), 0, False
+

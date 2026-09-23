@@ -304,6 +304,16 @@ class GraphRenderer {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.width, this.height);
 
+    if (!this.nodes || this.nodes.length === 0) {
+      ctx.save();
+      ctx.font = '500 13px Inter, sans-serif';
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'center';
+      ctx.fillText('Case graph will populate upon live investigation execution.', this.width / 2, this.height / 2);
+      ctx.restore();
+      return;
+    }
+
     ctx.save();
     ctx.translate(this.offsetX, this.offsetY);
     ctx.scale(this.scale, this.scale);

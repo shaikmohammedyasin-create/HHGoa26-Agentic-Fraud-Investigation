@@ -1,0 +1,3 @@
+# FINAL_SELECTION_READINESS_AUDIT.md
+
+Please see full selection readiness audit at [docs/FINAL_SELECTION_READINESS_AUDIT.md](docs/FINAL_SELECTION_READINESS_AUDIT.md).

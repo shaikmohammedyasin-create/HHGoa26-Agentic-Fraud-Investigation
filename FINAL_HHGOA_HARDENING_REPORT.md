@@ -1,0 +1,3 @@
+# FINAL_HHGOA_HARDENING_REPORT.md
+
+Please see full audit report at [docs/FINAL_HHGOA_HARDENING_REPORT.md](docs/FINAL_HHGOA_HARDENING_REPORT.md).

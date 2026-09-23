@@ -128,7 +128,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (tgStatus) tgStatus.textContent = h.graph ? (h.graph.tigergraph || h.graph.local || 'Unknown') : 'Checking...';
     if (dbStatus) dbStatus.textContent = h.app_db || 'Healthy';
-    if (llmProvider) llmProvider.textContent = h.llm_provider || 'Deterministic Fallback (Audit Safe)';
+    if (llmProvider) {
+      if (h.llm_provider === 'groq') {
+        llmProvider.textContent = 'Groq Cloud (OpenAI GPT-OSS / Llama)';
+      } else {
+        llmProvider.textContent = h.llm_provider || 'Deterministic Fallback (Audit Safe)';
+      }
+    }
 
     healthModal.style.display = 'flex';
   }
@@ -168,9 +174,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ── Case Selection ────────────────────────────────────────────────────────
   async function selectCase(caseId) {
     activeCaseId = caseId;
-    caseSelect.value = caseId;
+    activeCaseData = null;
+    activeGraphData = null;
     activeEntityFilter = null;
+    caseSelect.value = caseId;
+
     if (evFilterBar) evFilterBar.style.display = 'none';
+    if (graphInspector) graphInspector.style.display = 'none';
+    if (graphRenderer) {
+      graphRenderer.selectedNode = null;
+      graphRenderer.setData({ nodes: [], links: [] });
+    }
 
     const opt = caseSelect.selectedOptions[0];
     const triggerData = opt ? JSON.parse(opt.dataset.case || '{}') : {};
@@ -183,27 +197,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     metaCustId.textContent = triggerData.customer_id || '—';
     metaRiskScore.textContent = triggerData.risk_score != null ? Number(triggerData.risk_score).toFixed(2) : '—';
 
+    // Reset investigation state
     resetTimeline();
     resetAssessment();
 
-    // Fetch existing investigation & graph
-    const [fullData, graphData] = await Promise.all([
-      API.getInvestigationFull(caseId).catch(() => null),
-      API.getInvestigationGraph(caseId).catch(() => null)
-    ]);
-
-    activeGraphData = graphData;
-    if (fullData) {
-      renderInvestigation(fullData);
-    } else {
-      renderEmptyState(triggerData);
-    }
-
-    if (graphData) {
-      graphRenderer.setData(graphData);
-    } else {
-      graphRenderer.setData({ nodes: [], links: [] });
-    }
+    // Render empty state (passive selection; wait for user to click Start Live Investigation)
+    renderEmptyState(triggerData);
   }
 
   caseSelect.addEventListener('change', () => {
@@ -260,18 +259,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function resetAssessment() {
-    verdictBadge.textContent = 'PENDING';
-    verdictBadge.className = 'verdict-badge';
+    verdictBadge.textContent = 'READY';
+    verdictBadge.className = 'verdict-badge verdict-ready';
     probBar.style.width = '0%';
     probBar.style.backgroundColor = 'var(--text-muted)';
     probVal.textContent = '0.000';
     patternVal.textContent = '—';
     if (patternSecondaryVal) patternSecondaryVal.textContent = 'Secondary: none';
     exposureVal.textContent = '$0.00';
+    if (exposureSub) exposureSub.textContent = '1 Flagged Transaction';
   }
 
   function renderEmptyState(triggerData) {
     resetAssessment();
+    openScoreBreakdown(false);
+    if (btnInvestigate) {
+      btnInvestigate.disabled = false;
+      btnInvestigate.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>Start Live Investigation</span>
+      `;
+    }
     evidenceList.innerHTML = `
       <div class="empty-state">
         <p>Case not yet investigated.<br>Click <strong>"Start Live Investigation"</strong> to execute live TigerGraph queries and agent assessment.</p>
@@ -763,7 +773,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ── Handle Live Investigation Execution ───────────────────────────────────
   btnInvestigate.addEventListener('click', async () => {
-    if (!activeCaseId) return;
+    if (!activeCaseId || btnInvestigate.disabled) return;
 
     btnInvestigate.disabled = true;
     btnInvestigate.innerHTML = '<div class="spinner" style="width:16px; height:16px; border-width:2px; margin:0;"></div> <span>Investigating...</span>';
@@ -787,7 +797,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       await sleep(200);
       setTimelineStep(9, 'active');
 
-      // Reload rich full model & graph
+      // Reload investigation data after execution completes
       const [fullData, graphData] = await Promise.all([
         API.getInvestigationFull(activeCaseId),
         API.getInvestigationGraph(activeCaseId)

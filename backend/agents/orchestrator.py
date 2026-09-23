@@ -793,6 +793,9 @@ def run_investigation(case_id: str, force: bool = False) -> InvestigationCase:
         case.llm_used = llm_used
         if not llm_used:
             summary_text = _grounded_summary(case, flagged_txn, sig)
+        else:
+            if case.case_id not in summary_text or case.card_id not in summary_text:
+                summary_text = f"Case {case.case_id} (Card {case.card_id}): {summary_text}"
         case.summary = summary_text
         case.tokens_used += tok_summary
 

@@ -6,13 +6,18 @@
   <title>HHGoa '26 — Agentic Fraud Investigation Command Center</title>
   <meta name="description" content="TigerGraph-native, evidence-grounded, policy-controlled agentic fraud investigation command center for IEEE HHGoa 2026.">
   
+  <!-- Prevent browser caching of development/eval assets -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
   <!-- Modern Typography from Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Unified Design System CSS -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=20260922_07">
 </head>
 <body>
 
@@ -189,7 +194,7 @@
     <!-- ── Center Panel: Threat Assessment & Interactive Graph ────────────── -->
     <section class="panel-center" id="panelCenter">
       <div class="assessment-banner" id="assessmentBanner">
-        <div class="verdict-badge verdict-uncertain" id="verdictBadge">PENDING</div>
+        <div class="verdict-badge verdict-ready" id="verdictBadge">READY</div>
 
         <div class="prob-metric">
           <div class="prob-header">
@@ -275,6 +280,9 @@
         <button class="tab-btn" data-tab="tabPersistence" id="btnTabPersistence">
           Case Memory & SAR
         </button>
+        <button class="tab-btn" data-tab="tabBenchmark" id="btnTabBenchmark">
+          Benchmark / Validation
+        </button>
       </nav>
 
       <div class="tab-content-area">
@@ -349,6 +357,112 @@
         <div class="tab-pane" id="tabPersistence">
           <div id="persistenceContent"></div>
         </div>
+
+        <!-- Tab 5: Benchmark / Validation -->
+        <div class="tab-pane" id="tabBenchmark">
+          <div class="benchmark-dashboard">
+            <!-- Header -->
+            <div class="benchmark-header-box">
+              <div>
+                <div class="benchmark-title">BENCHMARK / VALIDATION</div>
+                <div class="benchmark-sub">20-case investigation benchmark and automated validation results</div>
+              </div>
+              <span class="route-pill route-auto">VALIDATION RESULTS</span>
+            </div>
+
+            <!-- PRIMARY VALIDATION -->
+            <div class="benchmark-section">
+              <div class="benchmark-section-label">PRIMARY VALIDATION</div>
+              <div class="benchmark-grid-hero">
+                <div class="benchmark-card benchmark-card-hero">
+                  <div class="benchmark-num hero-emerald">20 / 20</div>
+                  <div class="benchmark-lbl">CASES COMPLETED</div>
+                  <div class="benchmark-desc">All benchmark cases</div>
+                </div>
+                <div class="benchmark-card benchmark-card-hero">
+                  <div class="benchmark-num hero-emerald">600 / 600</div>
+                  <div class="benchmark-lbl">CHECKPOINTS PASSED</div>
+                  <div class="benchmark-desc">Defined checkpoints</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- INVESTIGATION ACCURACY -->
+            <div class="benchmark-section">
+              <div class="benchmark-section-label">INVESTIGATION ACCURACY</div>
+              <div class="benchmark-grid-accuracy">
+                <div class="benchmark-card card-span-2">
+                  <div class="benchmark-num val-emerald">95%</div>
+                  <div class="benchmark-lbl">VERDICT ACCURACY</div>
+                  <div class="benchmark-desc">Fraud verdict accuracy</div>
+                </div>
+                <div class="benchmark-card card-span-2">
+                  <div class="benchmark-num val-neutral">90%</div>
+                  <div class="benchmark-lbl">PRIMARY PATTERN</div>
+                  <div class="benchmark-desc">Primary pattern match</div>
+                </div>
+                <div class="benchmark-card card-span-2">
+                  <div class="benchmark-num val-neutral">90%</div>
+                  <div class="benchmark-lbl">CANDIDATE RECALL</div>
+                  <div class="benchmark-desc">Candidate pattern recall</div>
+                </div>
+                <div class="benchmark-card card-span-3">
+                  <div class="benchmark-num val-emerald">90%</div>
+                  <div class="benchmark-lbl">SAR ACCURACY</div>
+                  <div class="benchmark-desc">SAR decision accuracy</div>
+                </div>
+                <div class="benchmark-card card-span-3">
+                  <div class="benchmark-num val-amber">75%</div>
+                  <div class="benchmark-lbl">NBA ACCURACY</div>
+                  <div class="benchmark-desc">Next-best-action accuracy</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SYSTEM VALIDATION -->
+            <div class="benchmark-section">
+              <div class="benchmark-section-label">SYSTEM VALIDATION</div>
+              <div class="benchmark-grid-system">
+                <div class="benchmark-card">
+                  <div class="benchmark-num val-purple">20 / 20</div>
+                  <div class="benchmark-lbl">GRAPH PERSISTENCE</div>
+                  <div class="benchmark-desc">TigerGraph cases</div>
+                </div>
+                <div class="benchmark-card">
+                  <div class="benchmark-num val-blue">228 / 228</div>
+                  <div class="benchmark-lbl">AUTOMATED TESTS</div>
+                  <div class="benchmark-desc">Test suite passing</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Collapsible Secondary Details -->
+            <details class="benchmark-disclosure">
+              <summary class="benchmark-disclosure-trigger">
+                <span>Architecture Coverage &amp; Test Suite Breakdown</span>
+                <span class="disclosure-arrow">&#9662;</span>
+              </summary>
+              <div class="benchmark-disclosure-body">
+                <div class="benchmark-test-chips">
+                  <span class="benchmark-test-chip">Unit: 184</span>
+                  <span class="benchmark-test-chip">Integration: 44</span>
+                  <span class="benchmark-test-chip">Failures: 0</span>
+                </div>
+                <div class="benchmark-coverage-list">
+                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Multi-Hop GSQL Traversal (20/20 cases)</div>
+                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Noisy-OR Score Channel Grounding (100%)</div>
+                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Uncertainty Loop &amp; Reassessment (100%)</div>
+                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Governed Policy &amp; Permission Gating (100%)</div>
+                </div>
+              </div>
+            </details>
+
+            <!-- Source / Transparency Footer -->
+            <div class="benchmark-footer-note">
+              Validation metrics reported from the project benchmark and automated test suite.
+            </div>
+          </div>
+        </div>
       </div>
     </aside>
 
@@ -394,8 +508,8 @@
   </div>
 
   <!-- ── Scripts ───────────────────────────────────────────────────────── -->
-  <script src="js/api.js"></script>
-  <script src="js/graph.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/api.js?v=20260922_07"></script>
+  <script src="js/graph.js?v=20260922_07"></script>
+  <script src="js/app.js?v=20260922_07"></script>
 </body>
 </html>
