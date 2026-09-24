@@ -49,7 +49,10 @@ The planner chooses additional tools based on **open evidence gaps and the curre
 
 A simplified flow:
 
-![Agentic Fraud Investigation Flow](./docs/images/simplified_flow.png)
+![Agentic Fraud Investigation Flow: Trigger Ingestion → Planner-Driven Tool Selection → TigerGraph Multi-hop Retrieval → GraphRAG Evidence Assembly → Pattern Reasoning → Noisy-OR Risk Breakdown → Uncertainty Evaluation → High-Value Evidence Request → Risk Reassessment → Policy-Governed Next Best Actions (NBA) → Human Approval Routing (Auto / L1 / L2) → Case Memory Persistence in TigerGraph](./docs/images/simplified_flow.png)
+
+> 🖼️ **Investigation Flow Diagram:** *Trigger Ingestion ➔ Planner ➔ TigerGraph GSQL Traversal ➔ GraphRAG Evidence ➔ Pattern Typologies ➔ Noisy-OR Composite Risk ➔ Uncertainty Loop ➔ High-Value Evidence Request ➔ Reassessment Delta ➔ Governed NBA ➔ Human Approval ➔ Graph Case Memory*.  
+> 🔗 *If the image is slow to load or not rendering on your connection, [click here to view the high-resolution flow diagram directly](./docs/images/simplified_flow.png).*
 
 Each investigation records its plan trace so the selected tools and their rationale are auditable.
 
@@ -156,7 +159,10 @@ This closes the memory loop:
 
 ## Architecture
 
-![System Architecture](./docs/images/archi.png)
+![System Architecture: Analyst Command Center UI (D3 & Canvas) ➔ FastAPI Gateway ➔ Agentic Investigation Engine (Planner, GSQL Multi-hop Traversal, GraphRAG, Noisy-OR Risk, Policy Rules) ➔ Live TigerGraph Savanna Cloud & SQLite Application State DB](./docs/images/archi.png)
+
+> 🏛️ **System Architecture Overview:** *Analyst Command Center (HTML5/Canvas UI) ➔ FastAPI Gateway ➔ Agentic Engine (Adaptive Planner, Tool Selection, Noisy-OR Risk Decomposition, Policy-Governed NBA) ➔ Live TigerGraph Savanna Cloud & SQLite State DB*.  
+> 🔗 *If the architecture diagram is slow to load or not rendering on your connection, [click here to view the high-resolution architecture diagram directly](./docs/images/archi.png).*
 
 ### Technology
 
