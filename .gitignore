@@ -26,3 +26,21 @@ Thumbs.db
 scratch/
 *.webp
 
+# Internal audit & evaluation reports (kept locally only)
+*AUDIT*.md
+*HARDENING*.md
+*SELECTION*.md
+FINAL_*.md
+JUDGE_*.md
+docs/*AUDIT*.md
+docs/*HARDENING*.md
+docs/*SELECTION*.md
+docs/FINAL_*.md
+docs/JUDGE_*.md
+docs/ARCHITECTURE_FACTS.md
+artifacts/*audit*
+artifacts/*judge*
+artifacts/*hardening*
+artifacts/*freeze*
+artifacts/*gap*
+benchmark_report.md
