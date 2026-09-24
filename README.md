@@ -1,19 +1,26 @@
 # HHGOA'26 — Agentic Fraud Investigation
 
-> **Task #4 — TigerGraph Agentic Fraud Investigation + Next Best Action**
->
-> An evidence-driven, uncertainty-aware, policy-governed fraud investigation platform built around TigerGraph GraphRAG.
->
-> Built by **Team @BALLERINA** &bull; &copy; 2026 @BALLERINA. All rights reserved.
+> **TigerGraph Agentic Fraud Investigation + Next Best Action**
 
-[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-REST-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![TigerGraph](https://img.shields.io/badge/TigerGraph-Savanna%20Cloud-F36C21)](https://www.tigergraph.com/)
-[![Tests](https://img.shields.io/badge/tests-257%20passed%20(228%20base%20%2B%2029%20agentic)-2E7D32)](./docs/TECHNICAL_VALIDATION.md)
-[![IEEE Checkpoints](https://img.shields.io/badge/IEEE%20checkpoints-600%2F600-2E7D32)](./artifacts/benchmark/benchmark_report.md)
-[![Team](https://img.shields.io/badge/team-%40BALLERINA-C79A32)](https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![Status](https://img.shields.io/badge/status-demo%20ready-0B5A3C)](./docs/DEMO.md)
+<p align="center">
+  <img src="./docs/images/ballerina-logo.png" width="180" alt="Team BALLERINA Logo">
+</p>
+
+<p align="center">
+  <strong>Team BALLERINA • KHIT</strong><br>
+  <em>An evidence-driven, uncertainty-aware, policy-governed fraud investigation platform built around TigerGraph GraphRAG.</em>
+</p>
+
+<p align="center">
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python"></a>
+  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-REST-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
+  <a href="https://www.tigergraph.com/"><img src="https://img.shields.io/badge/TigerGraph-Savanna%20Cloud-F36C21" alt="TigerGraph"></a>
+  <a href="./docs/TECHNICAL_VALIDATION.md"><img src="https://img.shields.io/badge/tests-257%20passed%20(228%20base%20%2B%2029%20agentic)-2E7D32" alt="Tests"></a>
+  <a href="./artifacts/benchmark/benchmark_report.md"><img src="https://img.shields.io/badge/IEEE%20checkpoints-600%2F600-2E7D32" alt="IEEE Checkpoints"></a>
+  <a href="https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation"><img src="https://img.shields.io/badge/team-%40BALLERINA-C79A32" alt="Team"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
+  <a href="./docs/DEMO.md"><img src="https://img.shields.io/badge/status-demo%20ready-0B5A3C" alt="Status"></a>
+</p>
 
 ---
 
@@ -497,7 +504,7 @@ For competition/demo execution, follow the documented environment and live Tiger
 
 ## Team & Attribution
 
-- **Team Name:** `@BALLERINA` (Team Ballerina)
+- **Team Name:** `Team BALLERINA • KHIT` (`@BALLERINA`)
 - **Copyright:** &copy; 2026 `@BALLERINA`. All rights reserved.
 - **Competition:** TigerGraph × Hacker House Goa 2026 (HHGOA'26)
 - **Track:** Task #4 — TigerGraph Agentic Fraud Investigation + Next Best Action
