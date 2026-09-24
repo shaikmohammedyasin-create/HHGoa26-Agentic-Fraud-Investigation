@@ -12,6 +12,7 @@
 [![Tests](https://img.shields.io/badge/tests-257%20passed%20(228%20base%20%2B%2029%20agentic)-2E7D32)](./docs/TECHNICAL_VALIDATION.md)
 [![IEEE Checkpoints](https://img.shields.io/badge/IEEE%20checkpoints-600%2F600-2E7D32)](./artifacts/benchmark/benchmark_report.md)
 [![Team](https://img.shields.io/badge/team-%40BALLERINA-C79A32)](https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/status-demo%20ready-0B5A3C)](./docs/DEMO.md)
 
 ---
@@ -560,4 +561,6 @@ For competition/demo execution, follow the documented environment and live Tiger
 
 ## License
 
-&copy; 2026 `@BALLERINA`. All rights reserved. Built for Hacker House Goa 2026 Task #4.
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
+
+&copy; 2026 `@BALLERINA` (Team Ballerina). All rights reserved. Built for Hacker House Goa 2026 Task #4.
