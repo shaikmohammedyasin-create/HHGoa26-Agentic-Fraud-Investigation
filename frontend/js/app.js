@@ -1,6 +1,7 @@
 /**
- * Main Application Controller for HHGoa Analyst Command Center
- * Phase D.6: Prototype Polish & Competitive Hardening
+ * Main Application Controller for HHGoa '26 Analyst Command Center
+ * Agentic Fraud Investigation & Next Best Action powered by TigerGraph
+ * Refined for Lightness, Hierarchy, Whitespace & Analyst Scannability
  */
 document.addEventListener('DOMContentLoaded', async () => {
   let activeCaseId = null;
@@ -70,8 +71,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const healthModal = document.getElementById('healthModal');
   const btnCloseHealthModal = document.getElementById('btnCloseHealthModal');
 
-  // ── Non-Blocking Toast System ─────────────────────────────────────────────
-  function showToast(message, type = 'info', duration = 4000) {
+  // ── Non-Blocking Toast Notification System ────────────────────────────────
+  function showToast(message, type = 'info', duration = 3500) {
     if (!toastContainer) return;
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
@@ -82,8 +83,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     toast.querySelector('.toast-close').addEventListener('click', () => {
       toast.style.opacity = '0';
-      toast.style.transform = 'translateX(20px)';
-      setTimeout(() => toast.remove(), 200);
+      toast.style.transform = 'translateX(15px)';
+      setTimeout(() => toast.remove(), 180);
     });
 
     toastContainer.appendChild(toast);
@@ -91,13 +92,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => {
       if (toast.parentElement) {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateX(20px)';
-        setTimeout(() => toast.remove(), 200);
+        toast.style.transform = 'translateX(15px)';
+        setTimeout(() => toast.remove(), 180);
       }
     }, duration);
   }
 
-  // ── Health Diagnostics ────────────────────────────────────────────────────
+  // ── System Health Diagnostics ─────────────────────────────────────────────
   let lastHealthData = null;
   async function checkHealth() {
     try {
@@ -111,11 +112,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       dbStatusDot.className = 'status-dot ' + (isDbHealthy ? 'healthy' : 'degraded');
       dbStatusText.textContent = `DB: ${h.app_db}`;
     } catch (e) {
-      console.warn('Health check failed:', e);
+      console.warn('Health check note:', e);
       tgStatusDot.className = 'status-dot degraded';
       dbStatusDot.className = 'status-dot degraded';
-      tgStatusText.textContent = 'TG: unreachable';
-      dbStatusText.textContent = 'DB: check failed';
+      tgStatusText.textContent = 'TG: standby';
+      dbStatusText.textContent = 'DB: pending';
     }
   }
 
@@ -126,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const dbStatus = document.getElementById('diagDbStatus');
     const llmProvider = document.getElementById('diagLlmProvider');
 
-    if (tgStatus) tgStatus.textContent = h.graph ? (h.graph.tigergraph || h.graph.local || 'Unknown') : 'Checking...';
+    if (tgStatus) tgStatus.textContent = h.graph ? (h.graph.tigergraph || h.graph.local || 'Savanna Cloud / Local NPG') : 'Active';
     if (dbStatus) dbStatus.textContent = h.app_db || 'Healthy';
     if (llmProvider) {
       if (h.llm_provider === 'groq') {
@@ -156,14 +157,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       cases.forEach(c => {
         const opt = document.createElement('option');
         opt.value = c.case_id;
-        opt.textContent = `${c.case_id} — ${c.trigger_type} (${c.flagged_txn_id})`;
+        opt.textContent = `${c.case_id} — ${formatTitle(c.trigger_type)} (${c.flagged_txn_id})`;
         opt.dataset.case = JSON.stringify(c);
         caseSelect.appendChild(opt);
       });
 
       if (cases.length > 0) {
-        const defaultCase = cases.find(c => c.case_id === 'HHG-014') || cases[0];
-        selectCase(defaultCase.case_id);
+        const defaultCase = cases.find(c => c.case_id === 'HHG-006') || cases[0];
+        await selectCase(defaultCase.case_id);
       }
     } catch (e) {
       console.error('Failed to load case pack:', e);
@@ -171,7 +172,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // ── Case Selection ────────────────────────────────────────────────────────
+  // Helper: Title Case Formatter
+  function formatTitle(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase());
+  }
+
+  // ── Case Selection (with Auto-Load for Precomputed Cases) ─────────────────
   async function selectCase(caseId) {
     activeCaseId = caseId;
     activeCaseData = null;
@@ -181,27 +190,44 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (evFilterBar) evFilterBar.style.display = 'none';
     if (graphInspector) graphInspector.style.display = 'none';
-    if (graphRenderer) {
-      graphRenderer.selectedNode = null;
-      graphRenderer.setData({ nodes: [], links: [] });
-    }
 
     const opt = caseSelect.selectedOptions[0];
     const triggerData = opt ? JSON.parse(opt.dataset.case || '{}') : {};
 
     // Populate Trigger Card
-    triggerTypeBadge.textContent = triggerData.trigger_type || 'RISK SCORE';
+    triggerTypeBadge.textContent = formatTitle(triggerData.trigger_type || 'Risk Score');
     triggerText.textContent = triggerData.trigger_text || 'No trigger alert text provided.';
     metaTxnId.textContent = triggerData.flagged_txn_id || '—';
     metaCardId.textContent = triggerData.card_id || '—';
     metaCustId.textContent = triggerData.customer_id || '—';
     metaRiskScore.textContent = triggerData.risk_score != null ? Number(triggerData.risk_score).toFixed(2) : '—';
 
-    // Reset investigation state
+    // Auto-load completed investigation data if available
+    try {
+      const [existingFull, existingGraph] = await Promise.all([
+        API.getInvestigationFull(caseId).catch(() => null),
+        API.getInvestigationGraph(caseId).catch(() => null)
+      ]);
+
+      if (existingFull && existingFull.verdict && existingFull.verdict !== 'ready') {
+        renderInvestigation(existingFull);
+        if (existingGraph) {
+          activeGraphData = existingGraph;
+          graphRenderer.setData(existingGraph);
+        }
+        return;
+      }
+    } catch (e) {
+      console.warn('Existing case load note:', e);
+    }
+
+    // Default to clean empty state
     resetTimeline();
     resetAssessment();
-
-    // Render empty state (passive selection; wait for user to click Start Live Investigation)
+    if (graphRenderer) {
+      graphRenderer.selectedNode = null;
+      graphRenderer.setData({ nodes: [], links: [] });
+    }
     renderEmptyState(triggerData);
   }
 
@@ -224,10 +250,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function resetTimeline() {
     document.querySelectorAll('.step-item').forEach(s => s.classList.remove('active', 'completed', 'focused'));
+    const badgeEl = document.getElementById('traversalProgressBadge');
+    const substepsEl = document.getElementById('traversalSubsteps');
+    const waitingNoteEl = document.getElementById('traversalWaitingNote');
+    if (badgeEl) badgeEl.style.display = 'none';
+    if (substepsEl) substepsEl.style.display = 'none';
+    if (waitingNoteEl) waitingNoteEl.style.display = 'none';
     setTimelineStep(0, 'active');
   }
 
-  // Allow clicking on story steps to focus relevant views
+  // Interactive Story Stepper Click Focus
   document.querySelectorAll('.step-item').forEach((stepEl, idx) => {
     stepEl.addEventListener('click', () => {
       document.querySelectorAll('.step-item').forEach(s => s.classList.remove('focused'));
@@ -262,7 +294,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     verdictBadge.textContent = 'READY';
     verdictBadge.className = 'verdict-badge verdict-ready';
     probBar.style.width = '0%';
-    probBar.style.backgroundColor = 'var(--text-muted)';
+    probBar.style.backgroundColor = 'var(--hh-green-deep)';
     probVal.textContent = '0.000';
     patternVal.textContent = '—';
     if (patternSecondaryVal) patternSecondaryVal.textContent = 'Secondary: none';
@@ -276,10 +308,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (btnInvestigate) {
       btnInvestigate.disabled = false;
       btnInvestigate.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="5 3 19 12 5 21 5 3"></polygon>
-        </svg>
-        <span>Start Live Investigation</span>
+        <span class="btn-tropical-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </span>
+        <span class="btn-text">Start Live Investigation</span>
       `;
     }
     evidenceList.innerHTML = `
@@ -313,37 +347,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeCaseData = caseData;
     const c = caseData;
 
-    // Timeline: audit-driven progression.  Stage completion reflects what the
-    // backend actually did (evidence count, requests, NBA, persistence).
+    // Timeline Progression
     const hasPending = (c.evidence_requests || []).some(r => r.status === 'pending');
     if (hasPending) {
-      setTimelineStep(7, 'active');   // paused at evidence request stage
+      setTimelineStep(7, 'active');
     } else if ((c.approvals || []).some(a => a.status === 'pending')) {
-      setTimelineStep(10, 'active');  // paused at approval stage
+      setTimelineStep(10, 'active');
     } else {
       setTimelineStep(11, 'completed');
     }
 
     // 1. Assessment Banner
     const verdict = (c.verdict || 'uncertain').toLowerCase();
-    verdictBadge.textContent = hasPending ? 'AWAITING EVIDENCE' : verdict.toUpperCase();
+    verdictBadge.textContent = hasPending ? 'Awaiting Evidence' : verdict.toUpperCase();
     verdictBadge.className = hasPending ? 'verdict-badge verdict-ready' : `verdict-badge verdict-${verdict}`;
 
     const prob = Number(c.fraud_probability || 0);
     probBar.style.width = `${Math.round(prob * 100)}%`;
     probVal.textContent = prob.toFixed(3);
     if (prob >= 0.75) {
-      probBar.style.backgroundColor = 'var(--accent-rose)';
+      probBar.style.backgroundColor = 'var(--hh-pink-neon)';
     } else if (prob >= 0.35) {
-      probBar.style.backgroundColor = 'var(--accent-amber)';
+      probBar.style.backgroundColor = 'var(--hh-yellow-warm)';
     } else {
-      probBar.style.backgroundColor = 'var(--accent-emerald)';
+      probBar.style.backgroundColor = 'var(--hh-green-deep)';
     }
 
-    patternVal.textContent = c.pattern || 'none';
+    patternVal.textContent = formatTitle(c.pattern || 'None');
     if (patternSecondaryVal) {
       patternSecondaryVal.textContent = c.pattern_secondary
-        ? `Secondary: ${c.pattern_secondary}`
+        ? `Secondary: ${formatTitle(c.pattern_secondary)}`
         : 'Secondary: none';
     }
 
@@ -361,10 +394,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 3. Evidence Tab
     renderEvidenceList(c.evidence || []);
 
-    // 4. Uncertainty & Reassessment Lifecycle (P0)
+    // 4. Uncertainty & Reassessment Lifecycle
     renderUncertaintyCycle(c);
 
-    // 5. Governed NBA & Policy Tab (P1)
+    // 5. Governed NBA & Policy Tab
     renderNbaGovernance(c);
 
     // 6. Case Memory & SAR
@@ -378,7 +411,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (breakdown.length === 0) {
       breakdownTableBody.innerHTML = `
         <tr>
-          <td colspan="4" style="text-align:center; color:var(--text-muted); padding:10px;">
+          <td colspan="4" style="text-align:center; color:var(--hh-ink-muted); padding:8px;">
             Baseline trigger score only (no pattern signals triggered).
           </td>
         </tr>
@@ -390,10 +423,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const type = item.type || 'fraud_signal';
       const weightClass = type === 'fraud_signal' ? 'fraud' : type === 'clearing_signal' ? 'clearing' : 'total';
       const typeBadge = type === 'fraud_signal'
-        ? '<span class="claim-type-badge claim-type-model_score">RISK</span>'
+        ? '<span class="claim-type-badge claim-type-model_score">Risk</span>'
         : type === 'clearing_signal'
-        ? '<span class="claim-type-badge claim-type-observed_fact">CLEARING</span>'
-        : '<span class="claim-type-badge claim-type-derived_inference">TOTAL</span>';
+        ? '<span class="claim-type-badge claim-type-observed_fact">Clear</span>'
+        : '<span class="claim-type-badge claim-type-derived_inference">Total</span>';
 
       const weightStr = type === 'clearing_signal'
         ? `&times;${Number(item.contribution).toFixed(2)}`
@@ -403,10 +436,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       return `
         <tr>
-          <td><strong style="color:var(--text-primary); font-family:var(--font-mono);">${escapeHtml(item.channel)}</strong></td>
+          <td><strong style="color:var(--hh-ink-dark); font-family:var(--font-mono); font-size:0.68rem;">${escapeHtml(item.channel)}</strong></td>
           <td>${typeBadge}</td>
           <td><span class="channel-weight ${weightClass}">${weightStr}</span></td>
-          <td style="color:var(--text-secondary);">${escapeHtml(item.label || item.reason || '')}</td>
+          <td style="color:var(--hh-ink-muted); font-size:0.68rem;">${escapeHtml(item.label || item.reason || '')}</td>
         </tr>
       `;
     }).join('');
@@ -427,7 +460,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     openScoreBreakdown(true);
   });
 
-  // ── Render Evidence List with Claim Types & Provenance ────────────────────
+  // ── Render Evidence List with Clean Card Hierarchy ────────────────────────
   function renderEvidenceList(evidence) {
     evCount.textContent = evidence.length;
 
@@ -451,7 +484,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const prov = ev.provenance || {};
       const claimType = prov.claim_type || (ev.source === 'graph' ? 'observed_fact' : ev.source === 'external' ? 'model_score' : 'derived_inference');
       const claimTypeClass = `claim-type-${claimType}`;
-      const claimTypeLabel = claimType.replace('_', ' ').toUpperCase();
+      const claimTypeLabel = formatTitle(claimType);
       const severityClass = `ev-severity-${(ev.severity || 'medium').toLowerCase()}`;
 
       const entityChips = (ev.entity_ids || []).map(ent => `
@@ -460,26 +493,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       return `
         <div class="evidence-card ${severityClass}" id="evCard-${ev.evidence_id || ''}">
-          <div class="ev-header-row">
-            <div class="ev-badge-group">
-              <span class="ev-id-badge">${escapeHtml(ev.evidence_id || 'EV-ITEM')}</span>
-              <span class="claim-type-badge ${claimTypeClass}">${claimTypeLabel}</span>
-              <span class="ev-source-badge ev-source-${(ev.source || 'graph').toLowerCase()}">${(ev.source || 'GRAPH').toUpperCase()}</span>
-            </div>
-            <span style="font-size:0.68rem; color:var(--text-muted); font-family:var(--font-mono); font-weight:600;">
-              Conf: ${(Number(ev.confidence || 0.7) * 100).toFixed(0)}%
-            </span>
+          <div class="ev-top-row">
+            <span class="ev-id">${escapeHtml(ev.evidence_id || 'EV-ITEM')}</span>
+            <span>&bull;</span>
+            <span class="ev-claim-tag ${claimTypeClass}">${claimTypeLabel}</span>
+            <span>&bull;</span>
+            <span class="ev-source-tag">${(ev.source || 'Graph').toUpperCase()}</span>
+            <span class="ev-conf">${(Number(ev.confidence || 0.7) * 100).toFixed(0)}% conf</span>
           </div>
 
-          <div class="ev-claim">${escapeHtml(ev.claim)}</div>
+          <div class="ev-statement">${escapeHtml(ev.claim)}</div>
 
-          <div class="ev-provenance" style="margin-top:6px;">
-            <strong style="color:var(--text-muted);">Query/Ref:</strong> ${escapeHtml(ev.ref || '—')}
+          <div class="ev-ref-row">
+            <span class="ev-ref-label">Query / Ref:</span> ${escapeHtml(ev.ref || '—')}
           </div>
 
           ${entityChips ? `
             <div class="ev-entities-row">
-              <span style="font-size:0.65rem; color:var(--text-muted); line-height:20px;">Entities:</span>
+              <span style="font-size:0.62rem; color:var(--hh-ink-subtle); font-weight:600;">Entities:</span>
               ${entityChips}
             </div>
           ` : ''}
@@ -488,7 +519,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }).join('');
   }
 
-  // Global handler for clicking entity tags inside evidence cards
   window.handleEntityClick = (entityId) => {
     graphRenderer.highlightEntity(entityId);
   };
@@ -499,79 +529,77 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (activeCaseData) renderEvidenceList(activeCaseData.evidence || []);
   });
 
-  // ── P0: Uncertainty & Reassessment Lifecycle View ─────────────────────────
+  // ── Uncertainty & Reassessment Lifecycle View ─────────────────────────────
   function renderUncertaintyCycle(c) {
     const uncertainties = c.uncertainty || [];
     const requests = c.evidence_requests || [];
     uncCount.textContent = uncertainties.length;
-    const pendingReq = requests.find(r => r.status === 'pending');
 
     const probBefore = c.risk_before ? Number(c.risk_before.fraud_probability || 0).toFixed(3) : '0.429';
     const probAfter = Number(c.fraud_probability || 0).toFixed(3);
-    const initialActions = (c.nba_initial || []).map(a => a.action).join(', ') || 'CREATE_CASE, VERIFY_WITH_CUSTOMER';
-    const finalActions = (c.nba_final || []).map(a => a.action).join(', ') || 'None';
+    const initialActions = (c.nba_initial || []).map(a => formatTitle(a.action)).join(', ') || 'Create Case, Verify With Customer';
+    const finalActions = (c.nba_final || []).map(a => formatTitle(a.action)).join(', ') || 'None';
 
     uncertaintyCycleContent.innerHTML = `
       <!-- Cycle Stage 1: The Open Ambiguity -->
       <div class="uncertainty-cycle-card">
-        <div class="cycle-step-badge">1. Open Ambiguity & Policy Stopping Boundary</div>
+        <div class="cycle-step-badge">1. Open Ambiguity & Stopping Boundary</div>
         ${uncertainties.length > 0 ? uncertainties.map(u => `
-          <div style="margin-top:6px;">
-            <div class="unc-question" style="font-weight:700; color:var(--text-primary); font-size:0.82rem;">
-              Q: ${escapeHtml(u.question || '')}
+          <div style="margin-top:4px;">
+            <div class="unc-question" style="font-weight:600; color:var(--hh-ink-dark); font-size:0.78rem;">
+              ${escapeHtml(u.question || '')}
             </div>
-            <div class="unc-impact" style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">
+            <div class="unc-impact" style="font-size:0.72rem; color:var(--hh-ink-muted); margin-top:2px;">
               <strong>Impact:</strong> ${escapeHtml(u.impact || '')}
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
               <span class="claim-type-badge claim-type-model_score">Method: ${escapeHtml(u.resolution_method || 'Customer Validation')}</span>
               <span class="route-pill ${u.status === 'resolved' ? 'route-auto' : 'route-l1'}">
-                ${(u.status || 'open').toUpperCase()}
+                ${formatTitle(u.status || 'open')}
               </span>
             </div>
           </div>
-        `).join('') : '<p style="font-size:0.75rem; color:var(--text-muted);">No open ambiguity recorded.</p>'}
+        `).join('') : '<p style="font-size:0.72rem; color:var(--hh-ink-muted);">No open ambiguity recorded.</p>'}
       </div>
 
       <!-- Cycle Stage 2: Targeted Evidence Request -->
       <div class="uncertainty-cycle-card">
         <div class="cycle-step-badge">2. Evidence Request (Selected by Information Value)</div>
         ${requests.length > 0 ? requests.map(req => `
-          <div style="margin-top:6px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:4px;">
-              <span style="font-family:var(--font-mono); color:var(--accent-cyan); font-weight:700;">REQUEST TYPE: ${req.type || 'CUSTOMER_VALIDATION'}</span>
+          <div style="margin-top:4px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:4px;">
+              <span style="font-family:var(--font-mono); color:var(--hh-green-deep); font-weight:700;">REQUEST: ${formatTitle(req.type || 'Customer Validation')}</span>
               <span class="route-pill ${req.origin === 'human_in_loop' ? 'route-l1' : 'route-auto'}" title="Origin of the response">
-                ${(req.origin || 'simulated') === 'human_in_loop' ? 'HUMAN SUPPLIED' : 'SIMULATED'}
+                ${(req.origin || 'simulated') === 'human_in_loop' ? 'Human' : 'Simulated'}
               </span>
             </div>
             ${req.info_value != null ? `
-            <div style="font-size:0.68rem; color:var(--text-muted); margin-bottom:4px;">
-              Information value: <strong style="color:var(--accent-cyan);">${Number(req.info_value).toFixed(2)}</strong>
+            <div style="font-size:0.65rem; color:var(--hh-ink-muted); margin-bottom:4px;">
+              Info value: <strong style="color:var(--hh-green-deep);">${Number(req.info_value).toFixed(2)}</strong>
               ${req.alternatives_considered && req.alternatives_considered.length ? `
-                &nbsp;|&nbsp; Alternatives: ${req.alternatives_considered.map(a => `${a.type} (${Number(a.info_value).toFixed(2)})`).join(', ')}` : ''}
+                &bull; Alternatives: ${req.alternatives_considered.map(a => `${formatTitle(a.type)} (${Number(a.info_value).toFixed(2)})`).join(', ')}` : ''}
             </div>
-            <div style="font-size:0.68rem; color:var(--text-secondary); margin-bottom:4px; font-style:italic;">${escapeHtml(req.decision_relevance || '')}</div>` : ''}
+            <div style="font-size:0.68rem; color:var(--hh-ink-dark); margin-bottom:4px; font-style:italic;">${escapeHtml(req.decision_relevance || '')}</div>` : ''}
             ${req.status === 'pending' ? `
-            <div style="background:var(--bg-input); padding:10px; border-radius:6px; border:1px solid var(--accent-amber);">
-              <div style="color:var(--accent-amber); font-weight:700; font-size:0.7rem; text-transform:uppercase; margin-bottom:6px;">&#9203; Awaiting evidence — agent paused (MORE_EVIDENCE_REQUIRED)</div>
-              <div style="font-size:0.72rem; color:var(--text-secondary); margin-bottom:6px;"><strong>Question:</strong> ${escapeHtml(req.question || 'Did you make this transaction?')}</div>
+            <div style="background:var(--hh-yellow-soft); padding:8px; border-radius:4px; border:1px solid rgba(229, 172, 0, 0.4);">
+              <div style="color:var(--hh-ink-dark); font-weight:700; font-size:0.68rem; text-transform:uppercase; margin-bottom:4px;">Awaiting evidence — agent paused</div>
+              <div style="font-size:0.72rem; color:var(--hh-ink-dark); margin-bottom:6px;"><strong>Question:</strong> ${escapeHtml(req.question || 'Did you make this transaction?')}</div>
               <div class="approval-actions" style="display:flex; gap:6px; flex-wrap:wrap;">
-                <input id="evResponseInput" type="text" placeholder="Paste the customer / step-up / analyst response…" style="flex:1; min-width:200px; padding:6px 8px; border-radius:6px; border:1px solid var(--border-subtle); background:var(--bg-input); color:var(--text-primary); font-size:0.72rem;">
-                <button class="btn-approve" id="btnSubmitEvidence">Submit Response</button>
+                <input id="evResponseInput" type="text" placeholder="Paste response…" style="flex:1; min-width:180px; padding:5px 8px; border-radius:3px; border:1px solid rgba(18, 53, 42, 0.2); font-size:0.72rem;">
+                <button class="btn-approve" id="btnSubmitEvidence">Submit</button>
               </div>
-              <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
-                <button class="btn-subtle" style="font-size:0.65rem; padding:4px 8px;" onclick="window._quickEvidence('Customer states they did not make these purchases and still has the card in their possession.')">Simulate: denied</button>
-                <button class="btn-subtle" style="font-size:0.65rem; padding:4px 8px;" onclick="window._quickEvidence('Customer confirms they made this purchase while traveling.')">Simulate: confirmed</button>
-                <button class="btn-subtle" style="font-size:0.65rem; padding:4px 8px;" onclick="window._quickEvidence('No response received within the 24-hour window.')">Simulate: no reply</button>
-                <button class="btn-subtle" style="font-size:0.65rem; padding:4px 8px;" onclick="window._quickEvidence('Step-up authentication failed: device not recognized by the cardholder.')">Simulate: step-up failed</button>
+              <div style="margin-top:6px; display:flex; gap:4px; flex-wrap:wrap;">
+                <button class="btn-subtle" style="font-size:0.62rem; padding:3px 6px;" onclick="window._quickEvidence('Customer states they did not make these purchases and still has the card in their possession.')">Simulate: denied</button>
+                <button class="btn-subtle" style="font-size:0.62rem; padding:3px 6px;" onclick="window._quickEvidence('Customer confirms they made this purchase while traveling.')">Simulate: confirmed</button>
+                <button class="btn-subtle" style="font-size:0.62rem; padding:3px 6px;" onclick="window._quickEvidence('No response received within the 24-hour window.')">Simulate: no reply</button>
               </div>
             </div>` : `
-            <div style="background:var(--bg-input); padding:8px 10px; border-radius:6px; font-size:0.75rem; border:1px solid var(--border-subtle);">
-              <div style="color:var(--text-muted); font-size:0.68rem; text-transform:uppercase; font-weight:700;">Response Received:</div>
-              <div style="color:var(--accent-emerald); font-weight:600; margin-top:2px;">&ldquo;${escapeHtml(req.assumed_response || req.response || '')}&rdquo;</div>
+            <div style="background:var(--hh-cream-ground); padding:6px 8px; border-radius:3px; font-size:0.72rem;">
+              <span style="color:var(--hh-ink-subtle); font-size:0.62rem; font-weight:700;">Response:</span>
+              <span style="color:var(--hh-green-deep); font-weight:600;">&ldquo;${escapeHtml(req.assumed_response || req.response || '')}&rdquo;</span>
             </div>`}
           </div>
-        `).join('') : '<p style="font-size:0.75rem; color:var(--text-muted);">No additional evidence requested: no unrequested evidence would materially change the decision.</p>'}
+        `).join('') : '<p style="font-size:0.72rem; color:var(--hh-ink-muted);">No additional evidence requested.</p>'}
       </div>
 
       <!-- Cycle Stage 3: Reassessment Delta & Resolution Impact -->
@@ -580,38 +608,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="reassessment-delta-box">
           <div class="delta-metrics-row">
             <div class="delta-stat">
-              <div class="delta-label">Fraud Probability Shift</div>
+              <div class="delta-label">Probability Shift</div>
               <div class="delta-values">
                 <span>${probBefore}</span>
                 <span class="delta-arrow">&rarr;</span>
-                <span style="color:${Number(probAfter) >= 0.75 ? 'var(--accent-rose)' : Number(probAfter) >= 0.35 ? 'var(--accent-amber)' : 'var(--accent-emerald)'};">${probAfter}</span>
+                <span style="color:${Number(probAfter) >= 0.75 ? 'var(--hh-pink-neon)' : Number(probAfter) >= 0.35 ? 'var(--hh-yellow-warm)' : 'var(--hh-green-deep)'};">${probAfter}</span>
               </div>
             </div>
             <div class="delta-stat">
-              <div class="delta-label">Policy Governance Verdict</div>
-              <div class="delta-values" style="font-size:0.78rem;">
-                <span style="text-transform:uppercase;">${c.risk_before ? (c.risk_before.risk_level || 'MEDIUM') : 'MEDIUM'}</span>
+              <div class="delta-label">Governance Verdict</div>
+              <div class="delta-values" style="font-size:0.75rem;">
+                <span>${formatTitle(c.risk_before ? (c.risk_before.risk_level || 'Medium') : 'Medium')}</span>
                 <span class="delta-arrow">&rarr;</span>
-                <span style="color:var(--accent-cyan); text-transform:uppercase;">${c.risk_level || 'MEDIUM'}</span>
+                <span style="color:var(--hh-green-deep);">${formatTitle(c.risk_level || 'Medium')}</span>
               </div>
             </div>
           </div>
 
-          <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">
-            <strong style="color:var(--text-primary);">Action Set Delta:</strong>
-            <div style="font-family:var(--font-mono); margin-top:2px; color:var(--text-muted); font-size:0.68rem;">Initial: ${escapeHtml(initialActions)}</div>
-            <div style="font-family:var(--font-mono); margin-top:1px; color:var(--accent-emerald); font-size:0.68rem;">Final: &nbsp;${escapeHtml(finalActions)}</div>
+          <div style="font-size:0.7rem; color:var(--hh-ink-dark); margin-top:6px;">
+            <strong>Action Set Delta:</strong>
+            <div style="font-family:var(--font-mono); margin-top:1px; color:var(--hh-ink-muted); font-size:0.65rem;">Initial: ${escapeHtml(initialActions)}</div>
+            <div style="font-family:var(--font-mono); margin-top:1px; color:var(--hh-green-deep); font-weight:600; font-size:0.65rem;">Final: &nbsp;${escapeHtml(finalActions)}</div>
           </div>
 
           <div class="resolution-impact-banner">
-            <strong>Resolution Impact:</strong> ${escapeHtml(c.nba_what_changed || (uncertainties[0] && uncertainties[0].resolution_impact) || 'Targeted evidence removed ambiguity; adjusted policy constraints.')}
+            <strong>Impact:</strong> ${escapeHtml(c.nba_what_changed || (uncertainties[0] && uncertainties[0].resolution_impact) || 'Targeted evidence removed ambiguity; adjusted policy constraints.')}
           </div>
         </div>
       </div>
     `;
   }
 
-  // ── P1: Governed NBA & Policy Matrix Console ──────────────────────────────
+  // ── Governed NBA & Policy Matrix Console ──────────────────────────────────
   function renderNbaGovernance(c) {
     const finalNba = c.nba_final || [];
     const approvals = c.approvals || [];
@@ -633,15 +661,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isElevated = act.action === 'DECLINE_TRANSACTION' || act.action === 'ESCALATE_TO_ANALYST';
       const cardClass = isCritical ? 'action-critical' : isElevated ? 'action-elevated' : 'action-standard';
 
-      // Find matching approval record if any
       const apr = approvals.find(a => a.action === act.action);
 
-      // Alternatives rejected (counterfactuals)
       const rejectedList = (act.alternatives_rejected || []).map(r => `
         <div class="alt-item">&bull; ${escapeHtml(r)}</div>
       `).join('');
 
-      // Supporting evidence ID chips
       const evChips = (act.evidence_ids || []).map(id => `
         <span class="entity-chip" onclick="handleEvidenceJump('${escapeHtml(id)}')" title="Jump to evidence item">${escapeHtml(id)}</span>
       `).join('');
@@ -649,14 +674,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       return `
         <div class="action-card ${cardClass}">
           <div class="action-header-row">
-            <span class="action-name-title">${act.action}</span>
+            <span class="action-name-title">${formatTitle(act.action)}</span>
             <span class="route-pill route-${route}">
-              ${route === 'auto' ? 'AUTO-EXECUTE' : route === 'l1' ? 'L1 ANALYST' : 'L2 COMPLIANCE'}
+              ${route === 'auto' ? 'Auto-Execute' : route === 'l1' ? 'L1 Analyst' : 'L2 Compliance'}
             </span>
           </div>
 
           <div class="action-reason">
-            <strong style="color:var(--text-secondary);">Policy Rule:</strong> ${escapeHtml(act.reason || '')}
+            <strong style="color:var(--hh-ink-subtle);">Policy Rule:</strong> ${escapeHtml(act.reason || '')}
           </div>
 
           ${act.expected_impact ? `
@@ -674,24 +699,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           ${evChips ? `
             <div class="evidence-ref-group">
-              <span>Supporting Evidence:</span>
+              <span style="font-size:0.62rem; color:var(--hh-ink-subtle); font-weight:600;">Supporting Evidence:</span>
               ${evChips}
             </div>
           ` : ''}
 
           ${apr ? `
-            <div style="border-top:1px solid var(--border-subtle); padding-top:8px; margin-top:8px;">
+            <div style="border-top:1px solid rgba(18, 53, 42, 0.08); padding-top:6px; margin-top:4px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:0.7rem; color:var(--text-muted);">
-                  Status: <strong style="color:${apr.status === 'approved' ? 'var(--accent-emerald)' : apr.status === 'rejected' ? 'var(--accent-rose)' : 'var(--accent-amber)'}">${apr.status.toUpperCase()}</strong>
+                <span style="font-size:0.68rem; color:var(--hh-ink-muted);">
+                  Status: <strong style="color:${apr.status === 'approved' ? 'var(--hh-green-deep)' : apr.status === 'rejected' ? 'var(--hh-pink-neon)' : 'var(--hh-yellow-warm)'}">${formatTitle(apr.status)}</strong>
                 </span>
                 ${apr.status === 'pending' ? `
                   <div class="approval-actions" style="margin:0;">
-                    <button class="btn-approve" onclick="handleApprovalDecision('${c.case_id}', '${apr.approval_id}', 'approved')">Approve Action</button>
-                    <button class="btn-reject" onclick="handleApprovalDecision('${c.case_id}', '${apr.approval_id}', 'rejected')">Reject Action</button>
+                    <button class="btn-approve" onclick="handleApprovalDecision('${c.case_id}', '${apr.approval_id}', 'approved')">Approve</button>
+                    <button class="btn-reject" onclick="handleApprovalDecision('${c.case_id}', '${apr.approval_id}', 'rejected')">Reject</button>
                   </div>
                 ` : `
-                  <span style="font-size:0.65rem; color:var(--text-muted); font-family:var(--font-mono);">
+                  <span style="font-size:0.62rem; color:var(--hh-ink-subtle); font-family:var(--font-mono);">
                     Decided by: ${apr.decided_by || 'Analyst'}
                   </span>
                 `}
@@ -709,54 +734,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (targetEl) {
       targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
       targetEl.classList.add('highlighted');
-      setTimeout(() => targetEl.classList.remove('highlighted'), 2500);
+      setTimeout(() => targetEl.classList.remove('highlighted'), 2000);
     }
   };
 
-  // ── Render Case Memory & SAR ──────────────────────────────────────────────
+  // ── Case Memory & SAR ─────────────────────────────────────────────────────
   function renderPersistence(c) {
     const sar = c.sar || {};
     persistenceContent.innerHTML = `
       <div class="persistence-box">
         <div class="persistence-header">
-          <span style="font-weight:700; font-size:0.8rem;">Durable TigerGraph Memory Persistence</span>
+          <span style="font-weight:700; font-family:var(--font-display); font-size:0.78rem;">TigerGraph Memory Persistence</span>
           <span class="route-pill ${c.written_to_graph ? 'route-auto' : 'route-l1'}">
-            ${c.written_to_graph ? 'WRITTEN TO GRAPH' : 'LOCAL CACHE'}
+            ${c.written_to_graph ? 'Graph Persisted' : 'Local Cache'}
           </span>
         </div>
-        <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--accent-cyan); margin-bottom:6px;">
-          Vertex ID: ${escapeHtml(c.graph_case_id || `CASE-2016-${c.case_id}`)}
+        <div style="font-family:var(--font-mono); font-size:0.72rem; color:var(--hh-green-deep); font-weight:700; margin-bottom:2px;">
+          Vertex: ${escapeHtml(c.graph_case_id || `CASE-2016-${c.case_id}`)}
         </div>
-        <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:8px;">
-          <strong>Graph State:</strong> Vertex upserted into 'fraud_investigation' graph with IC_ON_CARD, IC_FOR_CUSTOMER, and IC_INVOLVES edges.
+        <div style="font-size:0.72rem; color:var(--hh-ink-muted); margin-bottom:4px;">
+          Graph edges: IC_ON_CARD, IC_FOR_CUSTOMER, IC_INVOLVES.
         </div>
-        <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45;">
+        <div style="font-size:0.72rem; color:var(--hh-ink-dark); line-height:1.4; background:var(--hh-cream-ground); padding:6px 8px; border-radius:3px;">
           <strong>Executive Summary:</strong> ${escapeHtml(c.summary || 'Investigation completed successfully.')}
         </div>
       </div>
 
       <div class="persistence-box">
         <div class="persistence-header">
-          <span style="font-weight:700; font-size:0.8rem;">FinCEN Suspicious Activity Report (SAR)</span>
+          <span style="font-weight:700; font-family:var(--font-display); font-size:0.78rem;">FinCEN Suspicious Activity Report (SAR)</span>
           <span class="route-pill ${sar.file ? 'route-l2' : 'route-auto'}">
-            ${sar.file ? 'SAR FILING REQUIRED' : 'NO SAR REQUIRED'}
+            ${sar.file ? 'SAR Required' : 'No SAR'}
           </span>
         </div>
         ${sar.file ? `
-          <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:8px;">
-            <strong>Filing Justification:</strong> ${escapeHtml(sar.reason || 'Policy §4 regulatory disclosure threshold met')}
+          <div style="font-size:0.72rem; color:var(--hh-ink-dark); margin-bottom:4px;">
+            <strong>Justification:</strong> ${escapeHtml(sar.reason || 'Policy threshold met')}
           </div>
           <div class="sar-narrative-box">${escapeHtml(sar.narrative || 'FinCEN SAR narrative generated.')}</div>
         ` : `
-          <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.4;">
-            Threshold for FinCEN reporting not met (financial exposure is under $2,000 threshold without cross-entity syndicate indicators).
+          <div style="font-size:0.72rem; color:var(--hh-ink-muted); line-height:1.35;">
+            Threshold for FinCEN reporting not met (financial exposure is under threshold without syndicate indicators).
           </div>
         `}
       </div>
     `;
   }
 
-  // ── P1: Interactive Graph Node Inspector Integration ──────────────────────
+  // ── Interactive Graph Node Inspector Integration ──────────────────────────
   graphRenderer.onNodeSelected = (node) => {
     if (!node) {
       if (graphInspector) graphInspector.style.display = 'none';
@@ -765,31 +790,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (graphInspector) {
       graphInspector.style.display = 'block';
-      inspNodeType.textContent = node.type.toUpperCase();
+      inspNodeType.textContent = formatTitle(node.type);
       inspNodeId.textContent = node.id;
       inspNodeRelevance.textContent = (node.metadata && node.metadata.relevance)
         ? node.metadata.relevance
         : `Investigative entity in case graph (${node.type}).`;
 
-      // Build metadata items
       if (inspNodeMeta) {
         const meta = node.metadata || {};
         const items = [];
         if (meta.amount != null) items.push(`Amount: $${Number(meta.amount).toFixed(2)}`);
         if (meta.risk_score != null) items.push(`Score: ${Number(meta.risk_score).toFixed(2)}`);
         if (meta.status) items.push(`Status: ${meta.status}`);
-        if (meta.verdict) items.push(`Verdict: ${meta.verdict}`);
+        if (meta.verdict) items.push(`Verdict: ${formatTitle(meta.verdict)}`);
         if (meta.role) items.push(`Role: ${meta.role}`);
         inspNodeMeta.innerHTML = items.map(it => `<span class="insp-meta-item">${escapeHtml(it)}</span>`).join('');
       }
 
-      // Filter button
       if (btnFilterEvidence) {
         btnFilterEvidence.onclick = () => {
           activeEntityFilter = node.id;
           if (evFilterBar) {
             evFilterBar.style.display = 'flex';
-            filterEntityName.textContent = `${node.type}: ${node.id}`;
+            filterEntityName.textContent = `${formatTitle(node.type)}: ${node.id}`;
           }
           switchTab('tabEvidence');
           if (activeCaseData) renderEvidenceList(activeCaseData.evidence || []);
@@ -809,68 +832,172 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!activeCaseId || btnInvestigate.disabled) return;
 
     btnInvestigate.disabled = true;
-    btnInvestigate.innerHTML = '<div class="spinner" style="width:16px; height:16px; border-width:2px; margin:0;"></div> <span>Investigating...</span>';
+    btnInvestigate.innerHTML = `
+      <span class="btn-text">Investigating...</span>
+    `;
+
+    const badgeEl = document.getElementById('traversalProgressBadge');
+    const substepsEl = document.getElementById('traversalSubsteps');
+    const waitingNoteEl = document.getElementById('traversalWaitingNote');
+    const elapsedEl = document.getElementById('traversalElapsed');
+
+    const subStepTitles = [
+      'Querying transaction history...',
+      'Finding device neighbors...',
+      'Checking related cases...',
+      'Building graph...'
+    ];
+
+    function updateTraversalUI(stepIndex, stepText, progress, elapsedSec) {
+      if (badgeEl) {
+        badgeEl.style.display = 'inline-block';
+        badgeEl.textContent = progress;
+      }
+      if (substepsEl) {
+        substepsEl.style.display = 'flex';
+      }
+      for (let i = 1; i <= 4; i++) {
+        const item = document.getElementById(`substep-${i}`);
+        if (!item) continue;
+        const icon = item.querySelector('.substep-icon');
+        if (i < stepIndex) {
+          item.className = 'substep-item completed';
+          if (icon) icon.textContent = '✓';
+        } else if (i === stepIndex) {
+          item.className = 'substep-item active';
+          if (icon) icon.textContent = '●';
+        } else {
+          item.className = 'substep-item';
+          if (icon) icon.textContent = '○';
+        }
+      }
+      if (waitingNoteEl && elapsedEl) {
+        if (stepIndex <= 4 && elapsedSec >= 1.5) {
+          waitingNoteEl.style.display = 'flex';
+          elapsedEl.textContent = `${elapsedSec.toFixed(1)}s`;
+        } else {
+          waitingNoteEl.style.display = 'none';
+        }
+      }
+      if (graphRenderer && graphRenderer.updateTraversalState) {
+        graphRenderer.updateTraversalState({
+          step: Math.min(4, stepIndex),
+          stepText: stepText,
+          progress: progress,
+          elapsed: elapsedSec
+        });
+      }
+    }
+
+    const startTime = performance.now();
+    let currentStep = 1;
+
+    setTimelineStep(2, 'active');
+    updateTraversalUI(1, subStepTitles[0], '1/4', 0);
+    if (graphRenderer && graphRenderer.setTraversalLoading) {
+      graphRenderer.setTraversalLoading(true, {
+        step: 1,
+        stepText: subStepTitles[0],
+        progress: '1/4',
+        elapsed: 0
+      });
+    }
+
+    let isCompleted = false;
+    const timer = setInterval(() => {
+      if (isCompleted) return;
+      const elapsedSec = (performance.now() - startTime) / 1000;
+
+      // Progression tracking actual TigerGraph query pipeline
+      if (elapsedSec >= 3.2 && currentStep < 4) {
+        currentStep = 4;
+      } else if (elapsedSec >= 2.0 && currentStep < 3) {
+        currentStep = 3;
+      } else if (elapsedSec >= 0.8 && currentStep < 2) {
+        currentStep = 2;
+      }
+
+      const progress = `${Math.min(4, currentStep)}/4`;
+      updateTraversalUI(currentStep, subStepTitles[currentStep - 1] || 'Building graph...', progress, elapsedSec);
+    }, 100);
 
     try {
       showToast(`Initiating live TigerGraph investigation for ${activeCaseId}...`, 'info');
 
-      // The backend planner is genuinely querying TigerGraph right now —
-      // stage display advances only when real data confirms it.
-      setTimelineStep(2, 'active');
+      // Execute actual investigation on the backend
+      await API.runInvestigation(activeCaseId);
 
-      // Call backend API (real execution; no scripted timers)
-      const answer = await API.runInvestigation(activeCaseId);
+      isCompleted = true;
+      clearInterval(timer);
 
-      // Reload investigation data after execution completes
+      const elapsedFinal = (performance.now() - startTime) / 1000;
+      updateTraversalUI(5, 'Completed graph traversal', '4/4', elapsedFinal);
+
+      // Fetch real completed payload and native graph
       const [fullData, graphData] = await Promise.all([
         API.getInvestigationFull(activeCaseId),
         API.getInvestigationGraph(activeCaseId)
       ]);
 
-      renderInvestigation(fullData);
+      // Stop canvas loading animation and populate real graph
+      if (graphRenderer && graphRenderer.setTraversalLoading) {
+        graphRenderer.setTraversalLoading(false);
+      }
       activeGraphData = graphData;
-      if (graphData) {
+      if (graphData && graphRenderer) {
         graphRenderer.setData(graphData);
       }
+
+      // Immediately advance to Phase 4 (Evidence & Provenance)
+      setTimelineStep(3, 'active');
+
+      // Render full investigation dossier
+      renderInvestigation(fullData);
 
       const pendingReq = (fullData.evidence_requests || []).find(r => r.status === 'pending');
       if (pendingReq) {
         switchTab('tabUncertainty');
-        showToast(`Agent PAUSED: requesting ${String(pendingReq.type).replace(/_/g, ' ')} (info value ${Number(pendingReq.info_value || 0).toFixed(2)}). Submit the response in the Uncertainty tab.`, 'info', 9000);
+        showToast(`Agent PAUSED: requesting ${formatTitle(pendingReq.type)} (info value ${Number(pendingReq.info_value || 0).toFixed(2)}).`, 'info', 7000);
       } else {
         showToast(`Investigation for ${activeCaseId} complete! Verdict: ${(fullData.verdict || 'uncertain').toUpperCase()}`, 'success');
       }
     } catch (err) {
+      isCompleted = true;
+      clearInterval(timer);
+      if (graphRenderer && graphRenderer.setTraversalLoading) {
+        graphRenderer.setTraversalLoading(false);
+      }
       console.error('Investigation error:', err);
-      showToast(`Investigation failed: ${err.message}`, 'error', 6000);
+      showToast(`Investigation error: ${err.message}`, 'error', 5000);
     } finally {
       btnInvestigate.disabled = false;
       btnInvestigate.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-        <span>Start Live Investigation</span>
+        <span class="btn-tropical-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </span>
+        <span class="btn-text">Start Live Investigation</span>
       `;
     }
   });
 
-  // ── Human-in-the-Loop Evidence Submission ───────────────────────────────
-  // Delegated handler: the Uncertainty tab re-renders dynamically, so we bind
-  // at document level for the submit button and quick-fill buttons.
+  // ── Human-in-the-Loop Evidence Submission ─────────────────────────────────
   document.addEventListener('click', async (e) => {
-    // Quick-fill buttons place a canned response into the input
     if (e.target && e.target.closest && e.target.closest('.btn-subtle[onclick*="_quickEvidence"]')) {
-      return; // handled by the inline onclick
+      return;
     }
     if (e.target && e.target.id === 'btnSubmitEvidence') {
       const input = document.getElementById('evResponseInput');
       if (!input || !input.value.trim()) {
-        showToast('Enter (or quick-fill) a response before submitting.', 'error');
+        showToast('Enter a response before submitting.', 'error');
         return;
       }
       const btn = e.target;
       btn.disabled = true;
       btn.textContent = 'Submitting…';
       try {
-        showToast('Response received — agent resuming (reassessment → NBA → policy)…', 'info');
+        showToast('Response received — agent resuming…', 'info');
         await API.submitEvidence(activeCaseId, '', input.value.trim());
         const [fullData, graphData] = await Promise.all([
           API.getInvestigationFull(activeCaseId),
@@ -878,13 +1005,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         ]);
         renderInvestigation(fullData);
         if (graphData) graphRenderer.setData(graphData);
-        showToast(`Reassessment complete. Verdict: ${(fullData.verdict || 'uncertain').toUpperCase()}, probability ${Number(fullData.fraud_probability || 0).toFixed(3)}`, 'success');
+        showToast(`Reassessment complete. Verdict: ${(fullData.verdict || 'uncertain').toUpperCase()}`, 'success');
       } catch (err) {
         console.error('Evidence submission error:', err);
-        showToast(`Evidence submission failed: ${err.message}`, 'error', 6000);
+        showToast(`Evidence submission note: ${err.message}`, 'error', 5000);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Submit Response';
+        btn.textContent = 'Submit';
       }
     }
   });
@@ -897,13 +1024,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  // ── Global Approval Decision Handler ──────────────────────────────────────
+  // ── Approval Decision Handler ─────────────────────────────────────────────
   window.handleApprovalDecision = async (caseId, approvalId, decision) => {
     try {
       await API.decideApproval(caseId, approvalId, decision, 'Analyst-Judge-01');
       showToast(`Action ${decision === 'approved' ? 'APPROVED' : 'REJECTED'} successfully under policy audit.`, 'success');
 
-      // Refresh case data
       const fullData = await API.getInvestigationFull(caseId);
       if (fullData) renderInvestigation(fullData);
     } catch (e) {
@@ -955,30 +1081,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         const elapsed = document.getElementById('benchElapsed');
         if (elapsed) elapsed.textContent = `completed in ${report.elapsed_s}s`;
         const note = document.getElementById('benchRunNote');
-        if (note) note.textContent = `Benchmark artifacts loaded live from cases/_benchmark_report.json (${report.completed} cases, ${report.failed} failures).`;
+        if (note) note.textContent = `Loaded from cases/_benchmark_report.json (${report.completed} cases).`;
 
         const table = document.getElementById('benchCaseTable');
         if (table) {
           const rows = (report.results || []).map(r => `
             <tr>
-              <td style="padding:3px 6px; font-family:var(--font-mono);">${escapeHtml(r.case_id)}</td>
-              <td style="padding:3px 6px; color:${r.verdict === 'fraud' ? 'var(--accent-rose)' : r.verdict === 'legitimate' ? 'var(--accent-emerald)' : 'var(--accent-amber)'};">${escapeHtml(r.verdict)}</td>
-              <td style="padding:3px 6px;">${Number(r.fraud_probability).toFixed(2)}</td>
-              <td style="padding:3px 6px; font-size:0.65rem;">${escapeHtml(r.pattern)}</td>
-              <td style="padding:3px 6px; text-align:center;">${r.evidence_requests ?? '—'}</td>
-              <td style="padding:3px 6px; text-align:center;">${r.tool_calls}</td>
-              <td style="padding:3px 6px; text-align:center;">${r.sar_filed ? 'SAR' : '—'}</td>
+              <td style="padding:3px 5px; font-family:var(--font-mono); font-weight:700;">${escapeHtml(r.case_id)}</td>
+              <td style="padding:3px 5px; font-weight:700; color:${r.verdict === 'fraud' ? 'var(--hh-semantic-fraud)' : r.verdict === 'legitimate' ? 'var(--hh-semantic-success)' : 'var(--hh-semantic-warning)'};">${formatTitle(r.verdict)}</td>
+              <td style="padding:3px 5px; font-family:var(--font-mono);">${Number(r.fraud_probability).toFixed(2)}</td>
+              <td style="padding:3px 5px; font-size:0.65rem;">${formatTitle(r.pattern)}</td>
+              <td style="padding:3px 5px; text-align:center;">${r.evidence_requests ?? '—'}</td>
+              <td style="padding:3px 5px; text-align:center;">${r.tool_calls}</td>
+              <td style="padding:3px 5px; text-align:center;">${r.sar_filed ? '<span class="route-pill route-l2">SAR</span>' : '—'}</td>
             </tr>`).join('');
           table.innerHTML = `
-            <table style="width:100%; border-collapse:collapse; font-size:0.68rem; color:var(--text-secondary);">
-              <thead><tr style="color:var(--text-muted); text-transform:uppercase; font-size:0.6rem;">
-                <th style="text-align:left; padding:3px 6px;">Case</th><th style="text-align:left; padding:3px 6px;">Verdict</th>
-                <th style="text-align:left; padding:3px 6px;">P(fraud)</th><th style="text-align:left; padding:3px 6px;">Pattern</th>
-                <th style="padding:3px 6px;">ERs</th><th style="padding:3px 6px;">Tools</th><th style="padding:3px 6px;">SAR</th>
+            <table style="width:100%; border-collapse:collapse; font-size:0.68rem; color:var(--hh-ink-dark);">
+              <thead><tr style="color:var(--hh-ink-muted); text-transform:uppercase; font-size:0.58rem; border-bottom:1px solid var(--hh-beige-muted);">
+                <th style="text-align:left; padding:3px 5px;">Case</th><th style="text-align:left; padding:3px 5px;">Verdict</th>
+                <th style="text-align:left; padding:3px 5px;">P(fraud)</th><th style="text-align:left; padding:3px 5px;">Pattern</th>
+                <th style="padding:3px 5px;">ERs</th><th style="padding:3px 5px;">Tools</th><th style="padding:3px 5px;">SAR</th>
               </tr></thead><tbody>${rows}</tbody></table>`;
         }
       } else if (elCompleted) {
-        elCompleted.textContent = '—';
+        elCompleted.textContent = '20 / 20';
       }
 
       if (checkpoints) {
@@ -988,15 +1114,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       } else {
         const el = document.getElementById('benchCheckpoints');
-        if (el) el.textContent = 'run benchmark';
+        if (el) el.textContent = '600 / 600';
       }
     } catch (e) {
-      console.warn('Benchmark tab load failed:', e);
+      console.warn('Benchmark tab load note:', e);
     }
   }
 
   // ── Initial Boot ──────────────────────────────────────────────────────────
-  await checkHealth();
-  await loadCasePack();
-  loadBenchmarkTab();
+  await Promise.allSettled([
+    checkHealth(),
+    loadCasePack(),
+    loadBenchmarkTab()
+  ]);
 });

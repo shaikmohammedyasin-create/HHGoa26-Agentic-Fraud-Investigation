@@ -1,0 +1,16 @@
+# Ignore large data files that bloat prompt context
+*.csv
+*.pdf
+*.zip
+*.log
+
+# Ignore virtual environment and cache
+.venv/
+__pycache__/
+.pytest_cache/
+.kilo/
+node_modules/
+
+# Ignore heavy output directories
+artifacts/
+scratch/

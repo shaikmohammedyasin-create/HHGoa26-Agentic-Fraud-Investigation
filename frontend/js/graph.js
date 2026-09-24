@@ -1,6 +1,6 @@
 /**
- * Interactive Knowledge Graph Renderer using HTML5 Canvas
- * Renders case-scoped entities and relationships with physics layout and node inspection.
+ * HHGOA '26 Interactive Knowledge Graph Renderer using HTML5 Canvas
+ * Controlled, sophisticated HHGOA graph palette with high readability.
  */
 class GraphRenderer {
   constructor(canvasId) {
@@ -38,6 +38,37 @@ class GraphRenderer {
     this.render();
   }
 
+  setTraversalLoading(isLoading, state = {}) {
+    this.traversalLoading = !!isLoading;
+    this.traversalState = { ...(this.traversalState || {}), ...state };
+    if (this.traversalLoading) {
+      if (!this._animLoopRunning) {
+        this._animLoopRunning = true;
+        this._animFrame = 0;
+        const tick = () => {
+          if (!this.traversalLoading) {
+            this._animLoopRunning = false;
+            return;
+          }
+          this._animFrame = (this._animFrame || 0) + 1;
+          this.render();
+          requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+    } else {
+      this._animLoopRunning = false;
+      this.render();
+    }
+  }
+
+  updateTraversalState(state = {}) {
+    this.traversalState = { ...(this.traversalState || {}), ...state };
+    if (this.traversalLoading && !this._animLoopRunning) {
+      this.render();
+    }
+  }
+
   setData(graphData) {
     if (!graphData || !graphData.nodes) {
       this.nodes = [];
@@ -51,7 +82,6 @@ class GraphRenderer {
     const cx = this.width / 2;
     const cy = this.height / 2;
 
-    // Build nodes with initial radial positions around center
     this.nodes = graphData.nodes.map((n, i) => {
       const angle = (i / graphData.nodes.length) * Math.PI * 2;
       const radius = n.type === 'FlaggedTransaction' ? 0 : 130 + (i % 3) * 65;
@@ -78,7 +108,6 @@ class GraphRenderer {
     this.selectedNode = null;
     if (this.onNodeSelected) this.onNodeSelected(null);
 
-    // Run physics layout
     this.simulate(70);
     this.render();
   }
@@ -86,28 +115,90 @@ class GraphRenderer {
   getNodeRadius(type) {
     switch (type) {
       case 'FlaggedTransaction': return 16;
-      case 'InvestigationCase': return 14;
-      case 'Customer': return 13;
-      case 'Card': return 12;
-      case 'DeviceProfile': return 11;
-      case 'ClosedCase': return 10;
-      case 'ConnectedCard': return 11;
-      default: return 9;
+      case 'InvestigationCase': return 15;
+      case 'Customer': return 14;
+      case 'Card': return 13;
+      case 'DeviceProfile': return 12;
+      case 'ClosedCase': return 11;
+      case 'ConnectedCard': return 12;
+      default: return 10;
     }
   }
 
   getNodeColor(type) {
+    // Professional Dark Green + Beige palette: minimal semantic colors
     switch (type) {
-      case 'FlaggedTransaction': return '#f43f5e'; // Rose
-      case 'InvestigationCase': return '#10b981';  // Emerald
-      case 'Customer': return '#38bdf8';           // Sky Blue
-      case 'Card': return '#6366f1';               // Indigo
-      case 'DeviceProfile': return '#06b6d4';      // Cyan
-      case 'ClosedCase': return '#a855f7';         // Purple
-      case 'ConnectedCard': return '#14b8a6';      // Teal
-      case 'Transaction': return '#f59e0b';        // Amber
-      default: return '#94a3b8';                   // Slate
+      case 'FlaggedTransaction': return '#B84A4A'; // Muted Burgundy (Flagged / Risk)
+      case 'Customer': return '#F3EBDD';           // Warm Beige (Customer)
+      case 'Card': return '#FAF6EC';               // Cream (Card)
+      case 'DeviceProfile': return '#6F9F84';      // Muted Green (Device Profile)
+      case 'ClosedCase': return '#3F765E';         // Forest Green (Previous Case)
+      case 'InvestigationCase': return '#3F765E';  // Forest Green (Case Record)
+      case 'ConnectedCard': return '#D8CCB8';      // Muted Beige (Other Txn / Card)
+      case 'Transaction': return '#D8CCB8';        // Muted Beige (Other Transaction)
+      default: return '#D8CCB8';
     }
+  }
+
+  getHumanRelation(type) {
+    switch (type) {
+      case 'SHARED_DEVICE': return 'Shared Device';
+      case 'CC_ON_CARD': return 'Card Used';
+      case 'CC_ON_CUSTOMER': return 'Customer Link';
+      case 'IC_INVOLVES': return 'Involves';
+      case 'OWNS': return 'Owns';
+      case 'MADE': return 'Made';
+      case 'USED_DEVICE': return 'Device Used';
+      default: return (type || '').replace(/_/g, ' ');
+    }
+  }
+
+  getNodeDisplayParts(node) {
+    let typeName = '';
+    let idName = '';
+
+    switch (node.type) {
+      case 'FlaggedTransaction':
+        typeName = 'FLAGGED TXN';
+        idName = node.metadata?.txn_id ? `#${node.metadata.txn_id}` : (node.label.replace(/^Flagged Txn:?\s*/i, '') || node.id);
+        break;
+      case 'Customer':
+        typeName = 'CUSTOMER';
+        idName = node.metadata?.customer_id || node.label.replace(/^Customer:?\s*/i, '') || node.id;
+        break;
+      case 'Card':
+        typeName = 'CARD';
+        idName = node.metadata?.card_id || node.label.replace(/^Card:?\s*/i, '') || node.id;
+        break;
+      case 'DeviceProfile':
+        typeName = 'DEVICE';
+        idName = node.metadata?.device_summary || node.label.replace(/^Device:?\s*/i, '') || node.id;
+        break;
+      case 'ClosedCase':
+        typeName = 'PREVIOUS CASE';
+        idName = node.metadata?.case_id || node.label.replace(/^Prior Case:?\s*/i, '') || node.id;
+        break;
+      case 'InvestigationCase':
+        typeName = 'CASE RECORD';
+        idName = node.metadata?.case_id || node.label.replace(/^Graph Case:?\s*/i, '') || node.id;
+        break;
+      case 'Transaction':
+        typeName = 'TRANSACTION';
+        idName = node.metadata?.txn_id ? `#${node.metadata.txn_id}` : (node.label.replace(/^Txn:?\s*/i, '') || node.id);
+        break;
+      case 'ConnectedCard':
+        typeName = 'CARD';
+        idName = node.metadata?.card_id || node.label.replace(/^Connected:\s*/i, '') || node.id;
+        break;
+      default:
+        typeName = (node.type || 'ENTITY').toUpperCase();
+        idName = node.label || node.id;
+    }
+
+    if (idName.length > 22) {
+      idName = idName.slice(0, 20) + '…';
+    }
+    return { typeName, idName };
   }
 
   simulate(steps = 1) {
@@ -116,7 +207,6 @@ class GraphRenderer {
     const damping = 0.85;
 
     for (let s = 0; s < steps; s++) {
-      // Repulsion between nodes
       for (let i = 0; i < this.nodes.length; i++) {
         for (let j = i + 1; j < this.nodes.length; j++) {
           const n1 = this.nodes[i];
@@ -136,7 +226,6 @@ class GraphRenderer {
         }
       }
 
-      // Spring attraction along links
       for (const link of this.links) {
         const dx = link.target.x - link.source.x;
         const dy = link.target.y - link.source.y;
@@ -151,13 +240,11 @@ class GraphRenderer {
         link.target.vy -= fy;
       }
 
-      // Center gravity
       const cx = this.width / 2;
       const cy = this.height / 2;
       for (const n of this.nodes) {
         n.vx += (cx - n.x) * 0.005;
         n.vy += (cy - n.y) * 0.005;
-
         n.vx *= damping;
         n.vy *= damping;
         n.x += n.vx;
@@ -210,7 +297,6 @@ class GraphRenderer {
     });
 
     window.addEventListener('mouseup', e => {
-      // If user clicked background without dragging, deselect
       if (this.isDragging && this.dragDistance < 4) {
         const pos = this.getCanvasPos(e);
         if (!this.findNode(pos.x, pos.y)) {
@@ -289,7 +375,6 @@ class GraphRenderer {
 
     if (found) {
       this.selectedNode = found;
-      // Smoothly pan so node is in center
       const cx = this.width / 2;
       const cy = this.height / 2;
       this.offsetX = cx - found.x * this.scale;
@@ -304,10 +389,96 @@ class GraphRenderer {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.width, this.height);
 
+    if (this.traversalLoading) {
+      const cx = this.width / 2;
+      const cy = this.height / 2;
+      const t = (this._animFrame || 0);
+
+      ctx.save();
+
+      // Subtle, slow pulsating concentric radar circles (ambient scanning state)
+      for (let i = 0; i < 3; i++) {
+        const radius = ((t * 0.65 + i * 50) % 160) + 25;
+        const alpha = Math.max(0, (1 - radius / 185) * 0.2);
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(111, 159, 132, ${alpha})`;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+
+      // Subtle Traversal HUD Card in the center
+      const cardW = 320;
+      const cardH = 92;
+      const cardX = cx - cardW / 2;
+      const cardY = cy - cardH / 2;
+
+      // Card Background (Dark Green)
+      ctx.fillStyle = 'rgba(6, 59, 42, 0.94)';
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(cardX, cardY, cardW, cardH, 6);
+      } else {
+        ctx.rect(cardX, cardY, cardW, cardH);
+      }
+      ctx.fill();
+
+      // Card Border
+      ctx.strokeStyle = 'rgba(216, 204, 184, 0.25)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Card Header: Title & Progress Pill
+      ctx.font = '700 8.5px Inter, sans-serif';
+      ctx.fillStyle = '#FAF6EC';
+      ctx.textAlign = 'left';
+      ctx.fillText('TIGERGRAPH LIVE TRAVERSAL', cardX + 14, cardY + 22);
+
+      const progressText = this.traversalState?.progress || '1/4';
+      ctx.font = '700 8.5px JetBrains Mono, monospace';
+      ctx.fillStyle = '#D8CCB8';
+      ctx.textAlign = 'right';
+      ctx.fillText(progressText, cardX + cardW - 14, cardY + 22);
+
+      // Sub-step text
+      const subStepText = this.traversalState?.stepText || 'Querying transaction history...';
+      ctx.font = '600 10.5px Inter, sans-serif';
+      ctx.fillStyle = '#FFF7DD';
+      ctx.textAlign = 'left';
+      ctx.fillText(subStepText, cardX + 14, cardY + 46);
+
+      // Elapsed status
+      const elapsed = this.traversalState?.elapsed || 0;
+      ctx.font = '500 8px JetBrains Mono, monospace';
+      if (elapsed >= 1.5) {
+        ctx.fillStyle = '#C79A32';
+        ctx.fillText(`Waiting for TigerGraph... ${elapsed.toFixed(1)}s`, cardX + 14, cardY + 67);
+      } else {
+        ctx.fillStyle = '#A3B8AD';
+        ctx.fillText(`Executing GSQL query traversal (${elapsed.toFixed(1)}s)`, cardX + 14, cardY + 67);
+      }
+
+      // Compact slim progress bar (height 3px)
+      const barY = cardY + cardH - 10;
+      const barW = cardW - 28;
+      ctx.fillStyle = 'rgba(216, 204, 184, 0.15)';
+      ctx.fillRect(cardX + 14, barY, barW, 3);
+
+      const stepNum = this.traversalState?.step || 1;
+      const fillW = Math.min(barW, Math.max(12, (stepNum / 4) * barW));
+      ctx.fillStyle = '#3F765E';
+      ctx.fillRect(cardX + 14, barY, fillW, 3);
+
+      ctx.restore();
+      return;
+    }
+
     if (!this.nodes || this.nodes.length === 0) {
       ctx.save();
       ctx.font = '500 13px Inter, sans-serif';
-      ctx.fillStyle = '#64748b';
+      ctx.fillStyle = '#D8CCB8';
       ctx.textAlign = 'center';
       ctx.fillText('Case graph will populate upon live investigation execution.', this.width / 2, this.height / 2);
       ctx.restore();
@@ -333,16 +504,18 @@ class GraphRenderer {
       const isConnected = hasSelection &&
         (link.source.id === this.selectedNode.id || link.target.id === this.selectedNode.id);
 
+      const isSuspicious = link.type === 'SHARED_DEVICE' || link.type === 'IC_INVOLVES' || link.type === 'CC_ON_CARD';
+
       ctx.beginPath();
       ctx.moveTo(link.source.x, link.source.y);
       ctx.lineTo(link.target.x, link.target.y);
 
       if (hasSelection) {
-        ctx.strokeStyle = isConnected ? '#38bdf8' : 'rgba(51, 65, 85, 0.25)';
-        ctx.lineWidth = isConnected ? 2.2 : 1.0;
+        ctx.strokeStyle = isConnected ? '#FFF7DD' : 'rgba(216, 204, 184, 0.05)';
+        ctx.lineWidth = isConnected ? 2.2 : 0.8;
       } else {
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = isSuspicious ? 'rgba(184, 74, 74, 0.65)' : 'rgba(216, 204, 184, 0.16)';
+        ctx.lineWidth = isSuspicious ? 1.5 : 0.9;
       }
 
       if (link.type === 'SHARED_DEVICE') {
@@ -353,13 +526,16 @@ class GraphRenderer {
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Link Label
-      const mx = (link.source.x + link.target.x) / 2;
-      const my = (link.source.y + link.target.y) / 2;
-      ctx.font = isConnected ? 'bold 9px monospace' : '8px monospace';
-      ctx.fillStyle = isConnected ? '#38bdf8' : (hasSelection ? 'rgba(100, 116, 139, 0.3)' : '#64748b');
-      ctx.textAlign = 'center';
-      ctx.fillText(link.type, mx, my - 3);
+      // Link Label (human-readable, only drawn when connected or when suspicious, to eliminate clutter)
+      if (isConnected || (!hasSelection && isSuspicious)) {
+        const mx = (link.source.x + link.target.x) / 2;
+        const my = (link.source.y + link.target.y) / 2;
+        const label = this.getHumanRelation(link.type);
+        ctx.font = isConnected ? '600 8.5px Inter, sans-serif' : '500 7.5px Inter, sans-serif';
+        ctx.fillStyle = isConnected ? '#FFF7DD' : 'rgba(184, 74, 74, 0.75)';
+        ctx.textAlign = 'center';
+        ctx.fillText(label, mx, my - 2);
+      }
     }
 
     // 2. Draw Nodes
@@ -369,18 +545,16 @@ class GraphRenderer {
       const isConnected = hasSelection && connectedNodeIds.has(node.id);
       const isDimmed = hasSelection && !isConnected;
 
-      ctx.globalAlpha = isDimmed ? 0.35 : 1.0;
+      ctx.globalAlpha = isDimmed ? 0.2 : 1.0;
 
-      // Glow halo for Flagged, Selected, or Hovered
-      if (node.type === 'FlaggedTransaction' || isSelected || isHovered) {
+      // Halo for Flagged or Selected
+      if (node.type === 'FlaggedTransaction' || isSelected) {
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius + (isSelected ? 9 : 6), 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, node.radius + (isSelected ? 7 : 5), 0, Math.PI * 2);
         if (node.type === 'FlaggedTransaction') {
-          ctx.fillStyle = 'rgba(244, 63, 94, 0.28)';
-        } else if (isSelected) {
-          ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+          ctx.fillStyle = 'rgba(184, 74, 74, 0.25)';
         } else {
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          ctx.fillStyle = 'rgba(255, 247, 221, 0.3)';
         }
         ctx.fill();
       }
@@ -391,17 +565,30 @@ class GraphRenderer {
       ctx.fillStyle = node.color;
       ctx.fill();
 
-      // Node border
-      ctx.strokeStyle = isSelected ? '#ffffff' : (isHovered ? '#38bdf8' : '#0f172a');
-      ctx.lineWidth = isSelected ? 2.5 : 1.5;
+      // Node border: cream outline #FFF7DD for selected
+      ctx.strokeStyle = isSelected ? '#FFF7DD' : (isHovered ? '#FFF7DD' : 'rgba(6, 59, 42, 0.55)');
+      ctx.lineWidth = isSelected ? 3.0 : (isHovered ? 2.0 : 1.2);
       ctx.stroke();
 
-      // Node label
-      ctx.font = isSelected ? 'bold 11px Inter, sans-serif' : '10px Inter, sans-serif';
-      ctx.fillStyle = isDimmed ? 'rgba(226, 232, 240, 0.35)' : '#e2e8f0';
+      // Node label: Entity TYPE prominently, ID smaller
+      const { typeName, idName } = this.getNodeDisplayParts(node);
+      const labelAlpha = isDimmed ? 0.18 : (isSelected ? 1.0 : (isConnected ? 0.95 : 0.85));
+
+      ctx.save();
+      ctx.globalAlpha = labelAlpha;
+
+      // Prominent Type
+      ctx.font = isSelected ? '700 8.5px Inter, sans-serif' : '600 8px Inter, sans-serif';
+      ctx.fillStyle = isSelected ? '#FFF7DD' : (node.type === 'FlaggedTransaction' ? '#E8B4B4' : '#FAF6EC');
       ctx.textAlign = 'center';
-      const shortLabel = node.label.length > 22 ? node.label.slice(0, 20) + '…' : node.label;
-      ctx.fillText(shortLabel, node.x, node.y + node.radius + 12);
+      ctx.fillText(typeName, node.x, node.y + node.radius + 11);
+
+      // Smaller ID
+      ctx.font = isSelected ? '600 7.5px JetBrains Mono, monospace' : '500 7px JetBrains Mono, monospace';
+      ctx.fillStyle = isSelected ? '#FAF6EC' : '#D8CCB8';
+      ctx.fillText(idName, node.x, node.y + node.radius + 21);
+
+      ctx.restore();
     }
 
     ctx.globalAlpha = 1.0;

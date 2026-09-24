@@ -1,8 +1,11 @@
 /**
  * API Client for HHGoa Fraud Investigation Backend
+ * Supports both origin-relative calls and local port fallback.
  */
 const API = {
-  baseUrl: '',
+  baseUrl: (typeof window !== 'undefined' && window.location.protocol === 'file:')
+    ? 'http://127.0.0.1:8008'
+    : '',
 
   async getHealth() {
     const res = await fetch(`${this.baseUrl}/health`);
@@ -60,8 +63,7 @@ const API = {
   },
 
   async runInvestigation(caseId) {
-    // force=true: the demo button always executes a fresh investigation
-    // rather than replaying a cached completed case.
+    // force=true: the demo button executes a fresh investigation
     const res = await fetch(`${this.baseUrl}/investigations/${encodeURIComponent(caseId)}/run?force=true`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
