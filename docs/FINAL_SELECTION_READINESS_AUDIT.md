@@ -20,7 +20,7 @@ Unlike typical hackathon projects that wrap a database with a basic chatbot or q
 3. Implemented a deterministic, multi-channel **Noisy-OR composite risk engine** that prevents LLM hallucinations.
 4. Enforced strict banking policy rules (R1–R10) and least-privilege approval routing (`auto`, `L1`, `L2`).
 5. Physically verified that finished investigations write `InvestigationCase` vertices and directed edges into live TigerGraph.
-6. Passed **228 of 228 automated regression tests (100%)** and validated **600 of 600 IEEE checkpoints (100%)**.
+6. Passed **257 of 257 automated tests (100%)** (228 baseline regression tests + 29 agentic upgrade tests) and validated **600 of 600 IEEE checkpoints (100%)**.
 
 **Primary Judge Caveats:**
 1. **MCP Transport Mode:** An MCP client is implemented in `backend/mcp/client.py`, but in the live production runtime, `MCP_URL` is unconfigured and the agent executes directly via `pyTigerGraph` / REST.

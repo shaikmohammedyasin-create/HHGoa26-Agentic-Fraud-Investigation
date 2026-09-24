@@ -3,12 +3,15 @@
 > **Task #4 — TigerGraph Agentic Fraud Investigation + Next Best Action**
 >
 > An evidence-driven, uncertainty-aware, policy-governed fraud investigation platform built around TigerGraph GraphRAG.
+>
+> Built by **Team @BALLERINA** &bull; &copy; 2026 @BALLERINA. All rights reserved.
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-REST-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![TigerGraph](https://img.shields.io/badge/TigerGraph-Savanna%20Cloud-F36C21)](https://www.tigergraph.com/)
-[![Tests](https://img.shields.io/badge/tests-257%20passed-2E7D32)](./docs/TECHNICAL_VALIDATION.md)
+[![Tests](https://img.shields.io/badge/tests-257%20passed%20(228%20base%20%2B%2029%20agentic)-2E7D32)](./docs/TECHNICAL_VALIDATION.md)
 [![IEEE Checkpoints](https://img.shields.io/badge/IEEE%20checkpoints-600%2F600-2E7D32)](./artifacts/benchmark/benchmark_report.md)
+[![Team](https://img.shields.io/badge/team-%40BALLERINA-C79A32)](https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation)
 [![Status](https://img.shields.io/badge/status-demo%20ready-0B5A3C)](./docs/DEMO.md)
 
 ---
@@ -467,17 +470,25 @@ These are **repository-reported benchmark results** from the documented benchmar
 
 ## Testing
 
-Run:
+Run the full automated test suite:
 
 ```bash
 pytest
 ```
 
-The repository's current validation documentation reports:
+### Test Suite Structure (228 Baseline + 29 Agentic Upgrades = 257 Total)
 
-- **257 / 257 automated tests**
-- **600 / 600 IEEE checkpoints**
-- **20 / 20 benchmark cases completed**
+The test suite consists of **257 automated tests** (100% passing across unit and integration suites):
+
+| Test Suite Component | Test Count | Description & Scope |
+|---|:---:|---|
+| **Core Baseline Regression** | **228** | Verified baseline test suite covering multi-hop TigerGraph queries, GraphRAG prompt context, Noisy-OR composite risk scoring (14 channels), policy engine rules (R1–R10), approval routing (`auto`/`L1`/`L2`), identity provenance, and models. *(Documented in early baseline audit reports).* |
+| **Agentic Upgrades** | **+29** | Integration tests in `tests/integration/test_agentic_upgrades.py` validating the adaptive hybrid planner, expected information-value calculation, human-in-the-loop pause/resume flow, and fraud-ring graph analytics. |
+| **Total Test Suite** | **257 / 257** | **100% Passed** with zero test failures across the complete system. |
+
+- **257 / 257 automated tests passed** (100%)
+- **600 / 600 IEEE checkpoints verified** (100%)
+- **20 / 20 benchmark cases completed** (100%)
 
 Run the suite again against your current checkout before treating these numbers as current execution results.
 
@@ -537,6 +548,16 @@ For competition/demo execution, follow the documented environment and live Tiger
 
 ---
 
+## Team & Attribution
+
+- **Team Name:** `@BALLERINA` (Team Ballerina)
+- **Copyright:** &copy; 2026 `@BALLERINA`. All rights reserved.
+- **Competition:** TigerGraph × Hacker House Goa 2026 (HHGOA'26)
+- **Track:** Task #4 — TigerGraph Agentic Fraud Investigation + Next Best Action
+- **Dataset:** Vesta Corporation / IEEE-CIS Fraud Detection Dataset
+
+---
+
 ## License
 
-No license is currently declared in this repository.
+&copy; 2026 `@BALLERINA`. All rights reserved. Built for Hacker House Goa 2026 Task #4.

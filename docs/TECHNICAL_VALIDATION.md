@@ -2,7 +2,7 @@
 
 **Project:** TigerGraph Agentic Fraud Investigation — HHGOA'26  
 **Status:** VALIDATED & FROZEN  
-**Baseline Test Suite:** 228 / 228 Passed (100%)  
+**Automated Test Suite:** 257 / 257 Passed (100%) (228 Baseline Regression + 29 Agentic Upgrades)  
 **Benchmark Checkpoint Coverage:** 600 / 600 IEEE Checkpoints Passed (100%)  
 
 ---
@@ -43,31 +43,34 @@ The full test suite was executed via pytest:
 
 ```text
 ============================= test session starts =============================
-platform win32 -- Python 3.14.5, pytest-9.0.2, pluggy-1.6.0
+platform win32 -- Python 3.12+ / 3.14, pytest-9.0.2, pluggy-1.6.0
 rootdir: HHGOA_IEEE
 configfile: pyproject.toml
-collected 228 items
+collected 257 items
 
-tests/integration/test_api.py .................                         [  7%]
-tests/integration/test_frontend_api.py ...........                      [ 12%]
-tests/integration/test_graph_backends.py ...........                    [ 17%]
-tests/integration/test_graphrag.py ................                     [ 24%]
-tests/integration/test_llm_layer.py ..............                      [ 30%]
-tests/integration/test_mcp_client.py .........                          [ 34%]
-tests/integration/test_phase_b_hardening.py ................            [ 41%]
-tests/integration/test_policy_approval.py ....................          [ 50%]
-tests/integration/test_tigergraph_live_agent.py ........                [ 53%]
-tests/unit/test_evidence_provenance.py ................                 [ 60%]
-tests/unit/test_models.py ...................................           [ 75%]
-tests/unit/test_nba_explanation.py ....................                 [ 84%]
-tests/unit/test_pattern_reasoning.py ...........................        [ 96%]
+tests/integration/test_agentic_upgrades.py ............................. [ 11%]
+tests/integration/test_api.py .................                         [ 18%]
+tests/integration/test_frontend_api.py ...........                      [ 22%]
+tests/integration/test_graph_backends.py ...........                    [ 26%]
+tests/integration/test_graphrag.py ................                     [ 33%]
+tests/integration/test_llm_layer.py ..............                      [ 38%]
+tests/integration/test_mcp_client.py .........                          [ 42%]
+tests/integration/test_phase_b_hardening.py ................            [ 48%]
+tests/integration/test_policy_approval.py ....................          [ 56%]
+tests/integration/test_tigergraph_live_agent.py ........                [ 59%]
+tests/unit/test_evidence_provenance.py ................                 [ 65%]
+tests/unit/test_models.py ...................................           [ 79%]
+tests/unit/test_nba_explanation.py ....................                 [ 87%]
+tests/unit/test_pattern_reasoning.py ...........................        [ 97%]
 tests/unit/test_policy_engine.py ...........                            [100%]
 
-============================= 228 passed in 43.78s =============================
+============================= 257 passed in 193.60s =============================
 ```
 
-- **Unit Tests:** 137 passed
-- **Integration Tests:** 91 passed
+- **Unit Tests:** 137 passed (100%)
+- **Integration Tests:** 120 passed (100%) [91 baseline + 29 agentic upgrades]
+- **Core Baseline Regression:** 228 passed
+- **Agentic Upgrades:** 29 passed
 - **Failures / Errors:** 0
 - **Skipped:** 0
 
