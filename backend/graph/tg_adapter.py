@@ -321,19 +321,28 @@ def get_transaction_identity(txn_id: str) -> IdentityRecord | None:
         items = res.get("result", []) if isinstance(res, dict) else []
         idr = _to_identity(txn_id, items[0]) if items else None
         
-        # Enrich transaction-level identity metadata (id_15, id_23, id_34)
+        # Enrich transaction-level identity metadata (id_15, id_23, id_34).
+        # PROVENANCE NOTE: these three fields come from the prepared local
+        # identity dataset when the TigerGraph DeviceProfile vertex does not
+        # carry them.  Each attribute's origin is recorded in attribute_sources
+        # so downstream consumers can distinguish graph-sourced vs prepared-
+        # dataset-sourced values.
         from backend.graph import local_store
         local_idr = local_store.get_transaction_identity(txn_id)
         if local_idr:
             if idr is None:
                 idr = local_idr
+                idr.attribute_sources = {
+                    k: "prepared_dataset"
+                    for k in ("device_status", "proxy", "match_status")
+                    if getattr(idr, k, None)
+                }
             else:
-                if idr.device_status is None and local_idr.device_status:
-                    idr.device_status = local_idr.device_status
-                if idr.proxy is None and local_idr.proxy:
-                    idr.proxy = local_idr.proxy
-                if idr.match_status is None and local_idr.match_status:
-                    idr.match_status = local_idr.match_status
+                for attr in ("device_status", "proxy", "match_status"):
+                    if getattr(idr, attr, None) is None and getattr(local_idr, attr, None):
+                        setattr(idr, attr, getattr(local_idr, attr))
+                        idr.attribute_sources = dict(idr.attribute_sources or {})
+                        idr.attribute_sources[attr] = "prepared_dataset"
         return idr
     except Exception as exc:
         raise RuntimeError(f"TigerGraph get_transaction_identity failed: {exc}")
@@ -522,6 +531,11 @@ def search_closed_cases_text(query: str, limit: int = 5) -> list[HistoricalCase]
     """
     Retrieval over closed-case notes.  Uses the TigerGraph vector store through
     MCP vector_search when available; otherwise the installed keyword query.
+
+    The GSQL keyword query uses a single LIKE over the raw text, which is both
+    case-sensitive and too narrow for a full trigger sentence.  We therefore
+    extract distinctive tokens and take the union of per-token matches (the
+    local store's search does the same over its tokens).
     """
     try:
         mcp = _mcp()
@@ -529,9 +543,30 @@ def search_closed_cases_text(query: str, limit: int = 5) -> list[HistoricalCase]
             res = mcp.vector_search(query, top_k=limit)
             items = res.get("result", []) if isinstance(res, dict) else []
             return [_to_historical_case(v) for v in items]
-        res = _run("search_case_notes", {"search_text": query.strip()[:100], "limit_n": limit})
-        items = res.get("result", []) if isinstance(res, dict) else []
-        return [_to_historical_case(v) for v in items]
+
+        # Tokenise: distinctive words only (drop tiny stopwords / numbers).
+        stop = {"the", "and", "for", "this", "that", "with", "from",
+                "was", "were", "have", "has", "had", "not", "are",
+                "review", "decide", "real-time", "model", "scored",
+                "transaction", "please", "check", "card"}
+        tokens: list[str] = []
+        for raw in query.lower().replace("_", " ").split():
+            tok = "".join(ch for ch in raw if ch.isalnum())
+            if len(tok) >= 4 and tok not in stop and tok not in tokens:
+                tokens.append(tok)
+            if len(tokens) >= 4:
+                break
+
+        seen: dict[str, HistoricalCase] = {}
+        for tok in tokens or [query.strip()[:100]]:
+            res = _run("search_case_notes", {"search_text": tok, "limit_n": limit})
+            items = res.get("result", []) if isinstance(res, dict) else []
+            for v in items:
+                hc = _to_historical_case(v)
+                seen.setdefault(hc.case_id, hc)
+            if len(seen) >= limit:
+                break
+        return list(seen.values())[:limit]
     except Exception as exc:
         raise RuntimeError(f"TigerGraph search_closed_cases_text failed: {exc}")
 
@@ -564,6 +599,51 @@ def get_cards_in_same_email_domain(domain: str) -> list[dict[str, Any]]:
         return [{"card_id": str(v.get("v_id")), "customer_id": _vertex_attrs(v).get("customer_id", "")} for v in items]
     except Exception as exc:
         raise RuntimeError(f"TigerGraph get_cards_in_same_email_domain failed: {exc}")
+
+
+def get_device_fraud_ring(device_label: str, max_cards: int = 25) -> dict[str, Any]:
+    """
+    Fraud-ring analysis around a device profile via the installed
+    `device_fraud_ring` GSQL query: the connected card component through this
+    device plus how many of those cards appear in confirmed-fraud closed cases.
+    Falls back to the local implementation through the query router on failure.
+    """
+    try:
+        dev_name = device_label.split("|")[0].strip() if "|" in device_label else device_label
+        if not dev_name or dev_name == "unknown":
+            return {"device": device_label, "ring_size": 0, "cards": [],
+                    "fraud_cards": [], "n_fraud": 0}
+        res = _run("device_fraud_ring", {"dp": dev_name, "limit_n": max_cards})
+        items = res.get("result", []) if isinstance(res, dict) else []
+        cards: list[str] = []
+        customers: dict[str, str] = {}
+        for v in items:
+            cid = str(v.get("v_id") or v.get("card_id") or "")
+            if cid:
+                cards.append(cid)
+                customers[cid] = str(_vertex_attrs(v).get("customer_id", ""))
+        # Fraud membership via closed cases on each ring card (bounded).
+        fraud_cards: set[str] = set()
+        for cid in cards[:max_cards]:
+            try:
+                cres = _run("card_closed_cases", {"card": cid})
+                citems = cres.get("result", []) if isinstance(cres, dict) else []
+                for cv in citems:
+                    a = _vertex_attrs(cv)
+                    if str(a.get("outcome", "")) == "confirmed_fraud":
+                        fraud_cards.add(cid)
+            except Exception:
+                continue
+        fraud_in_ring = sorted(fraud_cards)
+        return {
+            "device": device_label,
+            "ring_size": len(cards),
+            "cards": cards,
+            "fraud_cards": fraud_in_ring,
+            "n_fraud": len(fraud_in_ring),
+        }
+    except Exception as exc:
+        raise RuntimeError(f"TigerGraph get_device_fraud_ring failed: {exc}")
 
 
 def write_investigation_case(payload: dict[str, Any]) -> str:
@@ -601,6 +681,11 @@ def write_investigation_case(payload: dict[str, Any]) -> str:
     }]
     edges += [{"type": "IC_INVOLVES", "from": graph_case_id, "to": str(t)}
               for t in payload.get("affected_txn_ids", [])]
+    # Graph-native memory: link the case to the device profile(s) involved so
+    # future device-centric traversals encounter this investigation.
+    edges += [{"type": "IC_ON_DEVICE", "from": graph_case_id,
+               "to": str(d), "from_type": "InvestigationCase", "to_type": "DeviceProfile"}
+              for d in payload.get("connected_device_profiles", [])[:3] if d]
 
     _upsert(vertices, edges)
     return graph_case_id

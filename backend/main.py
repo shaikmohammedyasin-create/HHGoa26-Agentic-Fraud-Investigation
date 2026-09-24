@@ -53,8 +53,9 @@ class ApprovalDecision(BaseModel):
 
 
 class EvidenceSubmission(BaseModel):
-    type: str      # customer_validation | step_up_auth | analyst_info
-    response: str
+    type: str = ""  # optional; must match the pending request when provided
+    response: str = Field(..., min_length=1)
+    origin: str = "human_in_loop"
 
 
 class HealthResponse(BaseModel):
@@ -139,10 +140,16 @@ def get_investigation(case_id: str):
 
 
 @app.post("/investigations/{case_id}/run", tags=["Investigations"])
-def run_investigation_endpoint(case_id: str):
-    """Run or resume an investigation."""
+def run_investigation_endpoint(case_id: str, force: bool = False):
+    """
+    Run or resume an investigation.
+
+    force=true re-runs a completed case from scratch (the UI demo button uses
+    this so a judge always sees a fresh execution); the default respects the
+    idempotent cache and any paused human-in-the-loop state.
+    """
     try:
-        case = run_investigation(case_id)
+        case = run_investigation(case_id, force=force)
     except ValueError as exc:
         raise HTTPException(404, str(exc))
     write_answer_file(case)
@@ -161,12 +168,20 @@ def get_evidence(case_id: str):
 
 @app.post("/investigations/{case_id}/evidence", tags=["Evidence"])
 def submit_evidence(case_id: str, body: EvidenceSubmission):
-    """Submit additional evidence (customer reply, analyst info)."""
-    payload = app_db.load_investigation(case_id)
-    if not payload:
-        raise HTTPException(404, f"Case {case_id} not found")
-    # In a full implementation this would trigger reassessment
-    return {"status": "received", "case_id": case_id, "type": body.type}
+    """
+    Submit additional evidence for a pending evidence request and RESUME the
+    investigation (reassessment → NBA → policy → approval routing → completion).
+
+    This is the human-in-the-loop path: the investigation persists in
+    MORE_EVIDENCE_REQUIRED until a real response arrives here.
+    """
+    from backend.agents.orchestrator import submit_evidence as _submit
+    try:
+        case = _submit(case_id, body.type, body.response, body.origin)
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+    write_answer_file(case)
+    return case_to_answer(case)
 
 
 # ─── Timeline / Audit ────────────────────────────────────────────────────────
@@ -188,14 +203,17 @@ def list_approvals(case_id: str):
 
 @app.post("/investigations/{case_id}/approvals/{approval_id}", tags=["Approvals"])
 def decide_approval(case_id: str, approval_id: str, body: ApprovalDecision):
-    payload = app_db.load_approval(approval_id)
-    if not payload:
-        raise HTTPException(404, f"Approval {approval_id} not found")
-    payload["status"] = body.decision
-    payload["approver"] = body.approver
-    payload["decided_at"] = datetime.utcnow().isoformat()
-    app_db.save_approval(approval_id, case_id, payload)
-    return payload
+    """
+    Record a human approval decision AND execute it:
+      approved → ACTION_APPROVED: action executed under the approver's authority
+      rejected → action refused with the approver recorded
+    """
+    from backend.agents.orchestrator import decide_approval as _decide
+    try:
+        return _decide(case_id, approval_id, body.decision, body.approver)
+    except ValueError as exc:
+        status = 404 if "not found" in str(exc) else 409
+        raise HTTPException(status, str(exc))
 
 
 # ─── Cases (historical memory) ───────────────────────────────────────────────
@@ -252,6 +270,15 @@ def get_benchmark_report():
     path = settings.cases_dir / "_benchmark_report.json"
     if not path.exists():
         raise HTTPException(404, "No benchmark report found. Run POST /benchmark/run first.")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@app.get("/benchmark/checkpoints", tags=["Evaluation"])
+def get_checkpoint_report():
+    """Structural checkpoint validation report (validate_answers output)."""
+    path = settings.cases_dir / "_checkpoint_report.json"
+    if not path.exists():
+        raise HTTPException(404, "No checkpoint report found. Run the benchmark first.")
     return json.loads(path.read_text(encoding="utf-8"))
 
 

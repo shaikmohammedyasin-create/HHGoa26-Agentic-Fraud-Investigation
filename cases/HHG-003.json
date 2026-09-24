@@ -15,7 +15,17 @@
     "exposure_usd": 49.0,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C08623-K2. Most recent: 2016-12-31 $90.05 (in_person). Average amount: $129.31.",
+        "claim": "Trigger (customer_report): Customer C08623 message: 'I never made this $49.00 purchase. Please check my card.' Refers to 3530164.",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "C08623",
+          "C08623-K2",
+          "3530164"
+        ]
+      },
+      {
+        "claim": "50 previous transactions retrieved for card C08623-K2. Average amount: $129.31.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C08623-K2)",
         "entity_ids": [
@@ -35,18 +45,21 @@
         ]
       },
       {
-        "claim": "Customer C08623 reported: \"Customer C08623 message: 'I never made this $49.00 purchase. Please check my card.' Refers to 3530164.\"",
-        "source": "customer",
-        "ref": "trigger:customer_report",
+        "claim": "5 prior closed case(s) retrieved by pattern (none) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=none)",
         "entity_ids": [
-          "C08623",
-          "C08623-K2"
+          "CC-5234",
+          "CC-4734",
+          "CC-4783",
+          "CC-4591",
+          "CC-4437"
         ]
       },
       {
         "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
         "source": "customer",
-        "ref": "evidence_request:ER-e9437a99",
+        "ref": "evidence_request:ER-e7f97c36",
         "entity_ids": [
           "C08623"
         ]
@@ -58,9 +71,14 @@
       "CC-3327",
       "CC-2935",
       "CC-2817",
-      "CC-1589"
+      "CC-1589",
+      "CC-5234",
+      "CC-4734",
+      "CC-4783",
+      "CC-4591",
+      "CC-4437"
     ],
-    "summary": "Case HHG-003 investigated none activity on card C08623-K2 (customer C08623) around transaction 3530164 ($49.00, in_person). Assessed fraud probability 0.76 (CRITICAL risk) from 4 evidence items across 2 independent sources. Key signals: 5 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE.",
+    "summary": "Case HHG-003 investigated none activity on card C08623-K2 (customer C08623) around transaction 3530164 ($49.00, in_person). Assessed fraud probability 0.76 (CRITICAL risk) from 5 evidence items across 5 independent evidence families. Key signals: 5 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 0.95); response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-003"
   },
@@ -68,7 +86,11 @@
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "Customer reiterates they did not make this purchase and requests it be investigated."
+      "assumed_response": "Customer reiterates they did not make this purchase and requests it be investigated.",
+      "info_value": 0.95,
+      "origin": "simulated",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE (p=0.76); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.12)",
+      "alternatives_considered": []
     }
   ],
   "next_best_actions": {
@@ -106,8 +128,8 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Customer denial settled the question; final actions applied.",
-  "tool_calls": 16,
+  "stop_reason": "stopping criteria met; no further evidence request is decision-relevant",
+  "tool_calls": 11,
   "tokens": 0,
-  "latency_s": 21.92
+  "latency_s": 7.37
 }

@@ -3,96 +3,87 @@
   "case": {
     "status": "closed_fraud",
     "verdict": "fraud",
-    "fraud_probability": 0.946,
+    "fraud_probability": 0.963,
     "pattern": "card_testing",
     "pattern_description": "≥3 sub-$10 online authorizations (3) followed by larger purchase",
     "affected_txn_ids": [
-      "3578995",
-      "3582413",
-      "3584153",
-      "3582327",
-      "3580380",
-      "3585345",
-      "3583229",
-      "3584401",
-      "3580417",
-      "3578483",
-      "3583914",
-      "3580232",
-      "3580137",
-      "3578491",
-      "3582142",
-      "3579576",
-      "3578471",
-      "3583368",
-      "3578997",
-      "3580776",
-      "3584003",
       "3585064",
       "3584155",
-      "3582178",
-      "3582338",
-      "3584985",
-      "3582175",
-      "3580427",
-      "3580933",
-      "3583199",
-      "3583411",
-      "3582602",
-      "3580951",
-      "3580202",
-      "3583866",
-      "3578405",
-      "3582738",
-      "3583644",
-      "3580712",
-      "3584706",
-      "3580219",
-      "3580403",
-      "3578486",
-      "3583494",
-      "3578817",
-      "3584516",
-      "3583670",
-      "3580478",
-      "3582082",
       "3580765",
-      "3580821",
-      "3583435",
-      "3583348",
-      "3585055",
-      "3580348",
-      "3578506",
-      "3583101",
-      "3582897",
-      "3582671",
-      "3580815",
-      "3583968",
-      "3583140",
-      "3582868",
-      "3580992",
-      "3584859",
-      "3582107",
-      "3581048",
-      "3580544",
-      "3580907",
-      "3584693",
-      "3583417",
-      "3582375",
       "3584460",
-      "3578451",
-      "3582624",
-      "3578475",
-      "3578496",
+      "3580992",
+      "3582082",
+      "3579407",
+      "3582142",
+      "3578817",
+      "3579576",
+      "3583494",
+      "3583140",
+      "3580380",
+      "3584706",
+      "3583866",
+      "3581048",
+      "3583914",
+      "3580232",
+      "3583368",
+      "3582868",
+      "3580417",
+      "3580907",
+      "3582897",
+      "3582375",
+      "3584962",
+      "3583348",
+      "3580137",
+      "3582671",
+      "3583406",
+      "3583101",
+      "3578997",
+      "3583199",
+      "3582175",
+      "3585055",
+      "3582413",
+      "3583644",
+      "3584693",
+      "3580951",
+      "3580821",
+      "3582178",
+      "3584859",
       "3579400",
       "3581345",
-      "3579407",
-      "3583406",
+      "3584985",
+      "3580712",
+      "3580202",
+      "3580219",
+      "3580427",
+      "3583411",
+      "3583229",
+      "3584516",
+      "3580348",
+      "3580815",
+      "3583968",
+      "3584003",
+      "3580403",
+      "3583670",
+      "3580776",
+      "3582107",
+      "3582327",
+      "3584401",
+      "3582338",
+      "3583417",
+      "3580933",
+      "3583435",
+      "3582602",
+      "3582738",
       "3583415",
-      "3584962",
+      "3582624",
+      "3580478",
+      "3584153",
+      "3585345",
+      "3580544",
+      "3578995",
       "3579597"
     ],
-    "first_suspicious_txn_id": "3578405",
+    "first_suspicious_txn_id": "3578817",
     "connected_card_ids": [
       "C03938-K1",
       "C05678-K1",
@@ -101,10 +92,20 @@
     "connected_device_profiles": [
       "SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown"
     ],
-    "exposure_usd": 4135.17,
+    "exposure_usd": 3589.24,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C11923-K2. Most recent: 2016-12-29 $41.30 (online). Average amount: $39.47.",
+        "claim": "Trigger (customer_report): Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368.",
+        "source": "customer",
+        "ref": "trigger:customer_report",
+        "entity_ids": [
+          "C11923",
+          "C11923-K2",
+          "3583368"
+        ]
+      },
+      {
+        "claim": "50 previous transactions retrieved for card C11923-K2. Average amount: $39.47.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C11923-K2)",
         "entity_ids": [
@@ -122,20 +123,20 @@
         ]
       },
       {
-        "claim": "84 online transactions on this card within 48h of the flagged transaction.",
+        "claim": "75 online transactions on this card within 48h of the flagged transaction.",
         "source": "graph",
         "ref": "query:card_window(card_id=C11923-K2, hours=48)",
         "entity_ids": [
-          "3578405",
-          "3578451",
-          "3578471",
-          "3578475",
-          "3578483",
-          "3578486",
-          "3578491",
-          "3578496",
-          "3578506",
-          "3578817"
+          "3578817",
+          "3578995",
+          "3578997",
+          "3579400",
+          "3579407",
+          "3579576",
+          "3579597",
+          "3580137",
+          "3580202",
+          "3580219"
         ]
       },
       {
@@ -157,6 +158,23 @@
         ]
       },
       {
+        "claim": "Fraud-ring analysis: device component contains 12 confirmed-fraud card(s) (ring size 25).",
+        "source": "graph",
+        "ref": "query:device_fraud_ring(device=SM-G610F Build/NRD90M | unknown | chrome 66.0 for android | unknown)",
+        "entity_ids": [
+          "C00073-K2",
+          "C00259-K1",
+          "C00294-K2",
+          "C00426-K2",
+          "C00466-K1",
+          "C00583-K1",
+          "C00782-K1",
+          "C00854-K2",
+          "C00978-K1",
+          "C01002-K1"
+        ]
+      },
+      {
         "claim": "10 prior confirmed fraud case(s) found for customer C11923 or card C11923-K2: CC-4501, CC-3905, CC-3206, CC-3039, CC-2799.",
         "source": "graph",
         "ref": "query:closed_cases_for_customer(customer_id=C11923)",
@@ -169,16 +187,7 @@
         ]
       },
       {
-        "claim": "Customer C11923 reported: \"Customer C11923 message: 'I never made this $131.30 purchase. Please check my card.' Refers to 3583368.\"",
-        "source": "customer",
-        "ref": "trigger:customer_report",
-        "entity_ids": [
-          "C11923",
-          "C11923-K2"
-        ]
-      },
-      {
-        "claim": "15 prior closed case(s) retrieved by pattern (card_testing) and keyword match over analyst notes.",
+        "claim": "20 prior closed case(s) retrieved by pattern (card_testing) and keyword match over analyst notes.",
         "source": "document",
         "ref": "retrieval:pattern+keyword(pattern=card_testing)",
         "entity_ids": [
@@ -197,7 +206,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-0f3cf8db",
+        "ref": "evidence_request:ER-0a68627c",
         "entity_ids": [
           "C11923"
         ]
@@ -220,7 +229,7 @@
       "CC-4058",
       "CC-3653"
     ],
-    "summary": "Case HHG-011 investigated card_testing activity on card C11923-K2 (customer C11923) around transaction 3583368 ($131.30, online). Assessed fraud probability 0.95 (CRITICAL risk) from 9 evidence items across 3 independent sources. Key signals: card-testing sequence detected; new device for this account; 84 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD.",
+    "summary": "Case HHG-011 investigated card_testing activity on card C11923-K2 (customer C11923) around transaction 3583368 ($131.30, online). Assessed fraud probability 0.96 (CRITICAL risk) from 10 evidence items across 10 independent evidence families. Key signals: card-testing sequence detected; new device for this account; 75 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 0.70); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-011"
   },
@@ -228,7 +237,27 @@
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession."
+      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession.",
+      "info_value": 0.7,
+      "origin": "simulated",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD (p=0.96); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.86)",
+      "alternatives_considered": [
+        {
+          "type": "step_up_auth",
+          "info_value": -0.05,
+          "decision_relevance": "Outcome A (Authentication fails — device unknown to cardholder) -> BLOCK_CARD (p=0.95); Outcome B (Authentication succeeds — device is the cardholder's) -> BLOCK_CARD (p=0.87)"
+        },
+        {
+          "type": "analyst_info",
+          "info_value": -0.1,
+          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> BLOCK_CARD (p=0.94); Outcome B (Analyst reports no related activity) -> BLOCK_CARD (p=0.90)"
+        },
+        {
+          "type": "external_watchlist",
+          "info_value": -0.15,
+          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> BLOCK_CARD (p=0.93); Outcome B (No watchlist hits) -> BLOCK_CARD (p=0.91)"
+        }
+      ]
     }
   ],
   "next_best_actions": {
@@ -256,8 +285,8 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Fraud probability 0.95 ≥ 0.85 with 3 independent evidence sources.",
-  "tool_calls": 20,
+  "stop_reason": "Fraud probability 0.96 ≥ 0.85 with 10 independent evidence families.",
+  "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 46.07
+  "latency_s": 57.57
 }

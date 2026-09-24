@@ -11,16 +11,16 @@
     ],
     "first_suspicious_txn_id": "3478561",
     "connected_card_ids": [
-      "C12574-K1",
-      "C01935-K1",
+      "C11082-K1",
+      "C09998-K1",
+      "C09906-K1",
+      "C07762-K1",
       "C06617-K1",
       "C06197-K1",
-      "C03744-K1",
-      "C06710-K1",
       "C12645-K1",
-      "C12900-K2",
-      "C10350-K1",
-      "C03528-K1"
+      "C03528-K1",
+      "C07485-K1",
+      "C01289-K2"
     ],
     "connected_device_profiles": [
       "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
@@ -28,7 +28,17 @@
     "exposure_usd": 74.96,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C13487-K1. Most recent: 2016-12-27 $57.89 (in_person). Average amount: $57.43.",
+        "claim": "Trigger (analyst_request): Analyst request: several cards this month show purchases from the same unusual device profile. Review transaction 3478561 on card C13487-K1 and look for related activity.",
+        "source": "external",
+        "ref": "trigger:analyst_request",
+        "entity_ids": [
+          "C13487",
+          "C13487-K1",
+          "3478561"
+        ]
+      },
+      {
+        "claim": "50 previous transactions retrieved for card C13487-K1. Average amount: $57.43.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C13487-K1)",
         "entity_ids": [
@@ -44,7 +54,7 @@
         ]
       },
       {
-        "claim": "Proxy or anonymous connection used: id_23=IP_PROXY:ANONYMOUS.",
+        "claim": "Proxy or anonymous connection used: IP_PROXY:ANONYMOUS.",
         "source": "graph",
         "ref": "query:transaction_identity(txn_id=3478561)",
         "entity_ids": [
@@ -52,30 +62,20 @@
         ]
       },
       {
-        "claim": "Device profile shared across 19 other card(s): C12574-K1, C01935-K1, C06617-K1, C06197-K1, C03744-K1.",
+        "claim": "Device profile shared across 19 other card(s): C11082-K1, C09998-K1, C09906-K1, C07762-K1, C06617-K1.",
         "source": "graph",
         "ref": "query:accounts_sharing_device(device=SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080)",
         "entity_ids": [
-          "C12574-K1",
-          "C01935-K1",
+          "C11082-K1",
+          "C09998-K1",
+          "C09906-K1",
+          "C07762-K1",
           "C06617-K1",
           "C06197-K1",
-          "C03744-K1",
-          "C06710-K1",
           "C12645-K1",
-          "C12900-K2",
-          "C10350-K1",
-          "C03528-K1"
-        ]
-      },
-      {
-        "claim": "Mixed-channel activity in 48h window: in_person, online.",
-        "source": "graph",
-        "ref": "query:card_window(card_id=C13487-K1)",
-        "entity_ids": [
-          "3477218",
-          "3478561",
-          "3478886"
+          "C03528-K1",
+          "C07485-K1",
+          "C01289-K2"
         ]
       },
       {
@@ -98,7 +98,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-27b35490",
+        "ref": "evidence_request:ER-ea4b0d40",
         "entity_ids": [
           "C13487"
         ]
@@ -121,7 +121,7 @@
       "CC-5455",
       "CC-5538"
     ],
-    "summary": "Case HHG-014 investigated card_not_present_new_device activity on card C13487-K1 (customer C13487) around transaction 3478561 ($74.96, online). Assessed fraud probability 0.53 (MEDIUM risk) from 7 evidence items across 3 independent sources. Key signals: new device for this account; proxy/anonymous connection used. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "summary": "Case HHG-014 (Card C13487-K1): The transaction (txn 3478561, $74.96, online) was flagged because it originated from a **new mobile device** (SM‑G935F, Android 7.0, Chrome 62) that is **marked “New” for this account** [HIGH] and was accessed through an **anonymous proxy** [MEDIUM]; the same device profile is **shared across 19 other cards** (C11082‑K1, C09998‑K1, etc.) [HIGH]. This pattern matches the confirmed “card_not_present_new_device” fraud cases (CC‑5556, CC‑5541, CC‑5564, CC‑5515, CC‑5528) [LOW] and yields a fraud probability of **0.53 (MEDIUM risk)**. The cardholder has not responded within the 24‑hour window [LOW], triggering the policy to **monitor the card and decline the transaction** (R4) while also **creating a case and filing a SAR** due to the shared‑device indicator (R6). Recommended next steps: place the card on monitor, decline any further online attempts, and generate a SAR for exposure $74.96.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-014"
   },
@@ -129,7 +129,28 @@
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "No response received within the 24-hour window."
+      "assumed_response": "No response received within the 24-hour window.",
+      "status": "received",
+      "info_value": 1.0,
+      "origin": "simulated",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.79); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.15)",
+      "alternatives_considered": [
+        {
+          "type": "step_up_auth",
+          "info_value": 0.45,
+          "decision_relevance": "Outcome A (Authentication fails — device unknown to cardholder) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.74); Outcome B (Authentication succeeds — device is the cardholder's) -> ALLOW_TRANSACTION (p=0.27)"
+        },
+        {
+          "type": "analyst_info",
+          "info_value": 0.45,
+          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.65); Outcome B (Analyst reports no related activity) -> CREATE_CASE, VERIFY_WITH_CUSTOMER (p=0.41)"
+        },
+        {
+          "type": "external_watchlist",
+          "info_value": 0.4,
+          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.62); Outcome B (No watchlist hits) -> CREATE_CASE, VERIFY_WITH_CUSTOMER (p=0.47)"
+        }
+      ]
     }
   ],
   "next_best_actions": {
@@ -162,7 +183,7 @@
         "reason": "R4: decline pending authorization"
       }
     ],
-    "what_changed": "Added: DECLINE_TRANSACTION, MONITOR_CARD; Removed: CREATE_CASE, MONITOR_CONNECTED_CARDS, FILE_REPORT"
+    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: FILE_REPORT, CREATE_CASE, MONITOR_CONNECTED_CARDS"
   },
   "sar": {
     "file": false,
@@ -173,7 +194,7 @@
     "activity_dates": []
   },
   "stop_reason": "Borderline probability 0.53; investigation halted per stopping criteria. Escalated for analyst review.",
-  "tool_calls": 20,
-  "tokens": 0,
-  "latency_s": 31.88
+  "tool_calls": 16,
+  "tokens": 897,
+  "latency_s": 34.13
 }

@@ -313,13 +313,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeCaseData = caseData;
     const c = caseData;
 
-    // Timeline: mark all 11 stages completed
-    setTimelineStep(11, 'completed');
+    // Timeline: audit-driven progression.  Stage completion reflects what the
+    // backend actually did (evidence count, requests, NBA, persistence).
+    const hasPending = (c.evidence_requests || []).some(r => r.status === 'pending');
+    if (hasPending) {
+      setTimelineStep(7, 'active');   // paused at evidence request stage
+    } else if ((c.approvals || []).some(a => a.status === 'pending')) {
+      setTimelineStep(10, 'active');  // paused at approval stage
+    } else {
+      setTimelineStep(11, 'completed');
+    }
 
     // 1. Assessment Banner
     const verdict = (c.verdict || 'uncertain').toLowerCase();
-    verdictBadge.textContent = verdict.toUpperCase();
-    verdictBadge.className = `verdict-badge verdict-${verdict}`;
+    verdictBadge.textContent = hasPending ? 'AWAITING EVIDENCE' : verdict.toUpperCase();
+    verdictBadge.className = hasPending ? 'verdict-badge verdict-ready' : `verdict-badge verdict-${verdict}`;
 
     const prob = Number(c.fraud_probability || 0);
     probBar.style.width = `${Math.round(prob * 100)}%`;
@@ -496,6 +504,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const uncertainties = c.uncertainty || [];
     const requests = c.evidence_requests || [];
     uncCount.textContent = uncertainties.length;
+    const pendingReq = requests.find(r => r.status === 'pending');
 
     const probBefore = c.risk_before ? Number(c.risk_before.fraud_probability || 0).toFixed(3) : '0.429';
     const probAfter = Number(c.fraud_probability || 0).toFixed(3);
@@ -526,19 +535,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       <!-- Cycle Stage 2: Targeted Evidence Request -->
       <div class="uncertainty-cycle-card">
-        <div class="cycle-step-badge">2. Targeted Evidence Request Dispatched</div>
+        <div class="cycle-step-badge">2. Evidence Request (Selected by Information Value)</div>
         ${requests.length > 0 ? requests.map(req => `
           <div style="margin-top:6px;">
             <div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:4px;">
               <span style="font-family:var(--font-mono); color:var(--accent-cyan); font-weight:700;">REQUEST TYPE: ${req.type || 'CUSTOMER_VALIDATION'}</span>
-              <span style="color:var(--text-muted);">Triggered After Step ${req.asked_after_step}</span>
+              <span class="route-pill ${req.origin === 'human_in_loop' ? 'route-l1' : 'route-auto'}" title="Origin of the response">
+                ${(req.origin || 'simulated') === 'human_in_loop' ? 'HUMAN SUPPLIED' : 'SIMULATED'}
+              </span>
             </div>
+            ${req.info_value != null ? `
+            <div style="font-size:0.68rem; color:var(--text-muted); margin-bottom:4px;">
+              Information value: <strong style="color:var(--accent-cyan);">${Number(req.info_value).toFixed(2)}</strong>
+              ${req.alternatives_considered && req.alternatives_considered.length ? `
+                &nbsp;|&nbsp; Alternatives: ${req.alternatives_considered.map(a => `${a.type} (${Number(a.info_value).toFixed(2)})`).join(', ')}` : ''}
+            </div>
+            <div style="font-size:0.68rem; color:var(--text-secondary); margin-bottom:4px; font-style:italic;">${escapeHtml(req.decision_relevance || '')}</div>` : ''}
+            ${req.status === 'pending' ? `
+            <div style="background:var(--bg-input); padding:10px; border-radius:6px; border:1px solid var(--accent-amber);">
+              <div style="color:var(--accent-amber); font-weight:700; font-size:0.7rem; text-transform:uppercase; margin-bottom:6px;">&#9203; Awaiting evidence — agent paused (MORE_EVIDENCE_REQUIRED)</div>
+              <div style="font-size:0.72rem; color:var(--text-secondary); margin-bottom:6px;"><strong>Question:</strong> ${escapeHtml(req.question || 'Did you make this transaction?')}</div>
+              <div class="approval-actions" style="display:flex; gap:6px; flex-wrap:wrap;">
+                <input id="evResponseInput" type="text" placeholder="Paste the customer / step-up / analyst response…" style="flex:1; min-width:200px; padding:6px 8px; border-radius:6px; border:1px solid var(--border-subtle); background:var(--bg-input); color:var(--text-primary); font-size:0.72rem;">
+                <button class="btn-approve" id="btnSubmitEvidence">Submit Response</button>
+              </div>
+              <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+                <button class="btn-subtle" style="font-size:0.65rem; padding:4px 8px;" onclick="window._quickEvidence('Customer states they did not make these purchases and still has the card in their possession.')">Simulate: denied</button>
+                <button class="btn-subtle" style="font-size:0.65rem; padding:4px 8px;" onclick="window._quickEvidence('Customer confirms they made this purchase while traveling.')">Simulate: confirmed</button>
+                <button class="btn-subtle" style="font-size:0.65rem; padding:4px 8px;" onclick="window._quickEvidence('No response received within the 24-hour window.')">Simulate: no reply</button>
+                <button class="btn-subtle" style="font-size:0.65rem; padding:4px 8px;" onclick="window._quickEvidence('Step-up authentication failed: device not recognized by the cardholder.')">Simulate: step-up failed</button>
+              </div>
+            </div>` : `
             <div style="background:var(--bg-input); padding:8px 10px; border-radius:6px; font-size:0.75rem; border:1px solid var(--border-subtle);">
-              <div style="color:var(--text-muted); font-size:0.68rem; text-transform:uppercase; font-weight:700;">Cardholder Response Received:</div>
-              <div style="color:var(--accent-emerald); font-weight:600; margin-top:2px;">&ldquo;${escapeHtml(req.assumed_response || req.response || 'No response received within the 24-hour window.')}&rdquo;</div>
-            </div>
+              <div style="color:var(--text-muted); font-size:0.68rem; text-transform:uppercase; font-weight:700;">Response Received:</div>
+              <div style="color:var(--accent-emerald); font-weight:600; margin-top:2px;">&ldquo;${escapeHtml(req.assumed_response || req.response || '')}&rdquo;</div>
+            </div>`}
           </div>
-        `).join('') : '<p style="font-size:0.75rem; color:var(--text-muted);">No additional evidence requests made.</p>'}
+        `).join('') : '<p style="font-size:0.75rem; color:var(--text-muted);">No additional evidence requested: no unrequested evidence would materially change the decision.</p>'}
       </div>
 
       <!-- Cycle Stage 3: Reassessment Delta & Resolution Impact -->
@@ -781,21 +814,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       showToast(`Initiating live TigerGraph investigation for ${activeCaseId}...`, 'info');
 
-      // Stage progression animation
-      setTimelineStep(1, 'active');
-      await sleep(250);
+      // The backend planner is genuinely querying TigerGraph right now —
+      // stage display advances only when real data confirms it.
       setTimelineStep(2, 'active');
-      await sleep(250);
-      setTimelineStep(3, 'active');
 
-      // Call backend API
+      // Call backend API (real execution; no scripted timers)
       const answer = await API.runInvestigation(activeCaseId);
-
-      setTimelineStep(5, 'active');
-      await sleep(200);
-      setTimelineStep(7, 'active');
-      await sleep(200);
-      setTimelineStep(9, 'active');
 
       // Reload investigation data after execution completes
       const [fullData, graphData] = await Promise.all([
@@ -809,7 +833,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         graphRenderer.setData(graphData);
       }
 
-      showToast(`Investigation for ${activeCaseId} complete! Verdict: ${(fullData.verdict || 'uncertain').toUpperCase()}`, 'success');
+      const pendingReq = (fullData.evidence_requests || []).find(r => r.status === 'pending');
+      if (pendingReq) {
+        switchTab('tabUncertainty');
+        showToast(`Agent PAUSED: requesting ${String(pendingReq.type).replace(/_/g, ' ')} (info value ${Number(pendingReq.info_value || 0).toFixed(2)}). Submit the response in the Uncertainty tab.`, 'info', 9000);
+      } else {
+        showToast(`Investigation for ${activeCaseId} complete! Verdict: ${(fullData.verdict || 'uncertain').toUpperCase()}`, 'success');
+      }
     } catch (err) {
       console.error('Investigation error:', err);
       showToast(`Investigation failed: ${err.message}`, 'error', 6000);
@@ -821,6 +851,51 @@ document.addEventListener('DOMContentLoaded', async () => {
       `;
     }
   });
+
+  // ── Human-in-the-Loop Evidence Submission ───────────────────────────────
+  // Delegated handler: the Uncertainty tab re-renders dynamically, so we bind
+  // at document level for the submit button and quick-fill buttons.
+  document.addEventListener('click', async (e) => {
+    // Quick-fill buttons place a canned response into the input
+    if (e.target && e.target.closest && e.target.closest('.btn-subtle[onclick*="_quickEvidence"]')) {
+      return; // handled by the inline onclick
+    }
+    if (e.target && e.target.id === 'btnSubmitEvidence') {
+      const input = document.getElementById('evResponseInput');
+      if (!input || !input.value.trim()) {
+        showToast('Enter (or quick-fill) a response before submitting.', 'error');
+        return;
+      }
+      const btn = e.target;
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+      try {
+        showToast('Response received — agent resuming (reassessment → NBA → policy)…', 'info');
+        await API.submitEvidence(activeCaseId, '', input.value.trim());
+        const [fullData, graphData] = await Promise.all([
+          API.getInvestigationFull(activeCaseId),
+          API.getInvestigationGraph(activeCaseId)
+        ]);
+        renderInvestigation(fullData);
+        if (graphData) graphRenderer.setData(graphData);
+        showToast(`Reassessment complete. Verdict: ${(fullData.verdict || 'uncertain').toUpperCase()}, probability ${Number(fullData.fraud_probability || 0).toFixed(3)}`, 'success');
+      } catch (err) {
+        console.error('Evidence submission error:', err);
+        showToast(`Evidence submission failed: ${err.message}`, 'error', 6000);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Response';
+      }
+    }
+  });
+
+  window._quickEvidence = (text) => {
+    const input = document.getElementById('evResponseInput');
+    if (input) {
+      input.value = text;
+      input.focus();
+    }
+  };
 
   // ── Global Approval Decision Handler ──────────────────────────────────────
   window.handleApprovalDecision = async (caseId, approvalId, decision) => {
@@ -855,10 +930,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnZoomOut')?.addEventListener('click', () => graphRenderer.zoomOut());
   document.getElementById('btnResetView')?.addEventListener('click', () => graphRenderer.resetView());
 
-  function sleep(ms) {
-    return new Promise(r => setTimeout(r, ms));
-  }
-
   function escapeHtml(str) {
     if (!str) return '';
     return String(str)
@@ -869,7 +940,63 @@ document.addEventListener('DOMContentLoaded', async () => {
       .replace(/'/g, '&#039;');
   }
 
+  // ── Live Benchmark Tab ────────────────────────────────────────────────────
+  async function loadBenchmarkTab() {
+    const elCompleted = document.getElementById('benchCompleted');
+    if (!elCompleted) return;
+    try {
+      const [report, checkpoints] = await Promise.all([
+        API.getBenchmarkReport().catch(() => null),
+        API.getBenchmarkCheckpoints().catch(() => null),
+      ]);
+
+      if (report) {
+        elCompleted.textContent = `${report.completed} / ${report.total_cases}`;
+        const elapsed = document.getElementById('benchElapsed');
+        if (elapsed) elapsed.textContent = `completed in ${report.elapsed_s}s`;
+        const note = document.getElementById('benchRunNote');
+        if (note) note.textContent = `Benchmark artifacts loaded live from cases/_benchmark_report.json (${report.completed} cases, ${report.failed} failures).`;
+
+        const table = document.getElementById('benchCaseTable');
+        if (table) {
+          const rows = (report.results || []).map(r => `
+            <tr>
+              <td style="padding:3px 6px; font-family:var(--font-mono);">${escapeHtml(r.case_id)}</td>
+              <td style="padding:3px 6px; color:${r.verdict === 'fraud' ? 'var(--accent-rose)' : r.verdict === 'legitimate' ? 'var(--accent-emerald)' : 'var(--accent-amber)'};">${escapeHtml(r.verdict)}</td>
+              <td style="padding:3px 6px;">${Number(r.fraud_probability).toFixed(2)}</td>
+              <td style="padding:3px 6px; font-size:0.65rem;">${escapeHtml(r.pattern)}</td>
+              <td style="padding:3px 6px; text-align:center;">${r.evidence_requests ?? '—'}</td>
+              <td style="padding:3px 6px; text-align:center;">${r.tool_calls}</td>
+              <td style="padding:3px 6px; text-align:center;">${r.sar_filed ? 'SAR' : '—'}</td>
+            </tr>`).join('');
+          table.innerHTML = `
+            <table style="width:100%; border-collapse:collapse; font-size:0.68rem; color:var(--text-secondary);">
+              <thead><tr style="color:var(--text-muted); text-transform:uppercase; font-size:0.6rem;">
+                <th style="text-align:left; padding:3px 6px;">Case</th><th style="text-align:left; padding:3px 6px;">Verdict</th>
+                <th style="text-align:left; padding:3px 6px;">P(fraud)</th><th style="text-align:left; padding:3px 6px;">Pattern</th>
+                <th style="padding:3px 6px;">ERs</th><th style="padding:3px 6px;">Tools</th><th style="padding:3px 6px;">SAR</th>
+              </tr></thead><tbody>${rows}</tbody></table>`;
+        }
+      } else if (elCompleted) {
+        elCompleted.textContent = '—';
+      }
+
+      if (checkpoints) {
+        const el = document.getElementById('benchCheckpoints');
+        if (el) {
+          el.textContent = `${checkpoints.checkpoint_pass} / ${checkpoints.checkpoint_total}`;
+        }
+      } else {
+        const el = document.getElementById('benchCheckpoints');
+        if (el) el.textContent = 'run benchmark';
+      }
+    } catch (e) {
+      console.warn('Benchmark tab load failed:', e);
+    }
+  }
+
   // ── Initial Boot ──────────────────────────────────────────────────────────
   await checkHealth();
   await loadCasePack();
+  loadBenchmarkTab();
 });

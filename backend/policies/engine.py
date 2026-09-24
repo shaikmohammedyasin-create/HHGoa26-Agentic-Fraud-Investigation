@@ -59,6 +59,12 @@ class PolicyInput:
     undocumented_coordinated: bool        # R9
     connected_fraud_cards_count: int = 0 # R10
     evidence_count: int = 0
+    # R11 — uncertainty-aware action selection: how confident the assessment
+    # layer is in its own probability estimate (0-1).
+    assessment_confidence: float = 0.5
+    # R12 — information value: the expected decision impact of the best
+    # unrequested evidence.  High value -> request evidence before acting.
+    best_evidence_info_value: float = 0.0
     # D.5: evidence IDs available to link into recommendations
     evidence_ids: list[str] = None        # type: ignore[assignment]
 
@@ -83,7 +89,9 @@ def build_recommendations(inp: PolicyInput) -> list[ActionRecommendation]:
     can_block_all = inp.connected_fraud_cards_count >= 2
 
     # ── R5 card testing ──────────────────────────────────────────────────────────
-    if inp.card_testing_detected:
+    # R5 fires on the sequence alone, but a customer confirmation (R3)
+    # supersedes blocking: the sequence is then explained as legitimate use.
+    if inp.card_testing_detected and not inp.customer_confirmed:
         if inp.exposure_usd > 100:
             actions.append(ActionRecommendation(
                 action=Action.BLOCK_CARD,
@@ -295,6 +303,29 @@ def build_recommendations(inp: PolicyInput) -> list[ActionRecommendation]:
             expected_impact="Obtains cardholder confirmation before any disruptive action is taken",
         ))
 
+    # ── R11: high-impact action on a low-confidence borderline assessment ───────────
+    # When the probability is in the actioning band but the assessment itself is
+    # not confident AND high-value evidence remains unrequested, the correct NBA
+    # is to gather that evidence first rather than act on a shaky estimate.
+    if (0.35 <= inp.fraud_probability < 0.70
+            and inp.assessment_confidence < 0.70
+            and inp.best_evidence_info_value >= 0.40
+            and not inp.customer_denied and not inp.customer_confirmed
+            and not any(a.action in (Action.BLOCK_CARD, Action.DECLINE_TRANSACTION,
+                                    Action.VERIFY_WITH_CUSTOMER) for a in actions)):
+        actions.insert(0, ActionRecommendation(
+            action=Action.VERIFY_WITH_CUSTOMER,
+            route=ApprovalRoute.auto,
+            reason=("R11: borderline assessment (confidence < 0.70) with high-value "
+                    "evidence available — resolve the evidence gap before acting"),
+            evidence_ids=ev_ids[:3],
+            alternatives_rejected=[
+                "BLOCK_CARD: assessment confidence too low for a disruptive action at this probability",
+                "ALLOW_TRANSACTION: probability is not low enough to dismiss",
+            ],
+            expected_impact="Reduces decision uncertainty before any irreversible action is taken",
+        ))
+
     # ── R8 uncertain with exposure ────────────────────────────────────────────────────
     if inp.uncertain_exposed and not actions:
         actions.append(ActionRecommendation(
@@ -373,7 +404,50 @@ def build_recommendations(inp: PolicyInput) -> list[ActionRecommendation]:
                 expected_impact="Files regulatory SAR for confirmed high-value fraud",
             ))
 
+    # Populate why_now for every recommendation based on the current state.
+    for rec in actions:
+        rec.why_now = _why_now(inp, rec.action)
+
     return actions
+
+
+def _why_now(inp: PolicyInput, action: Action) -> str:
+    """Explain what in the CURRENT state makes this action the next step."""
+    p = inp.fraud_probability
+    if action == Action.BLOCK_CARD:
+        if inp.customer_denied:
+            return (f"now because the cardholder denied the transaction and "
+                    f"probability is {p:.2f} — delay leaves the card usable")
+        if inp.card_testing_detected:
+            return (f"now because a card-testing sequence is confirmed and the "
+                    f"purchase already cleared — every hour enables more testing")
+        return f"now because probability {p:.2f} crossed the 0.70 action threshold"
+    if action == Action.DECLINE_TRANSACTION:
+        return f"now because the disputed transaction can still be stopped while probability is {p:.2f}"
+    if action == Action.VERIFY_WITH_CUSTOMER:
+        if inp.best_evidence_info_value >= 0.40:
+            return (f"now because unrequested evidence has expected decision impact "
+                    f"{inp.best_evidence_info_value:.2f} — asking before acting avoids an irreversible mistake")
+        return f"now because probability {p:.2f} is actionable but the ownership question is unsettled"
+    if action == Action.CLOSE_NO_FRAUD:
+        return "now because the cardholder confirmed legitimate use — no fraud basis remains"
+    if action == Action.MONITOR_CARD:
+        return f"now because probability {p:.2f} warrants observation but not disruption"
+    if action == Action.MONITOR_CONNECTED_CARDS:
+        return "now because shared infrastructure implies correlated exposure across cards"
+    if action == Action.ESCALATE_TO_ANALYST:
+        return f"now because probability {p:.2f} is inside the band where human judgement outperforms automation"
+    if action == Action.FILE_REPORT:
+        return f"now because regulatory thresholds are met (probability {p:.2f}, exposure ${inp.exposure_usd:,.2f})"
+    if action == Action.CREATE_CASE:
+        return f"now because probability {p:.2f} exceeds the case-creation floor"
+    if action == Action.ALLOW_TRANSACTION:
+        return f"now because probability {p:.2f} is below every action threshold"
+    if action == Action.STEP_UP_AUTH:
+        return "now because friction applied immediately can deter automated testing"
+    if action == Action.WARN_CUSTOMER:
+        return "now because the customer should know about the disputed pattern"
+    return f"now because the current state (probability {p:.2f}) satisfies the rule conditions"
 
 
 def should_file_sar(

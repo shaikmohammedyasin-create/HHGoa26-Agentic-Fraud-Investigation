@@ -51,6 +51,11 @@ def case_to_answer(case: InvestigationCase) -> dict[str, Any]:
                 "type": er.type.value,
                 "asked_after_step": er.asked_after_step,
                 "assumed_response": er.assumed_response,
+                "status": er.status,
+                "info_value": er.info_value,
+                "origin": er.origin,
+                "decision_relevance": er.decision_relevance,
+                "alternatives_considered": er.alternatives_considered,
             }
             for er in case.evidence_requests
         ],

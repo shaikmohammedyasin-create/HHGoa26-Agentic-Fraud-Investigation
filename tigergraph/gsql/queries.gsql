@@ -246,3 +246,17 @@ CREATE OR REPLACE QUERY cases_by_device(STRING device_label, INT limit_n = 10) F
     LIMIT limit_n;
   PRINT cases AS result;
 }
+
+// ── Fraud-ring analysis around a device profile ─────────────
+// WHY: answers "is this device part of a coordinated ring or ordinary sharing?"
+// WHAT evidence: the connected card component through the device.
+// HOW: the agent scores ring size + confirmed-fraud membership into the
+//      fraud_ring risk channel and records the result as graph evidence.
+CREATE OR REPLACE QUERY device_fraud_ring(STRING dp, INT limit_n = 25) FOR GRAPH fraud_investigation {
+  AllTxns = {Transaction.*};
+  dev_txns = SELECT t FROM AllTxns:t -(FROM_DEVICE:e)-> DeviceProfile:d
+             WHERE d == to_vertex(dp, "DeviceProfile") OR d.device_info == dp;
+  cards = SELECT c FROM dev_txns:t -(MADE_BY:e)-> Card:c
+          LIMIT limit_n;
+  PRINT cards AS result;
+}

@@ -54,9 +54,26 @@ class EvidenceSignals:
     shared_region_cards: int = 0
     shared_email_cards: int = 0
 
+    # Fraud-ring analysis (graph algorithms)
+    fraud_ring_size: int = 0                     # cards in the device's connected component
+    fraud_ring_fraud_cards: int = 0              # confirmed-fraud cards inside that component
+
+    # Agent case memory (prior investigations written by this agent)
+    agent_prior_investigations: int = 0          # prior agent cases on this customer/device
+    agent_prior_fraud: int = 0                   # of those, confirmed fraud
+
+    # Additional evidence outcomes (from evidence requests)
+    step_up_failed: bool = False                 # step-up auth failed on new device
+    step_up_passed: bool = False
+    analyst_confirms_shared_fraud: bool = False
+    analyst_clears_shared: bool = False
+    watchlist_hit: bool = False
+    watchlist_clear: bool = False
+
     # Evidence quality
     evidence_count: int = 0
-    independent_evidence_count: int = 0          # distinct source types
+    independent_evidence_count: int = 0          # distinct evidence FAMILIES (see independence.py)
+    evidence_families: list[str] | None = None   # names of the contributing families
 
 
 def compute_fraud_probability(sig: EvidenceSignals) -> tuple[float, list[dict]]:
@@ -117,6 +134,24 @@ def compute_fraud_probability(sig: EvidenceSignals) -> tuple[float, list[dict]]:
     if sig.customer_denied:
         channels.append((0.55, "customer_denied", "Cardholder denied making the transaction"))
 
+    # ── Additional-evidence outcomes (step-up / analyst / watchlist) ───────────────
+    if sig.step_up_failed:
+        channels.append((0.45, "step_up_failed", "Step-up authentication failed on the new device"))
+    if sig.analyst_confirms_shared_fraud:
+        channels.append((0.25, "analyst_confirms_shared_fraud", "Analyst confirms related fraud on the shared profile"))
+    if sig.watchlist_hit:
+        channels.append((0.20, "watchlist_hit", "External watchlist hit on linked identifiers"))
+
+    # ── Fraud-ring / graph-algorithm signals ────────────────────────────────────────
+    if sig.fraud_ring_fraud_cards >= 2:
+        w = min(0.30, 0.15 + sig.fraud_ring_fraud_cards * 0.05)
+        channels.append((w, "fraud_ring", f"Device component contains {sig.fraud_ring_fraud_cards} confirmed-fraud cards (ring of {sig.fraud_ring_size})"))
+
+    # ── Agent case memory ────────────────────────────────────────────────────────
+    if sig.agent_prior_fraud > 0:
+        w = min(0.20, 0.10 + sig.agent_prior_fraud * 0.05)
+        channels.append((w, "agent_prior_fraud", f"{sig.agent_prior_fraud} prior agent investigation(s) on this entity ended in confirmed fraud"))
+
     # ── Shared origin ──────────────────────────────────────────────────────────────
     if sig.shared_device_count > 1:
         w = min(0.22, 0.10 + sig.shared_device_count * 0.03)
@@ -127,11 +162,25 @@ def compute_fraud_probability(sig: EvidenceSignals) -> tuple[float, list[dict]]:
     for q, _, _ in channels:
         not_fraud *= (1.0 - q)
 
-    # ── Clearing signals, multiplicative ────────────────────────────────────────────
+    # ── Clearing signals, multiplicative on P(not fraud) ─────────────────────────
+    # Semantics: P(fraud) = 1 - not_fraud.  A clearing factor f > 1 multiplies
+    # not_fraud, which LOWERS the fraud probability.  (Historical note: earlier
+    # revisions multiplied not_fraud by factors < 1 for confirmations, which
+    # raised the probability and only appeared to work because of the post-hoc
+    # cap below; the direction is now correct for all clearing channels.)
     clearing: list[tuple[float, str, str]] = []
     if sig.customer_confirmed:
-        not_fraud *= 0.60
-        clearing.append((0.60, "customer_confirmed", "Cardholder confirmed the transaction (strong clearing signal)"))
+        not_fraud *= 1.0 / 0.60
+        clearing.append((round(1.0 / 0.60, 3), "customer_confirmed", "Cardholder confirmed the transaction (strong clearing signal)"))
+    if sig.step_up_passed:
+        not_fraud *= 1.0 / 0.65
+        clearing.append((round(1.0 / 0.65, 3), "step_up_passed", "Step-up authentication succeeded — device belongs to the cardholder"))
+    if sig.analyst_clears_shared:
+        not_fraud *= 1.0 / 0.80
+        clearing.append((1.25, "analyst_clears_shared", "Analyst reports no related activity on the shared profile"))
+    if sig.watchlist_clear:
+        not_fraud *= 1.0 / 0.90
+        clearing.append((round(1.0 / 0.90, 3), "watchlist_clear", "No external watchlist hits on linked identifiers"))
     if sig.region_streak:
         not_fraud *= 1.30
         clearing.append((1.30, "region_streak", "Multi-day new-region purchases consistent with legitimate travel"))
@@ -190,11 +239,14 @@ def classify_risk(probability: float) -> RiskLevel:
 
 def compute_confidence(sig: EvidenceSignals, probability: float) -> float:
     """How confident are we in the probability estimate?"""
-    # More independent evidence sources → higher confidence
+    # More independent evidence FAMILIES → higher confidence
     base = 0.3 + min(0.5, sig.independent_evidence_count * 0.12)
     # Customer interaction settles the uncertainty
     if sig.customer_denied or sig.customer_confirmed:
         base = max(base, 0.85)
+    # Step-up auth outcome also settles the device question
+    if sig.step_up_failed or sig.step_up_passed:
+        base = max(base, 0.80)
     # Very low/high probability with little evidence: lower confidence
     if sig.independent_evidence_count < 2 and 0.35 < probability < 0.65:
         base -= 0.10
@@ -260,6 +312,16 @@ def build_risk_assessment(sig: EvidenceSignals) -> RiskAssessment:
         signals.append("cardholder denied making the transaction")
     if sig.customer_confirmed:
         signals.append("cardholder confirmed the transaction")
+    if sig.step_up_failed:
+        signals.append("step-up authentication failed on the new device")
+    if sig.step_up_passed:
+        signals.append("step-up authentication succeeded on the new device")
+    if sig.fraud_ring_fraud_cards >= 2:
+        signals.append(f"device component contains {sig.fraud_ring_fraud_cards} confirmed-fraud cards")
+    if sig.agent_prior_fraud:
+        signals.append(f"{sig.agent_prior_fraud} prior agent investigation(s) ended in confirmed fraud")
+    if sig.watchlist_hit:
+        signals.append("external watchlist hit on linked identifiers")
 
     return RiskAssessment(
         fraud_probability=prob,

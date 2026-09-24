@@ -69,6 +69,20 @@ class Settings(BaseSettings):
     fraud_prob_stop_low: float = 0.15
     min_evidence_for_stop: int = 2
 
+    # ── Agentic evidence loop ────────────────────────────────────────────────
+    # how: simulated  = agent fabricates a documented synthetic response
+    #      (benchmark default; flagged as simulated in evidence provenance)
+    #      human_in_loop = investigation pauses in MORE_EVIDENCE_REQUIRED and
+    #      waits for POST /investigations/{id}/evidence; the UI can supply the
+    #      customer / step-up / analyst response.
+    evidence_request_mode: Literal["simulated", "human_in_loop"] = "simulated"
+    # Minimum expected decision impact (0-1) for the agent to request evidence
+    # at all: low-value requests are suppressed so the agent only asks when the
+    # answer could materially change the recommendation.
+    min_evidence_info_value: float = 0.25
+    # Hard bound on reassessment rounds per investigation (stopping criteria).
+    max_investigation_rounds: int = 3
+
 
 settings = Settings()
 

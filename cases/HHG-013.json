@@ -3,7 +3,7 @@
   "case": {
     "status": "closed_fraud",
     "verdict": "fraud",
-    "fraud_probability": 0.93,
+    "fraud_probability": 0.951,
     "pattern": "card_not_present_new_device",
     "pattern_description": "Device marked New for this account",
     "affected_txn_ids": [
@@ -11,16 +11,16 @@
     ],
     "first_suspicious_txn_id": "3526826",
     "connected_card_ids": [
-      "C10969-K1",
-      "C09022-K1",
-      "C09280-K1",
-      "C08290-K1",
-      "C02639-K1",
-      "C10182-K1",
-      "C00788-K1",
-      "C01846-K1",
-      "C05022-K1",
-      "C11993-K1"
+      "C13067-K1",
+      "C10949-K1",
+      "C02147-K2",
+      "C01521-K2",
+      "C10509-K1",
+      "C03095-K2",
+      "C11137-K1",
+      "C03157-K1",
+      "C02332-K1",
+      "C02123-K1"
     ],
     "connected_device_profiles": [
       "Windows | unknown | chrome 66.0 | unknown"
@@ -28,7 +28,17 @@
     "exposure_usd": 71.32,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C07671-K2. Most recent: 2016-12-28 $107.90 (in_person). Average amount: $112.41.",
+        "claim": "Trigger (risk_score): Real-time model scored transaction 3526826 ($35.66, online) at 0.76. Review and decide.",
+        "source": "external",
+        "ref": "trigger:risk_score",
+        "entity_ids": [
+          "C07671",
+          "C07671-K2",
+          "3526826"
+        ]
+      },
+      {
+        "claim": "50 previous transactions retrieved for card C07671-K2. Average amount: $112.41.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C07671-K2)",
         "entity_ids": [
@@ -44,20 +54,37 @@
         ]
       },
       {
-        "claim": "Device profile shared across 20 other card(s): C10969-K1, C09022-K1, C09280-K1, C08290-K1, C02639-K1.",
+        "claim": "Device profile shared across 19 other card(s): C13067-K1, C10949-K1, C02147-K2, C01521-K2, C10509-K1.",
         "source": "graph",
         "ref": "query:accounts_sharing_device(device=Windows | unknown | chrome 66.0 | unknown)",
         "entity_ids": [
-          "C10969-K1",
-          "C09022-K1",
-          "C09280-K1",
-          "C08290-K1",
-          "C02639-K1",
-          "C10182-K1",
-          "C00788-K1",
-          "C01846-K1",
-          "C05022-K1",
-          "C11993-K1"
+          "C13067-K1",
+          "C10949-K1",
+          "C02147-K2",
+          "C01521-K2",
+          "C10509-K1",
+          "C03095-K2",
+          "C11137-K1",
+          "C03157-K1",
+          "C02332-K1",
+          "C02123-K1"
+        ]
+      },
+      {
+        "claim": "Fraud-ring analysis: device component contains 12 confirmed-fraud card(s) (ring size 25).",
+        "source": "graph",
+        "ref": "query:device_fraud_ring(device=Windows | unknown | chrome 66.0 | unknown)",
+        "entity_ids": [
+          "C00073-K2",
+          "C00259-K1",
+          "C00294-K2",
+          "C00426-K2",
+          "C00466-K1",
+          "C00583-K1",
+          "C00606-K1",
+          "C00750-K2",
+          "C00820-K1",
+          "C00841-K1"
         ]
       },
       {
@@ -85,19 +112,7 @@
         ]
       },
       {
-        "claim": "Mixed-channel activity in 48h window: online, in_person.",
-        "source": "graph",
-        "ref": "query:card_window(card_id=C07671-K2)",
-        "entity_ids": [
-          "3521713",
-          "3521799",
-          "3521839",
-          "3521874",
-          "3522133"
-        ]
-      },
-      {
-        "claim": "15 prior closed case(s) retrieved by pattern (card_not_present_new_device) and keyword match over analyst notes.",
+        "claim": "20 prior closed case(s) retrieved by pattern (card_not_present_new_device) and keyword match over analyst notes.",
         "source": "document",
         "ref": "retrieval:pattern+keyword(pattern=card_not_present_new_device)",
         "entity_ids": [
@@ -116,7 +131,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-ae1bf6ba",
+        "ref": "evidence_request:ER-55ca16e2",
         "entity_ids": [
           "C07671"
         ]
@@ -139,7 +154,7 @@
       "CC-5515",
       "CC-5528"
     ],
-    "summary": "Case HHG-013 investigated card_not_present_new_device activity on card C07671-K2 (customer C07671) around transaction 3526826 ($35.66, online). Assessed fraud probability 0.93 (CRITICAL risk) from 8 evidence items across 3 independent sources. Key signals: new device for this account; 13 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case HHG-013 investigated card_not_present_new_device activity on card C07671-K2 (customer C07671) around transaction 3526826 ($35.66, online). Assessed fraud probability 0.95 (CRITICAL risk) from 9 evidence items across 9 independent evidence families. Key signals: new device for this account; 13 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s); device component contains 12 confirmed-fraud cards. Additional evidence requested (customer_validation, information value 0.75); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-013"
   },
@@ -147,7 +162,27 @@
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession."
+      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession.",
+      "info_value": 0.75,
+      "origin": "simulated",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.95); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.82)",
+      "alternatives_considered": [
+        {
+          "type": "step_up_auth",
+          "info_value": -0.05,
+          "decision_relevance": "Outcome A (Authentication fails — device unknown to cardholder) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.94); Outcome B (Authentication succeeds — device is the cardholder's) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.83)"
+        },
+        {
+          "type": "analyst_info",
+          "info_value": -0.1,
+          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.92); Outcome B (Analyst reports no related activity) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.86)"
+        },
+        {
+          "type": "external_watchlist",
+          "info_value": -0.15,
+          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.91); Outcome B (No watchlist hits) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.88)"
+        }
+      ]
     }
   ],
   "next_best_actions": {
@@ -195,15 +230,15 @@
   "sar": {
     "file": true,
     "reason": "R6: confirmed fraud connected to shared device profile or card",
-    "narrative": "Between 2016-12-09 and 2016-12-09, customer C07671 and card C07671-K2, connected cards C10969-K1, C09022-K1, C09280-K1, device profile 'Windows | unknown | chrome 66.0 | unknown' were involved in 2 transaction(s) assessed as fraud (card_not_present_new_device pattern) with total exposure $71.32. The flagged transaction 3526826 of $35.66 (online, product C) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_new_device pattern with assessed fraud probability 0.93. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule .",
+    "narrative": "Between 2016-12-09 and 2016-12-09, customer C07671 and card C07671-K2, connected cards C13067-K1, C10949-K1, C02147-K2, device profile 'Windows | unknown | chrome 66.0 | unknown' were involved in 2 transaction(s) assessed as fraud (card_not_present_new_device pattern) with total exposure $71.32. The flagged transaction 3526826 of $35.66 (online, product C) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 9 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_new_device pattern with assessed fraud probability 0.95. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
     "subjects": [
-      "C02639-K1",
+      "C02147-K2",
+      "C10509-K1",
       "C07671-K2",
-      "C09280-K1",
-      "C08290-K1",
-      "C10969-K1",
       "C07671",
-      "C09022-K1",
+      "C01521-K2",
+      "C10949-K1",
+      "C13067-K1",
       "Windows | unknown | chrome 66.0 | unknown"
     ],
     "total_amount_usd": 71.32,
@@ -212,8 +247,8 @@
       "2016-12-09"
     ]
   },
-  "stop_reason": "Fraud probability 0.93 ≥ 0.85 with 3 independent evidence sources.",
-  "tool_calls": 20,
+  "stop_reason": "Fraud probability 0.95 ≥ 0.85 with 9 independent evidence families.",
+  "tool_calls": 16,
   "tokens": 0,
-  "latency_s": 40.09
+  "latency_s": 41.93
 }

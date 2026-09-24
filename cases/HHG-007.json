@@ -15,7 +15,17 @@
     "exposure_usd": 111.92,
     "evidence": [
       {
-        "claim": "50 previous transactions retrieved for card C09933-K2. Most recent: 2016-12-31 $47.96 (in_person). Average amount: $123.86.",
+        "claim": "Trigger (risk_score): Real-time model scored transaction 3514948 ($111.92, in billing region 264.0) at 0.87. Review and decide.",
+        "source": "external",
+        "ref": "trigger:risk_score",
+        "entity_ids": [
+          "C09933",
+          "C09933-K2",
+          "3514948"
+        ]
+      },
+      {
+        "claim": "50 previous transactions retrieved for card C09933-K2. Average amount: $123.86.",
         "source": "graph",
         "ref": "query:card_transaction_history(card_id=C09933-K2)",
         "entity_ids": [
@@ -44,19 +54,7 @@
         ]
       },
       {
-        "claim": "Mixed-channel activity in 48h window: online, in_person.",
-        "source": "graph",
-        "ref": "query:card_window(card_id=C09933-K2)",
-        "entity_ids": [
-          "3509151",
-          "3509355",
-          "3509392",
-          "3509466",
-          "3510700"
-        ]
-      },
-      {
-        "claim": "15 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
+        "claim": "20 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
         "source": "document",
         "ref": "retrieval:pattern+keyword(pattern=card_not_present_fraud)",
         "entity_ids": [
@@ -75,7 +73,7 @@
       {
         "claim": "Customer response (simulated): No response received within the 24-hour window.",
         "source": "customer",
-        "ref": "evidence_request:ER-d8b9a83b",
+        "ref": "evidence_request:ER-93a2e269",
         "entity_ids": [
           "C09933"
         ]
@@ -98,7 +96,7 @@
       "CC-5542",
       "CC-5513"
     ],
-    "summary": "Case HHG-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 3 independent sources. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "summary": "Case HHG-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 6 independent evidence families. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 0.95); response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-007"
   },
@@ -106,7 +104,11 @@
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "No response received within the 24-hour window."
+      "assumed_response": "No response received within the 24-hour window.",
+      "info_value": 0.95,
+      "origin": "simulated",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE (p=0.80); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.15)",
+      "alternatives_considered": []
     }
   ],
   "next_best_actions": {
@@ -134,7 +136,7 @@
         "reason": "R4: decline pending authorization"
       }
     ],
-    "what_changed": "Added: MONITOR_CARD, DECLINE_TRANSACTION; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
+    "what_changed": "Added: DECLINE_TRANSACTION, MONITOR_CARD; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER"
   },
   "sar": {
     "file": false,
@@ -145,7 +147,7 @@
     "activity_dates": []
   },
   "stop_reason": "Borderline probability 0.55; investigation halted per stopping criteria. Escalated for analyst review.",
-  "tool_calls": 17,
+  "tool_calls": 13,
   "tokens": 0,
-  "latency_s": 43.15
+  "latency_s": 11.3
 }

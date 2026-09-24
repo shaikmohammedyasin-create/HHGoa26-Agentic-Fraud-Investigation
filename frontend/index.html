@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HHGoa '26 — Agentic Fraud Investigation Command Center</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f172a'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='13' font-weight='bold' fill='%2338bdf8' text-anchor='middle'%3ETG%3C/text%3E%3C/svg%3E">
   <meta name="description" content="TigerGraph-native, evidence-grounded, policy-controlled agentic fraud investigation command center for IEEE HHGoa 2026.">
   
   <!-- Prevent browser caching of development/eval assets -->
@@ -370,89 +371,47 @@
               <span class="route-pill route-auto">VALIDATION RESULTS</span>
             </div>
 
-            <!-- PRIMARY VALIDATION -->
+            <!-- PRIMARY VALIDATION (live from /benchmark/report + /benchmark/checkpoints) -->
             <div class="benchmark-section">
-              <div class="benchmark-section-label">PRIMARY VALIDATION</div>
+              <div class="benchmark-section-label">PRIMARY VALIDATION — LIVE FROM BENCHMARK ARTIFACTS</div>
               <div class="benchmark-grid-hero">
                 <div class="benchmark-card benchmark-card-hero">
-                  <div class="benchmark-num hero-emerald">20 / 20</div>
+                  <div class="benchmark-num hero-emerald" id="benchCompleted">…</div>
                   <div class="benchmark-lbl">CASES COMPLETED</div>
-                  <div class="benchmark-desc">All benchmark cases</div>
+                  <div class="benchmark-desc" id="benchElapsed">of benchmark run</div>
                 </div>
                 <div class="benchmark-card benchmark-card-hero">
-                  <div class="benchmark-num hero-emerald">600 / 600</div>
+                  <div class="benchmark-num hero-emerald" id="benchCheckpoints">…</div>
                   <div class="benchmark-lbl">CHECKPOINTS PASSED</div>
-                  <div class="benchmark-desc">Defined checkpoints</div>
+                  <div class="benchmark-desc">Structural validation</div>
                 </div>
+              </div>
+              <div class="benchmark-footer-note" id="benchRunNote" style="margin-top:6px;">
+                Loading live benchmark artifacts…
               </div>
             </div>
 
             <!-- INVESTIGATION ACCURACY -->
             <div class="benchmark-section">
-              <div class="benchmark-section-label">INVESTIGATION ACCURACY</div>
-              <div class="benchmark-grid-accuracy">
-                <div class="benchmark-card card-span-2">
-                  <div class="benchmark-num val-emerald">95%</div>
-                  <div class="benchmark-lbl">VERDICT ACCURACY</div>
-                  <div class="benchmark-desc">Fraud verdict accuracy</div>
-                </div>
-                <div class="benchmark-card card-span-2">
-                  <div class="benchmark-num val-neutral">90%</div>
-                  <div class="benchmark-lbl">PRIMARY PATTERN</div>
-                  <div class="benchmark-desc">Primary pattern match</div>
-                </div>
-                <div class="benchmark-card card-span-2">
-                  <div class="benchmark-num val-neutral">90%</div>
-                  <div class="benchmark-lbl">CANDIDATE RECALL</div>
-                  <div class="benchmark-desc">Candidate pattern recall</div>
-                </div>
-                <div class="benchmark-card card-span-3">
-                  <div class="benchmark-num val-emerald">90%</div>
-                  <div class="benchmark-lbl">SAR ACCURACY</div>
-                  <div class="benchmark-desc">SAR decision accuracy</div>
-                </div>
-                <div class="benchmark-card card-span-3">
-                  <div class="benchmark-num val-amber">75%</div>
-                  <div class="benchmark-lbl">NBA ACCURACY</div>
-                  <div class="benchmark-desc">Next-best-action accuracy</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- SYSTEM VALIDATION -->
-            <div class="benchmark-section">
-              <div class="benchmark-section-label">SYSTEM VALIDATION</div>
-              <div class="benchmark-grid-system">
-                <div class="benchmark-card">
-                  <div class="benchmark-num val-purple">20 / 20</div>
-                  <div class="benchmark-lbl">GRAPH PERSISTENCE</div>
-                  <div class="benchmark-desc">TigerGraph cases</div>
-                </div>
-                <div class="benchmark-card">
-                  <div class="benchmark-num val-blue">228 / 228</div>
-                  <div class="benchmark-lbl">AUTOMATED TESTS</div>
-                  <div class="benchmark-desc">Test suite passing</div>
-                </div>
+              <div class="benchmark-section-label">PER-CASE RESULTS (FROM ARTIFACT)</div>
+              <div id="benchCaseTable" style="max-height:260px; overflow-y:auto;">
+                <div class="benchmark-footer-note">Loading per-case benchmark results…</div>
               </div>
             </div>
 
             <!-- Collapsible Secondary Details -->
             <details class="benchmark-disclosure">
               <summary class="benchmark-disclosure-trigger">
-                <span>Architecture Coverage &amp; Test Suite Breakdown</span>
+                <span>Agentic Capabilities Demonstrated</span>
                 <span class="disclosure-arrow">&#9662;</span>
               </summary>
               <div class="benchmark-disclosure-body">
-                <div class="benchmark-test-chips">
-                  <span class="benchmark-test-chip">Unit: 184</span>
-                  <span class="benchmark-test-chip">Integration: 44</span>
-                  <span class="benchmark-test-chip">Failures: 0</span>
-                </div>
                 <div class="benchmark-coverage-list">
-                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Multi-Hop GSQL Traversal (20/20 cases)</div>
-                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Noisy-OR Score Channel Grounding (100%)</div>
-                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Uncertainty Loop &amp; Reassessment (100%)</div>
-                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Governed Policy &amp; Permission Gating (100%)</div>
+                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Planner-driven adaptive tool selection (per-case plan trace)</div>
+                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Information-value evidence requests (expected decision impact)</div>
+                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Human-in-the-loop evidence submission (POST evidence endpoint)</div>
+                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Approval decisions execute under policy routes (auto / L1 / L2)</div>
+                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Fraud-ring graph analysis + graph-native agent case memory</div>
                 </div>
               </div>
             </details>

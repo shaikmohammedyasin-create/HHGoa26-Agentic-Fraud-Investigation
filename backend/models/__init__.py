@@ -122,6 +122,7 @@ class EvidenceRequestType(str, Enum):
     customer_validation = "customer_validation"
     step_up_auth = "step_up_auth"
     analyst_info = "analyst_info"
+    external_watchlist = "external_watchlist"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -169,6 +170,8 @@ class IdentityRecord(BaseModel):
     device_status: str | None = None  # id_15:  New | Found | NotFound
     proxy: str | None = None          # id_23
     match_status: str | None = None   # id_34
+    # Field-level provenance: which backend supplied each identity attribute.
+    attribute_sources: dict[str, str] = Field(default_factory=dict)
 
 
 class DeviceProfileKey(BaseModel):
@@ -265,6 +268,11 @@ class EvidenceRequest(BaseModel):
     assumed_response: str = ""
     status: str = "pending"  # pending | received | waived
     received_at: datetime | None = None
+    # Information-value selection provenance: why THIS evidence was chosen.
+    info_value: float = 0.0          # expected decision impact 0-1 (selected = max)
+    alternatives_considered: list[dict[str, Any]] = Field(default_factory=list)
+    decision_relevance: str = ""     # which hypotheses / actions it could flip
+    origin: str = "simulated"        # simulated | human_in_loop
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -294,6 +302,8 @@ class ActionRecommendation(BaseModel):
     evidence_ids: list[str] = Field(default_factory=list)       # which EvidenceItems support this action
     alternatives_rejected: list[str] = Field(default_factory=list)  # why competing actions were not chosen
     expected_impact: str = ""                                        # what this action accomplishes
+    # Why this action NOW (vs earlier/later): what in the current state triggers it
+    why_now: str = ""
 
 
 class NextBestActions(BaseModel):
@@ -363,6 +373,12 @@ class InvestigationCase(BaseModel):
     customer_id: str
     card_id: str
     flagged_txn_id: str
+
+    # Agentic execution: the planner's rationale for the tool sequence used.
+    plan_trace: list[dict[str, Any]] = Field(default_factory=list)
+    # Internal loop state: latest EvidenceSignals snapshot (signals_dict) so a
+    # resumed investigation continues from persisted state.
+    signal_store: dict[str, Any] = Field(default_factory=dict)
 
     # Findings
     status: CaseStatus = CaseStatus.open

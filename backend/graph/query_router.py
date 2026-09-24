@@ -163,15 +163,25 @@ def get_cards_in_same_email_domain(domain: str) -> list[dict[str, Any]]:
     return _route("get_cards_in_same_email_domain", "get_cards_in_same_email_domain", domain)
 
 
+def get_device_fraud_ring(device_label: str, max_cards: int = 25) -> dict[str, Any]:
+    """Fraud-ring analysis around a device profile (connected component + fraud membership)."""
+    return _route("get_device_fraud_ring", "get_device_fraud_ring", device_label, max_cards)
+
+
 # ─── Case memory (investigation cases written by this agent) ──────────────────
 
 def write_investigation_case(payload: dict[str, Any]) -> str:
-    """Persist a completed investigation case into the graph backend."""
+    """
+    Persist a completed investigation case into the graph backend.
+
+    Case-memory writes follow fail-closed semantics: when the configured backend
+    is TigerGraph and the write fails, the error propagates to the caller (the
+    orchestrator records `written_to_graph=False` + an audit event) instead of
+    silently writing to local storage while the UI claims TigerGraph persistence.
+    Local storage is only used when the local backend is selected.
+    """
     if _use_tg():
-        try:
-            return _tg_adapter().write_investigation_case(payload)
-        except Exception as exc:
-            log.warning("tg.fallback_to_local", error=str(exc), fn="write_investigation_case")
+        return _tg_adapter().write_investigation_case(payload)
     return _local_store().write_investigation_case(payload)
 
 

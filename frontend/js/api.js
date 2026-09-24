@@ -60,15 +60,41 @@ const API = {
   },
 
   async runInvestigation(caseId) {
-    const res = await fetch(`${this.baseUrl}/investigations`, {
+    // force=true: the demo button always executes a fresh investigation
+    // rather than replaying a cached completed case.
+    const res = await fetch(`${this.baseUrl}/investigations/${encodeURIComponent(caseId)}/run?force=true`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ case_id: caseId })
+      headers: { 'Content-Type': 'application/json' }
     });
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({}));
       throw new Error(errBody.detail || `Investigation run failed: ${res.statusText}`);
     }
+    return await res.json();
+  },
+
+  async submitEvidence(caseId, type, response) {
+    const res = await fetch(`${this.baseUrl}/investigations/${encodeURIComponent(caseId)}/evidence`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: type || '', response, origin: 'human_in_loop' })
+    });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.detail || `Evidence submission failed: ${res.statusText}`);
+    }
+    return await res.json();
+  },
+
+  async getBenchmarkReport() {
+    const res = await fetch(`${this.baseUrl}/benchmark/report`);
+    if (!res.ok) throw new Error(`Benchmark report unavailable: ${res.statusText}`);
+    return await res.json();
+  },
+
+  async getBenchmarkCheckpoints() {
+    const res = await fetch(`${this.baseUrl}/benchmark/checkpoints`);
+    if (!res.ok) throw new Error(`Checkpoint report unavailable: ${res.statusText}`);
     return await res.json();
   }
 };

@@ -444,6 +444,61 @@ def get_cards_in_same_email_domain(domain: str) -> list[dict[str, Any]]:
     return [dict(r) for r in rows]
 
 
+def get_device_fraud_ring(device_label: str, max_cards: int = 25) -> dict[str, Any]:
+    """
+    Fraud-ring analysis around a device profile: which cards form the connected
+    component through this device, and how many of them carry confirmed fraud
+    (from the historical closed-case table).
+
+    Returns {device, ring_size, cards: [...], fraud_cards: [...], n_fraud}.
+    Answers the investigation question: "is this device part of a coordinated
+    ring, or ordinary device sharing?"
+    """
+    parts = [p.strip() for p in device_label.split("|")]
+    if len(parts) < 4:
+        return {"device": device_label, "ring_size": 0, "cards": [],
+                "fraud_cards": [], "n_fraud": 0}
+    device_info, os_, browser, screen = parts[0], parts[1], parts[2], parts[3]
+    conn = _get_conn()
+    rows = conn.execute(
+        """
+        SELECT DISTINCT t.card_id, t.customer_id
+        FROM identity i
+        JOIN transactions t ON t.TransactionID = i.TransactionID
+        WHERE (COALESCE(i.DeviceInfo, 'unknown') = ?
+           OR COALESCE(i.id_30, 'unknown') = ?)
+          AND COALESCE(i.id_31, 'unknown') = ?
+          AND COALESCE(i.id_33, 'unknown') = ?
+        LIMIT ?
+        """,
+        (device_info, os_, browser, screen, max_cards),
+    ).fetchall()
+    cards = [str(r["card_id"]) for r in rows]
+
+    fraud_cards: set[str] = set()
+    for cid in cards:
+        frows = conn.execute(
+            """SELECT DISTINCT connected_card_ids, card_id FROM closed_cases
+               WHERE outcome='confirmed_fraud'
+                 AND (card_id=? OR connected_card_ids LIKE ?)""",
+            (cid, f"%{cid}%"),
+        ).fetchall()
+        for fr in frows:
+            fraud_cards.add(str(fr["card_id"]))
+            fraud_cards.update(
+                c.strip() for c in str(fr["connected_card_ids"] or "").split("|")
+                if c.strip()
+            )
+    fraud_in_ring = sorted(fraud_cards & set(cards))
+    return {
+        "device": device_label,
+        "ring_size": len(cards),
+        "cards": cards,
+        "fraud_cards": fraud_in_ring,
+        "n_fraud": len(fraud_in_ring),
+    }
+
+
 def health_check() -> dict[str, str]:
     try:
         conn = _get_conn()
