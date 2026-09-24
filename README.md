@@ -49,33 +49,7 @@ The planner chooses additional tools based on **open evidence gaps and the curre
 
 A simplified flow:
 
-```
-Trigger
-  ↓
-Planner
-  ↓
-Baseline Graph Retrieval
-  ↓
-Evidence + Risk Assessment
-  ↓
-Identify Evidence Gaps
-  ↓
-Planner selects next tool(s)
-  ↓
-Additional GraphRAG / GSQL Retrieval
-  ↓
-Uncertainty Check
-  ↓
-High-value Evidence Request
-  ↓
-Reassessment
-  ↓
-Policy-Governed NBA
-  ↓
-Approval / Execution
-  ↓
-InvestigationCase Memory
-```
+![Agentic Fraud Investigation Flow](./docs/images/simplified_flow.png)
 
 Each investigation records its plan trace so the selected tools and their rationale are auditable.
 
