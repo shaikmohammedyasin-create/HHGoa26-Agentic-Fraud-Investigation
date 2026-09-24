@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       .replace(/\b\w/g, l => l.toUpperCase());
   }
 
-  // ── Case Selection (with Auto-Load for Precomputed Cases) ─────────────────
+  // ── Case Selection (Clean State for Demo Recording) ──────────────────────
   async function selectCase(caseId) {
     activeCaseId = caseId;
     activeCaseData = null;
@@ -196,32 +196,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Populate Trigger Card
     triggerTypeBadge.textContent = formatTitle(triggerData.trigger_type || 'Risk Score');
+    if (triggerChannelBadge) {
+      triggerChannelBadge.textContent = triggerData.channel ? triggerData.channel.toUpperCase() : 'CARD TRANSACTION';
+    }
     triggerText.textContent = triggerData.trigger_text || 'No trigger alert text provided.';
     metaTxnId.textContent = triggerData.flagged_txn_id || '—';
     metaCardId.textContent = triggerData.card_id || '—';
     metaCustId.textContent = triggerData.customer_id || '—';
     metaRiskScore.textContent = triggerData.risk_score != null ? Number(triggerData.risk_score).toFixed(2) : '—';
 
-    // Auto-load completed investigation data if available
-    try {
-      const [existingFull, existingGraph] = await Promise.all([
-        API.getInvestigationFull(caseId).catch(() => null),
-        API.getInvestigationGraph(caseId).catch(() => null)
-      ]);
+    // Reset active tab to first tab (Evidence)
+    switchTab('tabEvidence');
 
-      if (existingFull && existingFull.verdict && existingFull.verdict !== 'ready') {
-        renderInvestigation(existingFull);
-        if (existingGraph) {
-          activeGraphData = existingGraph;
-          graphRenderer.setData(existingGraph);
-        }
-        return;
-      }
-    } catch (e) {
-      console.warn('Existing case load note:', e);
-    }
-
-    // Default to clean empty state
+    // Default to clean empty state (only start live investigation when analyst clicks "Start Live Investigation")
     resetTimeline();
     resetAssessment();
     if (graphRenderer) {
