@@ -156,41 +156,7 @@ This closes the memory loop:
 
 ## Architecture
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    Analyst Command Center                    │
-│  Case Selector • Investigation Story • Graph • Evidence     │
-│  Risk • Uncertainty • NBA • Case Memory • Benchmark         │
-└─────────────────────────────┬────────────────────────────────┘
-                              │ REST
-                              ▼
-┌──────────────────────────────────────────────────────────────┐
-│                       FastAPI Gateway                         │
-│  Cases • Investigations • Graph • Evidence • Approvals      │
-│  Benchmark • Health                                          │
-└─────────────────────────────┬────────────────────────────────┘
-                              ▼
-┌──────────────────────────────────────────────────────────────┐
-│                 Agentic Investigation Engine                 │
-│                                                              │
-│ Trigger → Planner → Retrieval → Evidence → Pattern → Risk   │
-│                         ↓                                    │
-│             Uncertainty / Evidence Gap                       │
-│                         ↓                                    │
-│                Reassessment → NBA → Policy                   │
-│                         ↓                                    │
-│                 Approval / Execution                          │
-│                         ↓                                    │
-│                   Graph Memory                                │
-└───────────────┬──────────────────────────────┬───────────────┘
-                │                              │
-                ▼                              ▼
-┌──────────────────────────┐      ┌───────────────────────────┐
-│ TigerGraph Savanna Cloud │      │ SQLite Application State  │
-│ fraud_investigation      │      │ timelines / approvals /   │
-│ graph + case memory      │      │ audit metadata            │
-└──────────────────────────┘      └───────────────────────────┘
-```
+![System Architecture](./docs/images/archi.png)
 
 ### Technology
 
