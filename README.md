@@ -36,15 +36,18 @@ TigerGraph provides the foundational computational backbone for this investigati
 ---
 
 ## 4. What the Agent Does
-The agent replaces manual, hours-long fraud triage with an auditable 8-stage investigation pipeline:
+The agent replaces manual, hours-long fraud triage with an adaptive, planner-driven investigation loop — not a fixed query script:
 1. **Trigger Ingestion**: Parses transaction metadata, dollar amounts, and baseline model risk.
-2. **Graph Memory Retrieval**: Queries TigerGraph for historical cardholder velocity, linked devices, and prior confirmed fraud incidents.
-3. **Graph Traversal (GSQL)**: Executes 2-hop neighborhood traversals to discover shared infrastructure.
-4. **Evidence Synthesis**: Synthesizes and tags all evidence items with immutable IDs and claim classifications (`OBSERVED FACT`, `DERIVED INFERENCE`, `MODEL SCORE`).
-5. **Pattern Reasoning**: Evaluates evidence against known fraud archetypes (`card_not_present_fraud`, `account_takeover`, `bust_out`, etc.), capturing primary and secondary candidates.
-6. **Noisy-OR Risk Assessment**: Fuses multi-channel risk signals into an explainable mathematical probability.
-7. **Uncertainty Evaluation**: When signals conflict, formulates structured inquiries to gather clarifying evidence.
-8. **Policy Gating & Action Routing**: Evaluates institutional policy rules, rejects invalid alternatives, and files regulatory Suspicious Activity Reports (SAR) where required.
+2. **Planner-Driven Tool Selection**: A hybrid planner chooses which GSQL tools to run each round based on the *evidence gaps still open* — different cases run different queries. Every plan is recorded in the case's `plan_trace` for auditability.
+3. **Graph Traversal (GSQL)**: Executes live traversals including 2-hop device co-usage (`device_neighbors`) and connected fraud-ring analysis (`device_fraud_ring`) on TigerGraph Savanna.
+4. **Evidence Synthesis**: Tags all evidence items with immutable IDs and claim classifications (`OBSERVED FACT`, `DERIVED INFERENCE`, `MODEL SCORE`), with per-attribute provenance for identity fields.
+5. **Pattern Reasoning**: Evaluates evidence against known fraud archetypes, capturing primary and secondary candidates with evidence-grounded tiebreakers.
+6. **Noisy-OR Risk Assessment**: Fuses multi-channel risk signals into an explainable probability, including fraud-ring and agent-case-memory channels.
+7. **Information-Value Evidence Loop**: When uncertain, the agent does not guess *whether* to ask — it scores every candidate evidence request by expected decision impact (how much the two possible answers would diverge the recommended action set) and requests only the highest-value one. Requests that cannot change the decision are suppressed.
+8. **Human-in-the-Loop or Governed Simulation**: In `human_in_loop` mode the investigation pauses at `MORE_EVIDENCE_REQUIRED` until real evidence arrives via the API/UI. In benchmark `simulated` mode responses are synthetic and always labelled `origin=simulated`.
+9. **Policy Gating & Action Routing**: Evaluates institutional policy rules R1–R11, rejects invalid alternatives with counterfactual explanations, gives a `why_now` rationale per action, and files SARs where required.
+10. **Approval Execution**: L1/L2 approval decisions actually execute the action under the approver's authority (or refuse it), with immutable audit events.
+11. **Graph Memory Persistence**: Persists every completed investigation as an `InvestigationCase` vertex linked to customer, card, transactions, *and device profiles* (`IC_ON_DEVICE`), building continuous organizational memory that future investigations retrieve through the same graph traversal they use for everything else.
 
 ---
 
@@ -54,30 +57,35 @@ The agent replaces manual, hours-long fraud triage with an auditable 8-stage inv
 [ Trigger Event ]
        │
        ▼
-[ Investigation Orchestrator ]
+[ Investigation Orchestrator ] ── persisted state machine (resume-safe)
        │
-       ├─► [ Live TigerGraph Query ] ──► (device_neighbors, card history, prior cases)
+       ├─► [ PLANNER: round 0 ] ── subject + baseline tools
+       │        └─► Live TigerGraph queries (txn, identity, history, window)
        │
-       ▼
-[ Evidence Synthesis ] ─────────────► Tagged as OBSERVED FACT / DERIVED INFERENCE / MODEL SCORE
+       ├─► [ PLANNER: round 1 — chosen by evidence gaps ]
+       │        ├─ new region?      → region-window traversal
+       │        ├─ device present?  → device_neighbors + device_fraud_ring
+       │        ├─ online burst?    → velocity + tiny-txn sequence
+       │        └─ always           → prior-case memory + agent case memory
        │
-       ▼
-[ Pattern Reasoning Engine ] ───────► Primary Pattern + Top Candidate Recall
+       ├─► [ Assessment ] ──► Noisy-OR channels + multi-candidate patterns
        │
-       ▼
-[ Noisy-OR Risk Decomposition ] ────► Multi-channel probabilistic aggregation
+       ├─► [ PLANNER: round 2 ] ── GraphRAG retrieval (pattern + keyword)
        │
-       ▼
-[ Uncertainty & Reassessment ] ─────► Request customer verification ──► Reassess probability
+       ├─► [ EVIDENCE-GAP ENGINE ]
+       │        score candidates by expected decision impact
+       │        ├─ best value ≥ threshold → request evidence
+       │        │        ├─ human_in_loop: PAUSE → POST /evidence → resume
+       │        │        └─ simulated: synthetic response (labelled)
+       │        │        └─► Reassessment → probability & action shift
+       │        └─ no request can change the decision → STOP (with reason)
        │
-       ▼
-[ Governed Policy Engine ] ─────────► Evaluate Rules R1–R4 ──► Log rejected alternatives
+       ├─► [ NBA before/after ] ──► R1–R11 policy engine + why_now rationale
        │
-       ▼
-[ Human Approval Gating ] ──────────► Auto-execute / L1 Team Lead / L2 Fraud Manager
+       ├─► [ Permission routing ] ──► auto-executes / L1 approval / L2 approval
+       │        └─► human decision → action EXECUTES under that authority
        │
-       ▼
-[ Graph Memory Persistence ] ───────► Persist InvestigationCase vertex to TigerGraph
+       └─► [ Graph Memory ] ──► InvestigationCase vertex + IC_* edges (incl. IC_ON_DEVICE)
 ```
 
 ---
@@ -93,11 +101,16 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full architectural document
 ---
 
 ## 7. Agent Tools, MCP & GSQL
-The agent interacts with TigerGraph via compiled GSQL queries and RESTPP endpoints:
-- **`device_neighbors(device_id)`**: Discovers cards and customers sharing identical digital hardware.
-- **`cases_by_device(device_id)`**: Identifies historical fraud patterns associated with hardware fingerprints.
-- **`card_transaction_history(card_id)`**: Calculates cardholder baseline transaction velocity and spending distributions.
-- **`customer_fraud_history(customer_id)`**: Uncovers recidivist accounts and prior fraud claims.
+The agent interacts with TigerGraph via compiled GSQL queries through a tool registry the planner selects from:
+- **`device_neighbors(device)`**: 2-hop discovery of cards sharing identical hardware fingerprints.
+- **`device_fraud_ring(device)`**: Connected-component ring analysis — how many cards in the device's component carry confirmed fraud. Feeds a dedicated `fraud_ring` risk channel.
+- **`card_transaction_history(card)` / `card_amount_stats(card)`**: Spending baseline and amount distribution.
+- **`tiny_txn_sequence(card, ts)`**: Card-testing micro-authorization detection.
+- **`customer_closed_cases / card_closed_cases / cases_by_device`**: Historical case memory via graph traversal.
+- **`investigation_cases_for_customer`**: The agent's own prior investigations, read back from the graph as institutional memory (closes the memory loop: write → retrieve → influence risk).
+- **`search_case_notes` / `cases_by_pattern`**: GraphRAG keyword + pattern retrieval over analyst notes.
+
+The TigerGraph MCP client (`backend/mcp/client.py`) remains an available tool surface (health-checked each investigation, fail-closed on unreachable servers) and is used for vector retrieval when `MCP_URL` is configured; the direct pyTigerGraph path is the default transport for operational reliability.
 
 ---
 
@@ -124,46 +137,58 @@ To prevent generative hallucinations:
 ---
 
 ## 10. Uncertainty & Additional Evidence Loop
-When fraud probability falls within the borderline zone ($0.35 \le P < 0.70$) or conflicting signals exist:
-1. The agent marks the investigation as **Uncertain**.
-2. It formulates a concrete **Evidence Request** (e.g., `VERIFY_WITH_CUSTOMER`).
-3. Upon receiving a response (simulated under competition guidelines), the engine triggers a **Second-Pass Reassessment**.
-4. The Command Center displays a clear **Before vs. After** state showing how customer verification altered the probability and changed the recommended action.
+When fraud probability falls inside the borderline band, the agent decides BOTH whether to ask and what to ask:
+1. **Candidate enumeration**: customer validation, step-up auth, analyst info, external watchlist — only those relevant to the case's signals are considered.
+2. **Information-value scoring**: for each candidate, the engine computes the policy action set under both plausible outcomes using the real Noisy-OR channels. The value is the severity-weighted divergence between those action sets (plus credit for evidence that would make a borderline case decisive). Candidates below `MIN_EVIDENCE_INFO_VALUE` are **suppressed** — asking them cannot change the decision, so the agent doesn't ask.
+3. **Selection provenance**: the chosen request records its `info_value`, the alternatives with their scores, and which hypotheses it could flip.
+4. **Two operating modes** (`EVIDENCE_REQUEST_MODE`):
+   - `human_in_loop` — investigation persists in `MORE_EVIDENCE_REQUIRED`; the UI offers a response input + quick-fill buttons; `POST /investigations/{id}/evidence` supplies the real answer and the agent resumes (reassessment → NBA → policy → completion).
+   - `simulated` — a deterministic synthetic response is generated and always labelled `origin=simulated` in evidence provenance (benchmark mode).
+5. **Reassessment**: probability, risk level, and uncertainty items update; resolved uncertainties record `resolved_by` and a `resolution_impact` string (e.g. "probability 0.53 → 0.67").
+6. The Command Center shows the **before vs. after** from real persisted state — initial and final NBA sets with the delta.
 
 ---
 
 ## 11. Next Best Action (NBA)
 The platform derives structured, legally defensible action recommendations:
 - **Recommended Action:** e.g., `BLOCK_CARD`, `DECLINE_TRANSACTION`, `MONITOR_CARD`, `CREATE_CASE`, `FILE_REPORT`.
-- **Policy Justification:** Cites the exact Bank Fraud Policy rule (e.g., `Policy §3a`, `Rule R1`, `Rule R4`).
-- **Expected Impact:** Summarizes the operational consequence (e.g., *"Blocks re-presentation of the disputed transaction"*).
-- **Alternatives Rejected:** Explicitly explains why harsher or more lenient measures were ruled out (e.g., *"BLOCK_CARD rejected: no customer confirmation of fraud; monitoring is proportionate"*).
+- **Policy Justification:** Cites the exact Bank Fraud Policy rule (e.g., `Policy §3a`, `Rule R1`, `Rule R11`).
+- **Why Now:** Each action explains what in the *current* state makes it the right moment (e.g., "now because unrequested evidence has expected decision impact 0.95 — asking before acting avoids an irreversible mistake").
+- **Expected Impact:** Summarizes the operational consequence.
+- **Alternatives Rejected:** Explicitly explains why harsher or more lenient measures were ruled out.
+- **R11 — Uncertainty-aware action selection:** when the assessment confidence is low but a high-value evidence request remains unrequested, the policy engine prefers gathering that evidence over acting on a shaky estimate.
+- **Before/After:** the case records `nba_initial` (pre-additional-evidence) and `nba_final` (post) with the exact delta — the values come from the real investigation state, not a static display.
 
 ---
 
 ## 12. Policy and Approval Governance
 Institutional safety is maintained through strict permission tiering:
 - **`auto`**: Low-impact actions (case creation, customer notification, account monitoring).
-- **`L1` (Team Lead)**: Moderate-impact actions (transaction decline).
-- **`L2` (Fraud Manager)**: Severe interventions (card blocking, account freezing, SAR regulatory filings).
-- **Enforcement Barrier:** The frontend cannot bypass backend policy; approval endpoints verify authorization and generate immutable audit log entries.
+- **`L1` (Team Lead)**: Moderate-impact actions (transaction decline, small-exposure card blocking).
+- **`L2` (Fraud Manager)**: Severe interventions (card blocking over $2,500, blocking all cards, SAR regulatory filings).
+- **Enforcement Barrier:** The frontend cannot bypass backend policy; every approval decision is re-validated against the policy table at decision time.
+- **Approval decisions execute:** approving an L1/L2 action marks it executed *under the approver's authority* and writes `approval_granted` + `action_executed` audit events; rejecting records `approval_rejected` and refuses the action. A decided approval cannot be re-decided.
 
 ---
 
 ## 13. Case Memory / InvestigationCase
 Every completed investigation writes an `InvestigationCase` vertex directly back to the TigerGraph schema:
-- Linked to the `Customer`, `Card`, and affected `Transaction` nodes.
+- Linked to the `Customer`, `Card`, affected `Transaction` nodes, **and involved `DeviceProfile` vertices** (`IC_ON_DEVICE`).
 - Preserves verdict, fraud probability, pattern, SAR filing status, and evidence IDs.
-- Subsequent investigations automatically retrieve these vertices during historical lookups, ensuring the institution learns from every investigation.
+- **The memory loop closes:** subsequent investigations retrieve these vertices via `investigation_cases_for_customer` and the results feed a dedicated `agent_prior_fraud` risk channel plus an evidence item — prior agent work materially changes future risk assessments.
+- Case-memory writes fail closed: when the TigerGraph backend is configured and a write fails, `written_to_graph=False` plus an audit event is recorded — no silent local fallback while the UI claims graph persistence.
 
 ---
 
 ## 14. Analyst Command Center
 A single-page command center provides analysts with full operational visibility:
 - **Dynamic Case Selector**: Switch between benchmark cases instantly.
-- **Causal Story Ribbon**: 8-stage visual progression showing investigation evolution.
-- **Interactive Graph Canvas**: Force-directed D3 SVG network graph with pan, zoom, reset, and entity property inspector drawer.
-- **Toast System**: Clean non-blocking notifications for operational events.
+- **Causal Story Ribbon**: 11-stage progression driven by real backend state — pauses at the evidence-request stage when the agent awaits evidence, not scripted timers.
+- **Interactive Graph Canvas**: HTML5 Canvas force-directed network with pan, zoom, reset, and an entity property inspector drawer linking entities to evidence IDs.
+- **Evidence-First Explainability**: claim-type badges, evidence ID chips, noisy-OR channel decomposition table, information-value display on evidence requests (with alternatives considered), and `why_now` rationales on every action.
+- **HITL Evidence Console**: when the agent pauses, submit the customer/step-up/analyst response directly (with quick-fill presets) and watch the reassessment update probability and actions.
+- **Live Benchmark Tab**: per-case results, checkpoint totals, and completion stats loaded from the actual benchmark artifacts — not hardcoded values.
+- **Toast System**: clean non-blocking notifications for operational events.
 
 ---
 
@@ -181,7 +206,7 @@ The platform was evaluated against the official 20-case IEEE-CIS fraud benchmark
 | **SAR Determination Accuracy** | 18 / 20 | **90.0%** | Exact alignment with regulatory filing thresholds |
 | **Next Best Action (NBA) Accuracy** | 15 / 20 | **75.0%** | Governed action recommendation matching bank policy |
 | **TigerGraph Graph Persistence** | 20 / 20 | **100%** | 20 `InvestigationCase` vertices persisted to live graph |
-| **Automated Test Suite** | 228 / 228 | **100%** | Full pytest regression suite passing in ~44s |
+| **Automated Test Suite** | 257 / 257 | **100%** | Full pytest regression suite (228 legacy + 29 new agentic tests) |
 
 > **Transparency Note on Pattern Accuracy:** Primary pattern match is **90.0% (18/20)**. The two remaining non-matching cases are strictly grounded in official challenge definitions without benchmark-specific hardcoding:
 > - **HHG-009**: An isolated low-dollar dispute ($30.02 vs $61.17 card average) with zero online burst within 48h, sharing a device fingerprint across 20 other cards. Classified as `undocumented` coordinated abuse rather than forced CNP fraud, per Policy R9.
@@ -317,8 +342,9 @@ python scripts/compare_metrics.py
 ## 24. Known Limitations
 - **Savanna Cloud Idle Suspension:** Free-tier TigerGraph Savanna clusters automatically suspend after 60 minutes of inactivity. The workspace must be resumed in TGCloud before testing.
 - **Network Roundtrip:** GSQL query latency depends on Internet connectivity to AWS us-east-1 (~35–85ms).
-- **Simulated External Actors:** Customer verification and analyst escalation responses during the benchmark are simulated in accordance with competition rules.
-- **Hackathon Scope:** Engineered as a high-fidelity prototype; not certified for automated production card blocking without human-in-the-loop oversight.
+- **Simulated External Actors:** In benchmark `simulated` mode, customer verification and analyst escalation responses are synthetic and clearly labelled `origin=simulated`. Set `EVIDENCE_REQUEST_MODE=human_in_loop` for real human-supplied evidence through the API/UI.
+- **MCP Surface:** The TigerGraph MCP client is health-checked and used for vector retrieval when `MCP_URL` is configured; the default transport is direct pyTigerGraph/RESTPP for reliability.
+- **Hackathon Scope:** Engineered as a high-fidelity prototype; production card blocking requires the human-in-the-loop oversight this system enforces by design.
 
 ---
 
