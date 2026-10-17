@@ -93,7 +93,13 @@
     <aside class="panel-left" id="panelLeft">
       <div class="panel-header-editorial">
         <div class="editorial-title-wrap">
-          <span class="editorial-icon">🌴</span>
+          <svg class="editorial-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="22" y1="12" x2="18" y2="12"></line>
+            <line x1="6" y1="12" x2="2" y2="12"></line>
+            <line x1="12" y1="6" x2="12" y2="2"></line>
+            <line x1="12" y1="22" x2="12" y2="18"></line>
+          </svg>
           <h3>Trigger Context</h3>
         </div>
         <span class="header-tag hhgoa-tag-pink" id="triggerTag">ALERT INGESTED</span>
@@ -128,7 +134,9 @@
 
       <div class="panel-header-editorial timeline-header-editorial">
         <div class="editorial-title-wrap">
-          <span class="editorial-icon">🧭</span>
+          <svg class="editorial-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
           <h3>Investigation Story</h3>
         </div>
         <span class="header-tag hhgoa-tag-yellow">11 STAGES</span>
@@ -346,26 +354,46 @@
     <aside class="panel-right" id="panelRight">
       <nav class="tab-nav">
         <button class="tab-btn active" data-tab="tabEvidence" id="btnTabEvidence">
-          <span class="tab-icon">📄</span>
+          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
           <span>Evidence</span>
           <span class="tab-badge" id="evCount">0</span>
         </button>
         <button class="tab-btn" data-tab="tabUncertainty" id="btnTabUncertainty">
-          <span class="tab-icon">❓</span>
+          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
           <span>Uncertainty</span>
           <span class="tab-badge" id="uncCount">0</span>
         </button>
         <button class="tab-btn" data-tab="tabNba" id="btnTabNba">
-          <span class="tab-icon">⚖️</span>
+          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
           <span>Governed NBA</span>
           <span class="tab-badge" id="aprCount">0</span>
         </button>
         <button class="tab-btn" data-tab="tabPersistence" id="btnTabPersistence">
-          <span class="tab-icon">🏛️</span>
+          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
           <span>Case Memory</span>
         </button>
         <button class="tab-btn" data-tab="tabBenchmark" id="btnTabBenchmark">
-          <span class="tab-icon">🏆</span>
+          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
           <span>Benchmark</span>
         </button>
       </nav>
@@ -403,7 +431,10 @@
 
           <div class="evidence-filter-bar" id="evFilterBar" style="display:none;">
             <div class="filter-indicator">
-              <span class="filter-icon">🔍</span>
+              <svg class="filter-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
               <span>Filtered by: <strong id="filterEntityName">None</strong></span>
             </div>
             <button class="btn-clear-filter" id="btnClearEvFilter">Clear Filter</button>
@@ -531,7 +562,12 @@
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title-wrap">
-          <span class="modal-icon">🌴</span>
+          <svg class="modal-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+          </svg>
           <h3>HHGOA '26 &bull; System Diagnostics & Connectivity</h3>
         </div>
         <button class="btn-close-modal" id="btnCloseHealthModal">&times;</button>

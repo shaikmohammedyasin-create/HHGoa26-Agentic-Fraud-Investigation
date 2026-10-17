@@ -417,6 +417,34 @@ select#caseSelect option {
   font-size: 0.9rem;
 }
 
+.editorial-icon-svg {
+  color: var(--hh-beige-muted);
+  flex-shrink: 0;
+}
+
+.tab-icon-svg {
+  color: var(--hh-ink-muted);
+  flex-shrink: 0;
+  transition: color var(--transition-fast), stroke var(--transition-fast);
+}
+
+.tab-btn.active .tab-icon-svg {
+  color: var(--hh-green-deep);
+  stroke: var(--hh-green-deep);
+}
+
+.filter-icon-svg {
+  color: var(--hh-ink-muted);
+  vertical-align: middle;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.modal-icon-svg {
+  color: var(--hh-green-primary);
+  flex-shrink: 0;
+}
+
 .panel-header-editorial h3 {
   font-family: var(--font-display);
   font-size: 0.78rem;
