@@ -1,5 +1,5 @@
 /**
- * API Client for HHGoa Fraud Investigation Backend
+ * API Client for Agentic Fraud Investigation Backend
  * Supports both origin-relative calls and local port fallback.
  */
 const API = {

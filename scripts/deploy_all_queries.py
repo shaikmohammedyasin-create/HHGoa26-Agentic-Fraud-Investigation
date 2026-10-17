@@ -1,5 +1,5 @@
 """
-Deploy and compile all HHGoa GSQL queries to TigerGraph Savanna Cloud.
+Deploy and compile all fraud investigation GSQL queries to TigerGraph Savanna Cloud.
 """
 import json
 import os

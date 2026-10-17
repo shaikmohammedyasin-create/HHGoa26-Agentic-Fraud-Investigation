@@ -5,7 +5,7 @@
 
 USE GRAPH fraud_investigation
 
-CREATE SCHEMA_CHANGE JOB deploy_hhgoa_vertices FOR GRAPH fraud_investigation {
+CREATE SCHEMA_CHANGE JOB deploy_fraud_vertices FOR GRAPH fraud_investigation {
   ADD VERTEX Card (
     PRIMARY_ID card_id STRING,
     customer_id STRING,
@@ -74,5 +74,5 @@ CREATE SCHEMA_CHANGE JOB deploy_hhgoa_vertices FOR GRAPH fraud_investigation {
   ) WITH STATS="OUTDEGREE_BY_EDGETYPE";
 }
 
-RUN SCHEMA_CHANGE JOB deploy_hhgoa_vertices
-DROP JOB deploy_hhgoa_vertices
+RUN SCHEMA_CHANGE JOB deploy_fraud_vertices
+DROP JOB deploy_fraud_vertices

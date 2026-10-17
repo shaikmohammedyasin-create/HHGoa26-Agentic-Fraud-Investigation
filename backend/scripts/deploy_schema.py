@@ -50,7 +50,7 @@ def deploy_and_verify():
         return False
 
     # Step 2: Read schema change GSQL
-    schema_file = Path(__file__).resolve().parents[2] / "tigergraph" / "schema" / "deploy_hhgoa_schema.gsql"
+    schema_file = Path(__file__).resolve().parents[2] / "tigergraph" / "schema" / "deploy_fraud_schema.gsql"
     if not schema_file.exists():
         print(f"  ERROR: {schema_file} not found.")
         return False

@@ -1,6 +1,6 @@
-# HHGOA'26 Live Demo Walkthrough (3–5 Minute Script)
+# Interactive Investigation Walkthrough & Demonstration Guide
 
-This guide outlines the exact demonstration sequence for judges to experience the **TigerGraph Agentic Fraud Investigation Command Center**.
+This guide outlines the end-to-end demonstration sequence for experiencing the **Agentic Fraud Investigation Platform** and Analyst Command Center.
 
 ---
 
@@ -52,7 +52,7 @@ This guide outlines the exact demonstration sequence for judges to experience th
   > *"When the case is borderline, the agent doesn't blindly ask questions. It scores every possible evidence request by expected decision impact — would either answer actually change the recommended action? Only the highest-value request is made. HHG-014 shows customer validation selected at information value 1.0, with the alternatives and their scores displayed."*
 - **Highlight (Human-in-the-Loop)**:
   - Set `EVIDENCE_REQUEST_MODE=human_in_loop` in `.env` before the demo and the agent **pauses** at `MORE_EVIDENCE_REQUIRED`.
-  - The Uncertainty tab shows the request with its info value and a response input with quick-fill presets. Submit a response live (or let a judge type one) and watch the reassessment update probability, risk level, and the NBA set in real time.
+  - The Uncertainty tab shows the request with its info value and a response input with quick-fill presets. Submit a response live (or enter a custom simulated response) and watch the reassessment update probability, risk level, and the NBA set in real time.
   - In default `simulated` mode, the same loop runs with a synthetic response always labelled `origin=simulated` — audit-safe and honest.
 
 ---

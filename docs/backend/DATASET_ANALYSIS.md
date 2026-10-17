@@ -6,7 +6,7 @@
 2. `identity.csv`: Contains ~144,000 identity records associated with online transactions (joins on `TransactionID`). Includes device strings, OS, browser, etc.
 3. `closed_cases_history.csv`: 5,565 historical investigations from July-Oct. Includes outcomes, patterns, connected cards, exposure, etc.
 4. `case_pack.csv`: The 20 evaluation cases (Nov-Dec) with triggers.
-5. `README.md` & `TigerGraph Agentic Fraud Investigation HHGOA.pdf`: The challenge requirements.
+5. Core dataset specifications and fraud typology definitions.
 
 ## Entity Relationships
 

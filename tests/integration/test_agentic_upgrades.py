@@ -277,9 +277,9 @@ class TestApprovalExecution:
         if not pending:
             pytest.skip("case produced no pending approvals")
         apr = pending[0]
-        res = decide_approval(case.case_id, apr.approval_id, "approved", "Judge-L1")
+        res = decide_approval(case.case_id, apr.approval_id, "approved", "Analyst-L1")
         assert res["status"] == "approved"
-        assert res["approver"] == "Judge-L1"
+        assert res["approver"] == "Analyst-L1"
         # The case must now record an executed action under human authority
         trail = app_db.get_audit_trail(case.case_id)
         events = {e["event_type"] for e in trail}
@@ -291,7 +291,7 @@ class TestApprovalExecution:
         if not pending:
             pytest.skip("case produced no pending approvals")
         apr = pending[0]
-        res = decide_approval(case.case_id, apr.approval_id, "rejected", "Judge-L2")
+        res = decide_approval(case.case_id, apr.approval_id, "rejected", "Supervisor-L2")
         assert res["status"] == "rejected"
         trail = app_db.get_audit_trail(case.case_id)
         events = {e["event_type"] for e in trail}
@@ -302,9 +302,9 @@ class TestApprovalExecution:
         if not pending:
             pytest.skip("case produced no pending approvals")
         apr = pending[0]
-        decide_approval(case.case_id, apr.approval_id, "approved", "Judge-L1")
+        decide_approval(case.case_id, apr.approval_id, "approved", "Analyst-L1")
         with pytest.raises(ValueError, match="already decided"):
-            decide_approval(case.case_id, apr.approval_id, "rejected", "Judge-L1")
+            decide_approval(case.case_id, apr.approval_id, "rejected", "Analyst-L1")
 
 
 # ─── Orchestrator end-to-end sanity ────────────────────────────────────────────

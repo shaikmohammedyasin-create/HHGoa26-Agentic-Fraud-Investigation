@@ -19,7 +19,7 @@ configure_logging()
 log = get_logger(__name__)
 
 app = FastAPI(
-    title="HHGOA Fraud Investigation API",
+    title="Agentic Fraud Investigation Platform API",
     description="TigerGraph-native, evidence-grounded, policy-controlled agentic fraud investigation backend.",
     version="1.0.0",
 )
@@ -144,8 +144,8 @@ def run_investigation_endpoint(case_id: str, force: bool = False):
     """
     Run or resume an investigation.
 
-    force=true re-runs a completed case from scratch (the UI demo button uses
-    this so a judge always sees a fresh execution); the default respects the
+    force=true re-runs a completed case from scratch (the UI re-run button uses
+    this so an analyst always gets a fresh execution); the default respects the
     idempotent cache and any paused human-in-the-loop state.
     """
     try:

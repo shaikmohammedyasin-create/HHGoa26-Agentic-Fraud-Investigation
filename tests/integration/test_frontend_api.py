@@ -111,7 +111,7 @@ class TestFrontendAPI:
         """Root and static assets must be accessible."""
         r_root = client.get("/")
         assert r_root.status_code == 200
-        assert "HHGoa" in r_root.text
+        assert "Agentic Fraud Investigation" in r_root.text
 
         r_css = client.get("/css/style.css")
         assert r_css.status_code == 200

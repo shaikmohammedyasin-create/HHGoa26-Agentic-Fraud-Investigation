@@ -1,7 +1,7 @@
 # Technical Validation Summary
 
-**Project:** TigerGraph Agentic Fraud Investigation — HHGOA'26  
-**Status:** VALIDATED & FROZEN  
+**Project:** Agentic Fraud Investigation Platform  
+**Status:** VALIDATED & STABLE  
 **Automated Test Suite:** 257 / 257 Passed (100%) (228 Baseline Regression + 29 Agentic Upgrades)  
 **Benchmark Checkpoint Coverage:** 600 / 600 IEEE Checkpoints Passed (100%)  
 
@@ -44,7 +44,7 @@ The full test suite was executed via pytest:
 ```text
 ============================= test session starts =============================
 platform win32 -- Python 3.12+ / 3.14, pytest-9.0.2, pluggy-1.6.0
-rootdir: HHGOA_IEEE
+rootdir: agentic-fraud-investigation
 configfile: pyproject.toml
 collected 257 items
 

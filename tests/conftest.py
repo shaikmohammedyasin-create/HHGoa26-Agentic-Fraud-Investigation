@@ -18,5 +18,7 @@ def isolate_test_environment():
     """Default test session to local graph store and disabled LLM calls."""
     os.environ["GRAPH_BACKEND"] = "local"
     os.environ["LLM_PROVIDER"] = "none"
+    os.environ["TG_HOST"] = ""
     settings.graph_backend = "local"
     settings.llm_provider = "none"
+    settings.tg_host = ""

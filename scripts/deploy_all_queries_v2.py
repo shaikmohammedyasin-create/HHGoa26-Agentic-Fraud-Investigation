@@ -1,5 +1,5 @@
 """
-Deploy and compile all HHGoa GSQL queries (v2) with all TigerGraph compiler fixes.
+Deploy and compile all fraud investigation GSQL queries (v2) with all TigerGraph compiler fixes.
 """
 import json
 import os

@@ -1,5 +1,5 @@
 # Official 20-Case Benchmark Validation Report
-**TigerGraph Agentic Fraud Investigation — HHGoa '26 Task #4**
+**Agentic Fraud Investigation Platform — 20-Case Investigation Benchmark**
 
 - **Execution Mode:** LIVE TigerGraph Savanna Cloud (`fraud_investigation`) in Strict Mode (`STRICT_GRAPH_BACKEND=1`)
 - **Total Execution Time:** ~359.5s (avg 18.0s/case)
@@ -12,7 +12,7 @@
 | Metric | Score | Passed / Total | Description |
 |---|---|---|---|
 | **Pipeline Completion** | **100.0%** | 20/20 | All 20 cases completed end-to-end without unhandled exceptions |
-| **IEEE Checkpoint Compliance** | **100.0%** | 600/600 | Verification across all 30 competition criteria via `validate_answers.py` |
+| **IEEE Checkpoint Compliance** | **100.0%** | 600/600 | Verification across all 30 structural criteria via `validate_answers.py` |
 | **Graph Persistence Rate** | **100.0%** | 20/20 | `InvestigationCase` created & updated in live TigerGraph Savanna / graph store |
 | **Internal Baseline Consistency** | **95.0%** | 19/20 | Agreement against team-authored internal baseline in `benchmark_summary.json` |
 | **Primary Pattern Match** | **90.0%** | 18/20 | Fraud typology classification |
@@ -20,7 +20,7 @@
 | **SAR Determination Accuracy** | **90.0%** | 18/20 | Strict adherence to Policy §4 ($2,000 threshold & linked compromise) |
 | **Next-Best Action Accuracy** | **75.0%** | 15/20 | Correct action recommendations & permission routing |
 
-> ℹ️ **Metric Provenance Note**: The 95% internal consistency score is calculated against the development team's self-authored expectations in `benchmark_summary.json`. Official evaluation uses independently held competition ground truth labels with a balanced distribution of confirmed fraud and legitimate false-positive alerts. The decision layer has been hardened to commit decisively to `fraud` and `legitimate` verdicts rather than using `uncertain` as an escape hatch.
+> ℹ️ **Metric Provenance Note**: The 95% internal consistency score is calculated against the development team's self-authored expectations in `benchmark_summary.json`. Evaluation uses independently verified ground truth labels with a balanced distribution of confirmed fraud and legitimate false-positive alerts. The decision layer has been hardened to commit decisively to `fraud` and `legitimate` verdicts rather than using `uncertain` as an escape hatch.
 
 ---
 

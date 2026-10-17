@@ -6,7 +6,7 @@
 
 USE GRAPH fraud_investigation
 
-CREATE SCHEMA_CHANGE JOB deploy_hhgoa_schema FOR GRAPH fraud_investigation {
+CREATE SCHEMA_CHANGE JOB deploy_fraud_schema FOR GRAPH fraud_investigation {
   // ── Vertex Types ─────────────────────────────────────────────
 
   ADD VERTEX Customer (
@@ -104,5 +104,5 @@ CREATE SCHEMA_CHANGE JOB deploy_hhgoa_schema FOR GRAPH fraud_investigation {
   ADD DIRECTED EDGE IC_ON_DEVICE (FROM InvestigationCase, TO DeviceProfile);
 }
 
-RUN SCHEMA_CHANGE JOB deploy_hhgoa_schema
-DROP JOB deploy_hhgoa_schema
+RUN SCHEMA_CHANGE JOB deploy_fraud_schema
+DROP JOB deploy_fraud_schema

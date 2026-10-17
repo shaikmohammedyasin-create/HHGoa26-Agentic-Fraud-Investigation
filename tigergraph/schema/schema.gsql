@@ -1,5 +1,5 @@
 // ============================================================
-// TigerGraph Schema for HHGOA Fraud Investigation
+// TigerGraph Schema for Agentic Fraud Investigation
 // Based on dataset: transactions.csv, identity.csv,
 //   closed_cases_history.csv, case_pack.csv
 // ============================================================

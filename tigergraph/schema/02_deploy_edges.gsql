@@ -6,7 +6,7 @@
 
 USE GRAPH fraud_investigation
 
-CREATE SCHEMA_CHANGE JOB deploy_hhgoa_edges FOR GRAPH fraud_investigation {
+CREATE SCHEMA_CHANGE JOB deploy_fraud_edges FOR GRAPH fraud_investigation {
   ADD DIRECTED EDGE OWNS (FROM Customer, TO Card);
   ADD DIRECTED EDGE MADE (FROM Card, TO Transaction) WITH REVERSE_EDGE="MADE_BY";
   ADD DIRECTED EDGE FROM_DEVICE (FROM Transaction, TO DeviceProfile);
@@ -27,5 +27,5 @@ CREATE SCHEMA_CHANGE JOB deploy_hhgoa_edges FOR GRAPH fraud_investigation {
   ADD DIRECTED EDGE IC_ON_DEVICE (FROM InvestigationCase, TO DeviceProfile);
 }
 
-RUN SCHEMA_CHANGE JOB deploy_hhgoa_edges
-DROP JOB deploy_hhgoa_edges
+RUN SCHEMA_CHANGE JOB deploy_fraud_edges
+DROP JOB deploy_fraud_edges

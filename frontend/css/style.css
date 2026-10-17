@@ -1,5 +1,5 @@
 /* ==========================================================================
-   HACKER HOUSE GOA 2026 — AGENTIC FRAUD INVESTIGATION COMMAND CENTER
+   AGENTIC FRAUD INVESTIGATION COMMAND CENTER
    Final Visual Direction: Professional Dark Green + Beige Intelligence Console
    Restrained palette: Dark Forest Green + Warm Beige + Cream + Minimal Semantic
    ========================================================================== */
@@ -86,7 +86,8 @@
   padding: 0;
 }
 
-body.hhgoa-theme {
+body.afi-theme,
+body.app-theme {
   font-family: var(--font-sans);
   background-color: var(--hh-green-deep);
   color: var(--hh-ink-dark);
@@ -169,7 +170,7 @@ code, pre, .meta-val, .inspector-node-id, .ev-id, .prob-num,
   margin-bottom: 1px;
 }
 
-.hhgoa-pill {
+.platform-pill {
   font-family: var(--font-display);
   font-size: 0.62rem;
   font-weight: 800;
@@ -182,7 +183,7 @@ code, pre, .meta-val, .inspector-node-id, .ev-id, .prob-num,
   text-transform: uppercase;
 }
 
-.hhgoa-subpill {
+.platform-subpill {
   font-family: var(--font-mono);
   font-size: 0.58rem;
   font-weight: 700;
@@ -193,7 +194,8 @@ code, pre, .meta-val, .inspector-node-id, .ev-id, .prob-num,
   border: 1px solid rgba(243, 235, 221, 0.2);
 }
 
-.hhgoa-team-pill {
+.platform-team-pill,
+.platform-version-pill {
   font-family: var(--font-mono);
   font-size: 0.58rem;
   font-weight: 700;
@@ -464,12 +466,12 @@ select#caseSelect option {
   border-radius: 3px;
 }
 
-.hhgoa-tag-pink {
+.tag-critical {
   background: var(--hh-semantic-fraud);
   color: #FFFDF8;
 }
 
-.hhgoa-tag-yellow {
+.tag-accent {
   background: var(--hh-beige-light);
   color: var(--hh-ink-dark);
   border: 1px solid var(--hh-beige-muted);
@@ -1512,7 +1514,7 @@ select#caseSelect option {
   padding: 10px 12px;
 }
 
-.banner-badge-hhgoa {
+.banner-badge-afi {
   font-family: var(--font-display);
   font-size: 0.62rem;
   font-weight: 800;
@@ -2060,7 +2062,8 @@ select#caseSelect option {
 }
 
 @media (max-width: 768px) {
-  body.hhgoa-theme {
+  body.afi-theme,
+body.app-theme {
     height: auto;
     overflow-y: auto;
   }

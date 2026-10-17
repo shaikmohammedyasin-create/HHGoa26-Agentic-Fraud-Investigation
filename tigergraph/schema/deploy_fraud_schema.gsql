@@ -1,13 +1,12 @@
 // ============================================================
 // TigerGraph 4.2.5 GSQL Reconciled Schema Deployment
 // Graph: fraud_investigation (isolated, never touches Transaction_Fraud)
-// Note: Customer vertex was already deployed via test_hhgoa_schema.
-// This job deploys the remaining 7 vertices and all 14 edges.
+// This job deploys the vertices and edges for fraud investigation.
 // ============================================================
 
 USE GRAPH fraud_investigation
 
-CREATE SCHEMA_CHANGE JOB deploy_hhgoa_schema FOR GRAPH fraud_investigation {
+CREATE SCHEMA_CHANGE JOB deploy_fraud_schema FOR GRAPH fraud_investigation {
   // ── Remaining 7 Vertex Types (Customer is already present) ──
 
   ADD VERTEX Card (
@@ -99,5 +98,5 @@ CREATE SCHEMA_CHANGE JOB deploy_hhgoa_schema FOR GRAPH fraud_investigation {
   ADD DIRECTED EDGE IC_ON_DEVICE (FROM InvestigationCase, TO DeviceProfile);
 }
 
-RUN SCHEMA_CHANGE JOB deploy_hhgoa_schema
-DROP JOB deploy_hhgoa_schema
+RUN SCHEMA_CHANGE JOB deploy_fraud_schema
+DROP JOB deploy_fraud_schema

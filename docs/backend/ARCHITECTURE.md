@@ -1,6 +1,6 @@
 # Backend Architecture
 
-TigerGraph-native, evidence-grounded, policy-controlled fraud investigation backend for HHGOA 2026.
+TigerGraph-native, evidence-grounded, policy-controlled fraud investigation backend.
 
 Frontend is out of scope. This backend exposes a typed HTTP API that a later analyst UI can consume.
 

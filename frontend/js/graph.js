@@ -1,6 +1,6 @@
 /**
- * HHGOA '26 Interactive Knowledge Graph Renderer using HTML5 Canvas
- * Controlled, sophisticated HHGOA graph palette with high readability.
+ * Interactive Knowledge Graph Renderer using HTML5 Canvas
+ * Controlled, high-readability investigation graph palette.
  */
 class GraphRenderer {
   constructor(canvasId) {

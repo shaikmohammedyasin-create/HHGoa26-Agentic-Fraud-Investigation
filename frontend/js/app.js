@@ -1,5 +1,5 @@
 /**
- * Main Application Controller for HHGoa '26 Analyst Command Center
+ * Main Application Controller for Agentic Fraud Investigation Command Center
  * Agentic Fraud Investigation & Next Best Action powered by TigerGraph
  * Refined for Lightness, Hierarchy, Whitespace & Analyst Scannability
  */
@@ -1048,7 +1048,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ── Approval Decision Handler ─────────────────────────────────────────────
   window.handleApprovalDecision = async (caseId, approvalId, decision) => {
     try {
-      await API.decideApproval(caseId, approvalId, decision, 'Analyst-Judge-01');
+      await API.decideApproval(caseId, approvalId, decision, 'Lead-Fraud-Analyst');
       showToast(`Action ${decision === 'approved' ? 'APPROVED' : 'REJECTED'} successfully under policy audit.`, 'success');
 
       const fullData = await API.getInvestigationFull(caseId);
