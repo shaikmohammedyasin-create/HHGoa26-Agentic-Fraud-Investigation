@@ -338,16 +338,23 @@ def simulate_response(candidate_type: EvidenceRequestType, sig: EvidenceSignals,
             fraud_side=bool(sig.device_linked_fraud or sig.shared_device_count >= 2))
 
     # customer_validation (default)
-    if sig.card_testing_sequence or sig.device_linked_fraud:
+    if sig.card_testing_sequence or sig.device_linked_fraud or sig.connected_card_fraud > 0 or sig.fraud_ring_fraud_cards >= 2:
         return ("Customer states they did not make these purchases "
                 "and still has the card in their possession.")
     if sig.region_streak:
         return ("Customer confirms they were traveling in this region "
                 "during the dates in question.")
     if trigger_type == "customer_report":
+        # Disputed in-person card-present charges with zero device anomaly are friendly fraud / customer confusion
+        if not sig.new_device and sig.shared_device_count == 0 and not sig.burst_online:
+            return ("Customer confirms they authorized this purchase upon checking the merchant statement.")
         return ("Customer reiterates they did not make this purchase "
                 "and requests it be investigated.")
-    return "No response received within the 24-hour window."
+    if sig.proxy_used or trigger_type == "analyst_request" or (sig.shared_device_count >= 10 and sig.new_device and sig.burst_online >= 2):
+        return "No response received within the 24-hour window."
+
+    # Benign alerts where cardholder confirms legitimate transaction
+    return "Customer confirms they authorized this purchase from their personal account."
 
 
 def apply_response_to_signals(sig: EvidenceSignals,

@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -82,7 +82,7 @@ def _create_schema(conn: sqlite3.Connection) -> None:
 
 def save_investigation(case_id: str, state: str, payload: dict[str, Any]) -> None:
     conn = get_db()
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     conn.execute(
         """
         INSERT INTO investigations(case_id, state, payload, created_at, updated_at)
@@ -134,7 +134,7 @@ def append_audit_event(evt: dict[str, Any]) -> None:
             evt.get("state_to"),
             evt.get("actor", "agent"),
             json.dumps(evt.get("metadata", {})),
-            evt.get("timestamp", datetime.utcnow().isoformat()),
+            evt.get("timestamp", datetime.now(timezone.utc).isoformat()),
         ),
     )
     conn.commit()
@@ -168,7 +168,7 @@ def save_approval(approval_id: str, case_id: str, payload: dict[str, Any]) -> No
         VALUES (?, ?, ?, ?)
         ON CONFLICT(approval_id) DO UPDATE SET payload=excluded.payload
         """,
-        (approval_id, case_id, json.dumps(payload), datetime.utcnow().isoformat()),
+        (approval_id, case_id, json.dumps(payload), datetime.now(timezone.utc).isoformat()),
     )
     conn.commit()
 
@@ -209,6 +209,6 @@ def register_idempotency(key: str, case_id: str) -> None:
     conn = get_db()
     conn.execute(
         "INSERT OR IGNORE INTO idempotency_keys(key, case_id, created_at) VALUES (?,?,?)",
-        (key, case_id, datetime.utcnow().isoformat()),
+        (key, case_id, datetime.now(timezone.utc).isoformat()),
     )
     conn.commit()

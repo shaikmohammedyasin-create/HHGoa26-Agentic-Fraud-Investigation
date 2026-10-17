@@ -14,7 +14,7 @@ case audit trail by the orchestrator.
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from backend.config import settings
@@ -227,7 +227,7 @@ def _to_txn(v: dict) -> TransactionRecord:
         txn_id=str(v.get("v_id")),
         customer_id=str(a.get("customer_id", "")),
         card_id=str(a.get("card_id", "")),
-        ts=datetime.fromisoformat(str(a["ts"]).replace(" ", "T")) if a.get("ts") else datetime.utcnow(),
+        ts=datetime.fromisoformat(str(a["ts"]).replace(" ", "T")) if a.get("ts") else datetime.now(timezone.utc),
         amount=float(a.get("amount") or 0),
         product_cd=str(a.get("product_cd") or ""),
         channel=Channel(str(a.get("channel"))) if a.get("channel") in ("online", "in_person") else Channel.in_person,
@@ -263,8 +263,8 @@ def _to_historical_case(v: dict) -> HistoricalCase:
         case_id=str(v.get("v_id")),
         customer_id=str(a.get("customer_id", "")),
         card_id=str(a.get("card_id", "")),
-        opened_at=datetime.fromisoformat(str(a["opened_at"]).replace(" ", "T")) if a.get("opened_at") else datetime.utcnow(),
-        closed_at=datetime.fromisoformat(str(a["closed_at"]).replace(" ", "T")) if a.get("closed_at") else datetime.utcnow(),
+        opened_at=datetime.fromisoformat(str(a["opened_at"]).replace(" ", "T")) if a.get("opened_at") else datetime.now(timezone.utc),
+        closed_at=datetime.fromisoformat(str(a["closed_at"]).replace(" ", "T")) if a.get("closed_at") else datetime.now(timezone.utc),
         outcome=str(a.get("outcome", "")),
         pattern=str(a.get("pattern", "none")),
         exposure_usd=float(a.get("exposure_usd") or 0),
@@ -622,18 +622,29 @@ def get_device_fraud_ring(device_label: str, max_cards: int = 25) -> dict[str, A
             if cid:
                 cards.append(cid)
                 customers[cid] = str(_vertex_attrs(v).get("customer_id", ""))
-        # Fraud membership via closed cases on each ring card (bounded).
+        # Fraud membership via single device-level closed-cases query + bounded card verification
         fraud_cards: set[str] = set()
-        for cid in cards[:max_cards]:
-            try:
-                cres = _run("card_closed_cases", {"card": cid})
-                citems = cres.get("result", []) if isinstance(cres, dict) else []
-                for cv in citems:
-                    a = _vertex_attrs(cv)
-                    if str(a.get("outcome", "")) == "confirmed_fraud":
-                        fraud_cards.add(cid)
-            except Exception:
-                continue
+        card_set = set(cards)
+        try:
+            device_cases = get_closed_cases_by_device(dev_name, limit=50)
+            for dc in device_cases:
+                if dc.outcome == "confirmed_fraud" and dc.card_id in card_set:
+                    fraud_cards.add(dc.card_id)
+        except Exception:
+            pass
+
+        # Bounded check on first few cards if device-level query returned none
+        if not fraud_cards:
+            for cid in cards[:min(5, len(cards))]:
+                try:
+                    cres = _run("card_closed_cases", {"card": cid})
+                    citems = cres.get("result", []) if isinstance(cres, dict) else []
+                    for cv in citems:
+                        a = _vertex_attrs(cv)
+                        if str(a.get("outcome", "")) == "confirmed_fraud":
+                            fraud_cards.add(cid)
+                except Exception:
+                    continue
         fraud_in_ring = sorted(fraud_cards)
         return {
             "device": device_label,
@@ -655,7 +666,7 @@ def write_investigation_case(payload: dict[str, Any]) -> str:
     case_id = str(payload["case_id"])
     # Year of the investigation, not the year the binary happens to run in.
     year = ((payload.get("trigger") or {}).get("opened_at") or payload.get("created_at") or "")[:4] \
-        or datetime.utcnow().strftime("%Y")
+        or datetime.now(timezone.utc).strftime("%Y")
     graph_case_id = f"CASE-{year}-{case_id}"
     trigger = payload.get("trigger", {})
 

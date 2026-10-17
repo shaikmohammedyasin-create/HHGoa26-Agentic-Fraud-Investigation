@@ -21,31 +21,36 @@ from backend.logging import get_logger
 log = get_logger(__name__)
 
 
-def _call_anthropic(prompt: str) -> str:
+def _call_anthropic(prompt: str) -> tuple[str, int]:
     import anthropic
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
     msg = client.messages.create(
         model=settings.llm_model,
-        max_tokens=512,
+        max_tokens=1024,
         temperature=settings.llm_temperature,
         messages=[{"role": "user", "content": prompt}],
     )
-    return msg.content[0].text.strip()
+    tokens = getattr(msg.usage, "input_tokens", 0) + getattr(msg.usage, "output_tokens", 0)
+    return msg.content[0].text.strip(), tokens
 
 
-def _call_openai(prompt: str) -> str:
+def _call_openai(prompt: str) -> tuple[str, int]:
     from openai import OpenAI
     client = OpenAI(api_key=settings.openai_api_key)
     resp = client.chat.completions.create(
         model=settings.openai_model,
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=512,
+        max_tokens=1024,
         temperature=settings.llm_temperature,
     )
-    return resp.choices[0].message.content.strip()
+    text = resp.choices[0].message.content.strip()
+    if resp.choices[0].finish_reason == "length":
+        log.warning("llm.openai.truncated_at_max_tokens")
+    tokens = resp.usage.total_tokens if resp.usage else (len(prompt.split()) + len(text.split()))
+    return text, tokens
 
 
-def _call_groq(prompt: str) -> str:
+def _call_groq(prompt: str) -> tuple[str, int]:
     import httpx
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
@@ -65,14 +70,19 @@ def _call_groq(prompt: str) -> str:
             },
             {"role": "user", "content": prompt},
         ],
-        "max_tokens": 512,
+        "max_tokens": 1024,
         "temperature": settings.llm_temperature,
     }
     with httpx.Client(timeout=settings.llm_timeout_seconds) as client:
         resp = client.post(url, headers=headers, json=payload)
         resp.raise_for_status()
         data = resp.json()
-        return data["choices"][0]["message"]["content"].strip()
+        choice = data["choices"][0]
+        text = choice["message"]["content"].strip()
+        if choice.get("finish_reason") == "length":
+            log.warning("llm.groq.truncated_at_max_tokens")
+        tokens = data.get("usage", {}).get("total_tokens") or (len(prompt.split()) + len(text.split()))
+        return text, tokens
 
 
 def _template_summary(prompt_hint: str) -> str:
@@ -117,12 +127,17 @@ def generate_summary(prompt: str) -> tuple[str, int, bool]:
         return _template_summary(prompt), 0, False
     try:
         if settings.llm_provider == "anthropic":
-            text = _call_anthropic(prompt)
+            res = _call_anthropic(prompt)
         elif settings.llm_provider == "groq":
-            text = _call_groq(prompt)
+            res = _call_groq(prompt)
         else:
-            text = _call_openai(prompt)
-        return text, len(prompt.split()) + len(text.split()), True
+            res = _call_openai(prompt)
+        if isinstance(res, tuple):
+            text, tokens = res
+        else:
+            text = res
+            tokens = len(prompt.split()) + len(text.split())
+        return text, tokens, True
     except Exception as exc:
         log.warning("llm.fallback_to_template", error=str(exc))
     return _template_summary(prompt), 0, False
@@ -134,12 +149,17 @@ def generate_sar_narrative(prompt: str) -> tuple[str, int, bool]:
         return _template_sar(prompt), 0, False
     try:
         if settings.llm_provider == "anthropic":
-            text = _call_anthropic(prompt)
+            res = _call_anthropic(prompt)
         elif settings.llm_provider == "groq":
-            text = _call_groq(prompt)
+            res = _call_groq(prompt)
         else:
-            text = _call_openai(prompt)
-        return text, len(prompt.split()) + len(text.split()), True
+            res = _call_openai(prompt)
+        if isinstance(res, tuple):
+            text, tokens = res
+        else:
+            text = res
+            tokens = len(prompt.split()) + len(text.split())
+        return text, tokens, True
     except Exception as exc:
         log.warning("llm.sar.fallback", error=str(exc))
     return _template_sar(prompt), 0, False

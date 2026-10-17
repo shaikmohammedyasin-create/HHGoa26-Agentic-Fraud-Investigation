@@ -24,7 +24,7 @@ from pathlib import Path
 import pandas as pd
 
 # Allow running as a top-level script
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backend.config import settings
 from backend.logging import configure_logging, get_logger

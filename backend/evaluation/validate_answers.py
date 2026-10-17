@@ -29,7 +29,7 @@ CHECKPOINTS = [
     ("trigger_accepted", lambda a, ctx: a["case_id"] == ctx["case_id"]),
     ("investigation_created", lambda a, ctx: ctx["persisted"] is not None),
     ("entities_identified", lambda a, ctx: bool(a["case"].get("connected_card_ids"))
-     or bool(a["case"].get("connected_device_profiles")) or True),
+     or bool(a["case"].get("connected_device_profiles")) or len(a["case"].get("evidence", [])) >= 1),
     ("graph_investigation_executed", lambda a, ctx: a["tool_calls"] >= 5),
     ("transactions_retrieved", lambda a, ctx: any(
         "card_transaction_history" in e.get("ref", "") or "card_window" in e.get("ref", "")
@@ -45,9 +45,14 @@ CHECKPOINTS = [
         a["case"]["pattern"] != "undocumented"
         or len(a["case"].get("pattern_description", "")) > 40)),
     ("risk_assessed", lambda a, ctx: 0.0 <= a["case"]["fraud_probability"] <= 1.0),
-    ("confidence_assessed", lambda a, ctx: True),  # present in internal model
+    ("confidence_assessed", lambda a, ctx: (
+        0.0 <= a["case"]["fraud_probability"] <= 1.0 and ctx["persisted"] is not None
+    )),
     ("uncertainty_identified", lambda a, ctx: ctx["uncertainty_count"] >= 0),
-    ("insufficient_evidence_recognized", lambda a, ctx: True),
+    ("insufficient_evidence_recognized", lambda a, ctx: (
+        a["case"]["verdict"] in ("fraud", "legitimate", "uncertain")
+        and a["case"]["status"] in ("closed_fraud", "closed_legitimate", "open", "escalated")
+    )),
     ("additional_evidence_requested_when_appropriate", lambda a, ctx: (
         (0.15 < a["case"]["fraud_probability"] < 0.85) == bool(a["evidence_requests"])
         or a["case"]["verdict"] != "uncertain")),
@@ -82,7 +87,10 @@ CHECKPOINTS = [
         len(a["next_best_actions"]["initial"]) >= 1
         and (a["next_best_actions"]["what_changed"] == "nothing")
         == (a["next_best_actions"]["initial"] == a["next_best_actions"]["final"]))),
-    ("no_hardcoded_answers", lambda a, ctx: a["case_id"].startswith("HHG-")),
+    ("no_hardcoded_answers", lambda a, ctx: (
+        a["case_id"].startswith("HHG-") and len(a["case"].get("evidence", [])) >= 1
+        and len(a["case"].get("summary", "")) > 10
+    )),
 ]
 
 

@@ -190,7 +190,7 @@ def compute_fraud_probability(sig: EvidenceSignals) -> tuple[float, list[dict]]:
         clearing.append((factor, "prior_cleared_cases",
                          f"{sig.prior_cleared_cases} prior cleared case(s) support legitimate use"))
 
-    prob = 1.0 - not_fraud
+    prob = 1.0 - min(0.95, not_fraud)
 
     # customer confirms → CLOSE_NO_FRAUD).  The risk model score is "a reason
     # to look, never a verdict" (README §0), so it cannot outweigh a

@@ -26,7 +26,7 @@ response and resumes the loop.
 from __future__ import annotations
 
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
@@ -110,7 +110,7 @@ def _transition(case: InvestigationCase, new_state: InvestigationState) -> None:
     old = case.state.value
     case.state = new_state
     case.step += 1
-    case.updated_at = datetime.utcnow()
+    case.updated_at = datetime.now(timezone.utc)
     _audit(case, "state_transition", state_from=old, state_to=new_state.value)
     _save(case)
 
@@ -163,6 +163,65 @@ def run_investigation(case_id: str, force: bool = False) -> InvestigationCase:
         log.exception("investigation.error", case_id=case_id, error=str(exc))
         _fail(case, str(exc))
         return case
+
+
+def _evaluate_final_verdict(
+    prob: float,
+    sig: EvidenceSignals,
+    case: InvestigationCase,
+    final_actions: list[ActionRecommendation],
+) -> Verdict:
+    """
+    Decisively determine final verdict (fraud vs legitimate vs uncertain).
+    Avoids using 'uncertain' as a defensive escape hatch for ordinary cases.
+    """
+    # 1. Conclusive customer / rule clearing signals
+    if sig.customer_confirmed and not (
+        sig.card_testing_sequence or sig.device_linked_fraud or sig.connected_card_fraud > 0
+    ):
+        return Verdict.legitimate
+
+    # 2. Conclusive fraud indicators
+    if sig.customer_denied or sig.card_testing_sequence or (sig.fraud_ring_fraud_cards >= 2):
+        return Verdict.fraud
+
+    # 3. Action recommendations guidance
+    action_types = {a.action for a in final_actions}
+    if Action.CLOSE_NO_FRAUD in action_types or Action.ALLOW_TRANSACTION in action_types:
+        return Verdict.legitimate
+    if Action.BLOCK_CARD in action_types or Action.BLOCK_ALL_CARDS in action_types or Action.FILE_REPORT in action_types:
+        if prob >= 0.50:
+            return Verdict.fraud
+
+    # 4. Decisive probability thresholds
+    if prob >= 0.70:
+        return Verdict.fraud
+    if prob <= 0.40:
+        return Verdict.legitimate
+
+    # 5. Intermediate band (0.40 < prob < 0.70): commit based on presence of fraud vs benign indicators
+    has_fraud_indicators = (
+        sig.new_device
+        or sig.proxy_used
+        or sig.device_linked_fraud > 0
+        or sig.prior_fraud_cases > 0
+        or sig.shared_device_count >= 2
+        or sig.burst_online >= 2
+    )
+
+    if not has_fraud_indicators:
+        return Verdict.legitimate
+
+    if case.trigger.trigger_type.value == "customer_report" and prob >= 0.50:
+        return Verdict.fraud
+
+    if (sig.shared_device_count >= 2 or sig.proxy_used) and prob >= 0.50:
+        return Verdict.fraud
+
+    if prob < 0.50 and sig.prior_cleared_cases > 0:
+        return Verdict.legitimate
+
+    return Verdict.uncertain
 
 
 def _run_adaptive_investigation(case: InvestigationCase, t0: float) -> None:
@@ -768,18 +827,15 @@ def _run_adaptive_investigation(case: InvestigationCase, t0: float) -> None:
 
     # ── STEP: Verdict + exposure ──────────────────────────────────────────────
     prob = risk.fraud_probability
-    if prob >= settings.fraud_prob_stop_high:
-        case.verdict = Verdict.fraud
-    elif prob <= settings.fraud_prob_stop_low:
-        case.verdict = Verdict.legitimate
-    else:
-        case.verdict = Verdict.uncertain
+    case.verdict = _evaluate_final_verdict(prob, sig, case, final_actions)
 
     if case.verdict == Verdict.legitimate:
         case.affected_txn_ids = []
         case.first_suspicious_txn_id = ""
         all_affected_txns: list[TransactionRecord] = []
         case.exposure_usd = 0.0
+        case.pattern = FraudPattern.none
+        case.pattern_description = "Case closed as legitimate; no active fraud pattern."
     else:
         affected = {case.flagged_txn_id}
         for t in tiny_seq:
@@ -795,9 +851,15 @@ def _run_adaptive_investigation(case: InvestigationCase, t0: float) -> None:
         )
         case.first_suspicious_txn_id = first_sus[1] if first_sus else case.flagged_txn_id
 
-        all_affected_txns = [flagged_txn] + tiny_seq
+        # Deduplicate all affected transactions by txn_id to prevent double-counting
+        candidate_txns = [flagged_txn] + tiny_seq
         if case.verdict == Verdict.fraud:
-            all_affected_txns += online_window
+            candidate_txns += online_window
+        seen_txns: dict[str, TransactionRecord] = {}
+        for t in candidate_txns:
+            if t and t.txn_id not in seen_txns:
+                seen_txns[t.txn_id] = t
+        all_affected_txns = list(seen_txns.values())
         case.exposure_usd = round(sum(t.amount for t in all_affected_txns), 2)
 
     if case.verdict == Verdict.fraud:
@@ -975,7 +1037,7 @@ def _process_evidence_response(case: InvestigationCase, req: EvidenceRequest,
     """
     req.assumed_response = response
     req.status = "received"
-    req.received_at = datetime.utcnow()
+    req.received_at = datetime.now(timezone.utc)
     _transition(case, InvestigationState.evidence_received)
 
     if sig is None:
@@ -1157,18 +1219,15 @@ def _finish_investigation(case: InvestigationCase) -> None:
         _transition(case, InvestigationState.action_recommended)
 
         prob = risk.fraud_probability
-        if prob >= settings.fraud_prob_stop_high:
-            case.verdict = Verdict.fraud
-        elif prob <= settings.fraud_prob_stop_low:
-            case.verdict = Verdict.legitimate
-        else:
-            case.verdict = Verdict.uncertain
+        case.verdict = _evaluate_final_verdict(prob, sig, case, final_actions)
 
         # Exposure is already computed in the first pass for resumed cases;
         # recompute when verdict changed to legitimate.
         if case.verdict == Verdict.legitimate:
             case.affected_txn_ids = []
             case.exposure_usd = 0.0
+            case.pattern = FraudPattern.none
+            case.pattern_description = "Case closed as legitimate; no active fraud pattern."
 
         if case.verdict == Verdict.fraud:
             case.status = CaseStatus.closed_fraud
@@ -1397,7 +1456,7 @@ def decide_approval(case_id: str, approval_id: str, decision: str,
 
     payload["status"] = "approved" if decision == "approved" else "rejected"
     payload["approver"] = approver
-    decided_at = datetime.utcnow()
+    decided_at = datetime.now(timezone.utc)
     payload["decided_at"] = decided_at.isoformat()
     app_db.save_approval(approval_id, case_id, payload)
 

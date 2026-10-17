@@ -13,12 +13,16 @@ Phase D.5 additions (all backward-compatible, all fields have defaults):
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -222,7 +226,7 @@ class EvidenceItem(BaseModel):
     entity_ids: list[str] = Field(default_factory=list)
     severity: RiskLevel = RiskLevel.medium
     confidence: float = 0.5             # 0-1 how certain this piece of evidence is
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=_utc_now)
     provenance: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -338,7 +342,7 @@ class ApprovalRequest(BaseModel):
     policy_ref: str = ""
     required_route: ApprovalRoute
     status: str = "pending"    # pending | approved | rejected
-    requested_at: datetime = Field(default_factory=datetime.utcnow)
+    requested_at: datetime = Field(default_factory=_utc_now)
     decided_at: datetime | None = None
     approver: str | None = None
 
@@ -350,7 +354,7 @@ class ApprovalRequest(BaseModel):
 class ActionResult(BaseModel):
     action: Action
     status: str    # executed | skipped | pending_approval | failed
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=_utc_now)
     result: str = ""
     case_id: str = ""
     approval_ref: str = ""
@@ -366,8 +370,8 @@ class InvestigationCase(BaseModel):
     trigger: TriggerRecord
     state: InvestigationState = InvestigationState.triggered
     step: int = 0
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=_utc_now)
+    updated_at: datetime = Field(default_factory=_utc_now)
 
     # Subject
     customer_id: str
@@ -446,4 +450,4 @@ class AuditEvent(BaseModel):
     state_to: str | None = None
     actor: str = "agent"
     metadata: dict[str, Any] = Field(default_factory=dict)
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=_utc_now)

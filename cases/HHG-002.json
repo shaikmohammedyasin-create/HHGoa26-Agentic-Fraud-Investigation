@@ -1,18 +1,16 @@
 {
   "case_id": "HHG-002",
   "case": {
-    "status": "escalated",
-    "verdict": "uncertain",
-    "fraud_probability": 0.427,
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.05,
     "pattern": "none",
-    "pattern_description": "",
-    "affected_txn_ids": [
-      "3478782"
-    ],
-    "first_suspicious_txn_id": "3478782",
+    "pattern_description": "Case closed as legitimate; no active fraud pattern.",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
     "connected_card_ids": [],
     "connected_device_profiles": [],
-    "exposure_usd": 292.36,
+    "exposure_usd": 0.0,
     "evidence": [
       {
         "claim": "Trigger (risk_score): Real-time model scored transaction 3478782 ($292.36, online) at 0.79. Review and decide.",
@@ -53,9 +51,9 @@
         ]
       },
       {
-        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "claim": "Customer response (simulated): Customer confirms they authorized this purchase from their personal account.",
         "source": "customer",
-        "ref": "evidence_request:ER-cd2e72ac",
+        "ref": "evidence_request:ER-ac234756",
         "entity_ids": [
           "C11891"
         ]
@@ -69,7 +67,7 @@
       "CC-5563",
       "CC-5555"
     ],
-    "summary": "Case HHG-002 (Card C11891-K1): The real‑time model flagged transaction 3478782 (online purchase of $292.36) on card C11891‑K1 with a risk score of 0.79 and a fraud probability of 0.43 (MEDIUM risk) [MEDIUM] Trigger (risk_score). The card’s recent history shows 44 online transactions with an average amount of $47.46, but a prior confirmed fraud case (CC‑4160) exists for the same customer/card [HIGH] [MEDIUM] [MEDIUM] Card‑not‑present fraud. No response was received from the cardholder within the required 24‑hour window [LOW] Customer response. Per policy R4, the appropriate action is to MONITOR_CARD and DECLINE_TRANSACTION ( exposure <$500, so no escalation or block is required).",
+    "summary": "Case HHG-002 investigated none activity on card C11891-K1 (customer C11891) around transaction 3478782 ($292.36, online). Assessed fraud probability 0.05 (LOW risk) from 5 evidence items across 5 independent evidence families. Key signals: 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 0.95); response: Customer confirms they authorized this purchase from their personal account. Final actions: CLOSE_NO_FRAUD.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-002"
   },
@@ -77,7 +75,7 @@
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "No response received within the 24-hour window.",
+      "assumed_response": "Customer confirms they authorized this purchase from their personal account.",
       "status": "received",
       "info_value": 0.95,
       "origin": "simulated",
@@ -100,17 +98,12 @@
     ],
     "final": [
       {
-        "action": "MONITOR_CARD",
+        "action": "CLOSE_NO_FRAUD",
         "route": "auto",
-        "reason": "R4: no reply within 24 hours"
-      },
-      {
-        "action": "DECLINE_TRANSACTION",
-        "route": "L1",
-        "reason": "R4: decline pending authorization"
+        "reason": "R3: customer confirmed the transaction"
       }
     ],
-    "what_changed": "Added: DECLINE_TRANSACTION, MONITOR_CARD; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
+    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -120,8 +113,8 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Borderline probability 0.43; investigation halted per stopping criteria. Escalated for analyst review.",
+  "stop_reason": "Fraud probability 0.05 ≤ 0.15; activity consistent with legitimate use.",
   "tool_calls": 12,
-  "tokens": 743,
-  "latency_s": 1.51
+  "tokens": 0,
+  "latency_s": 0.05
 }
