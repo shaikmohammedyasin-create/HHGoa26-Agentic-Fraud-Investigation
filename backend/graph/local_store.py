@@ -10,7 +10,7 @@ official challenge fraud patterns.
 from __future__ import annotations
 
 import sqlite3
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from backend.config import settings
@@ -603,7 +603,7 @@ def write_investigation_case(payload: dict[str, Any]) -> str:
             payload.get("pattern", "none"),
             float(payload.get("exposure_usd") or 0.0),
             (payload.get("summary") or "")[:4000],
-            datetime.utcnow().isoformat(),
+            datetime.now(timezone.utc).isoformat(),
         ),
     )
     conn.execute("DELETE FROM investigation_case_txns WHERE case_id=?", (case_id,))

@@ -1,18 +1,16 @@
 {
   "case_id": "HHG-003",
   "case": {
-    "status": "open",
-    "verdict": "uncertain",
-    "fraud_probability": 0.763,
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.122,
     "pattern": "none",
-    "pattern_description": "",
-    "affected_txn_ids": [
-      "3530164"
-    ],
-    "first_suspicious_txn_id": "3530164",
+    "pattern_description": "Case closed as legitimate; no active fraud pattern.",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
     "connected_card_ids": [],
     "connected_device_profiles": [],
-    "exposure_usd": 49.0,
+    "exposure_usd": 0.0,
     "evidence": [
       {
         "claim": "Trigger (customer_report): Customer C08623 message: 'I never made this $49.00 purchase. Please check my card.' Refers to 3530164.",
@@ -49,17 +47,17 @@
         "source": "document",
         "ref": "retrieval:pattern+keyword(pattern=none)",
         "entity_ids": [
-          "CC-5234",
-          "CC-4734",
-          "CC-4783",
-          "CC-4591",
-          "CC-4437"
+          "CC-5559",
+          "CC-5558",
+          "CC-5556",
+          "CC-5563",
+          "CC-5555"
         ]
       },
       {
-        "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
+        "claim": "Customer response (simulated): Customer confirms they authorized this purchase upon checking the merchant statement.",
         "source": "customer",
-        "ref": "evidence_request:ER-e7f97c36",
+        "ref": "evidence_request:ER-f56a7b75",
         "entity_ids": [
           "C08623"
         ]
@@ -72,13 +70,13 @@
       "CC-2935",
       "CC-2817",
       "CC-1589",
-      "CC-5234",
-      "CC-4734",
-      "CC-4783",
-      "CC-4591",
-      "CC-4437"
+      "CC-5559",
+      "CC-5558",
+      "CC-5556",
+      "CC-5563",
+      "CC-5555"
     ],
-    "summary": "Case HHG-003 investigated none activity on card C08623-K2 (customer C08623) around transaction 3530164 ($49.00, in_person). Assessed fraud probability 0.76 (CRITICAL risk) from 5 evidence items across 5 independent evidence families. Key signals: 5 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 0.95); response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE.",
+    "summary": "Case HHG-003 investigated none activity on card C08623-K2 (customer C08623) around transaction 3530164 ($49.00, in_person). Assessed fraud probability 0.12 (LOW risk) from 5 evidence items across 5 independent evidence families. Key signals: 5 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 0.95); response: Customer confirms they authorized this purchase upon checking the merchant statement. Final actions: CLOSE_NO_FRAUD.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-003"
   },
@@ -86,7 +84,8 @@
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "Customer reiterates they did not make this purchase and requests it be investigated.",
+      "assumed_response": "Customer confirms they authorized this purchase upon checking the merchant statement.",
+      "status": "received",
       "info_value": 0.95,
       "origin": "simulated",
       "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE (p=0.76); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.12)",
@@ -108,17 +107,12 @@
     ],
     "final": [
       {
-        "action": "BLOCK_CARD",
-        "route": "L1",
-        "reason": "R2: customer denied the transaction"
-      },
-      {
-        "action": "CREATE_CASE",
+        "action": "CLOSE_NO_FRAUD",
         "route": "auto",
-        "reason": "R2"
+        "reason": "R3: customer confirmed the transaction"
       }
     ],
-    "what_changed": "Added: BLOCK_CARD; Removed: VERIFY_WITH_CUSTOMER"
+    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -128,8 +122,8 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "stopping criteria met; no further evidence request is decision-relevant",
+  "stop_reason": "Fraud probability 0.12 ≤ 0.15; activity consistent with legitimate use.",
   "tool_calls": 11,
   "tokens": 0,
-  "latency_s": 7.37
+  "latency_s": 0.18
 }

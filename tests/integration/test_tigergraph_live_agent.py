@@ -16,9 +16,12 @@ from backend.agents.orchestrator import run_investigation
 class TestTigerGraphLiveAdapter:
     @pytest.fixture(autouse=True)
     def setup_tg(self):
-        # Only run if TigerGraph host is configured
+        # Only run if TigerGraph host is configured and reachable
         if not settings.tg_host:
             pytest.skip("TigerGraph host not configured")
+        conn = tg_adapter.get_connection()
+        if conn is None or not tg_adapter._get_auth_token():
+            pytest.skip("TigerGraph live cluster is unreachable or authentication token unavailable")
 
     def test_amount_stats_format(self):
         stats = tg_adapter.get_card_amount_stats("C07297-K1")

@@ -1,26 +1,26 @@
 {
   "case_id": "HHG-014",
   "case": {
-    "status": "escalated",
-    "verdict": "uncertain",
-    "fraud_probability": 0.528,
-    "pattern": "card_not_present_new_device",
-    "pattern_description": "Device marked New for this account; proxy/anonymous connection",
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.949,
+    "pattern": "undocumented",
+    "pattern_description": "Activity does not match any of the five known fraud patterns, but the evidence shows coordinated abuse across accounts: 20 other card(s) share the device profile used here; the same device profile appears in 3 confirmed fraud case(s); 3 confirmed fraud case(s) on connected cards. It is reported as undocumented rather than forced into a known category, per policy R9.",
     "affected_txn_ids": [
       "3478561"
     ],
     "first_suspicious_txn_id": "3478561",
     "connected_card_ids": [
-      "C09998-K1",
-      "C01935-K1",
-      "C11687-K1",
-      "C06617-K1",
-      "C06710-K1",
-      "C12395-K1",
-      "C01289-K2",
-      "C10193-K2",
-      "C11670-K2",
-      "C08972-K2"
+      "C00255-K1",
+      "C00329-K2",
+      "C00728-K2",
+      "C00750-K2",
+      "C00773-K2",
+      "C00834-K2",
+      "C00854-K2",
+      "C01007-K1",
+      "C01040-K2",
+      "C01047-K1"
     ],
     "connected_device_profiles": [
       "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
@@ -62,66 +62,103 @@
         ]
       },
       {
-        "claim": "Device profile shared across 20 other card(s): C09998-K1, C01935-K1, C11687-K1, C06617-K1, C06710-K1.",
+        "claim": "Device profile shared across 20 other card(s): C00255-K1, C00329-K2, C00728-K2, C00750-K2, C00773-K2.",
         "source": "graph",
         "ref": "query:accounts_sharing_device(device=SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080)",
         "entity_ids": [
-          "C09998-K1",
-          "C01935-K1",
-          "C11687-K1",
-          "C06617-K1",
-          "C06710-K1",
-          "C12395-K1",
-          "C01289-K2",
-          "C10193-K2",
-          "C11670-K2",
-          "C08972-K2"
+          "C00255-K1",
+          "C00329-K2",
+          "C00728-K2",
+          "C00750-K2",
+          "C00773-K2",
+          "C00834-K2",
+          "C00854-K2",
+          "C01007-K1",
+          "C01040-K2",
+          "C01047-K1"
         ]
       },
       {
-        "claim": "15 prior closed case(s) retrieved by pattern (card_not_present_new_device) and keyword match over analyst notes.",
-        "source": "document",
-        "ref": "retrieval:pattern+keyword(pattern=card_not_present_new_device)",
+        "claim": "Fraud-ring analysis: device component contains 18 confirmed-fraud card(s) (ring size 25).",
+        "source": "graph",
+        "ref": "query:device_fraud_ring(device=SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080)",
         "entity_ids": [
-          "CC-5556",
-          "CC-5541",
-          "CC-5564",
-          "CC-5515",
-          "CC-5528",
-          "CC-5508",
-          "CC-5428",
-          "CC-5434",
-          "CC-5395",
-          "CC-5446"
+          "C00255-K1",
+          "C00329-K2",
+          "C00728-K2",
+          "C00750-K2",
+          "C00773-K2",
+          "C00834-K2",
+          "C00854-K2",
+          "C01040-K2",
+          "C01109-K2",
+          "C01119-K2"
         ]
       },
       {
-        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "claim": "3 prior confirmed fraud case(s) found for customer C13487 or card C13487-K1: CC-0334, CC-0590, CC-5122.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C13487)",
+        "entity_ids": [
+          "CC-0334",
+          "CC-0590",
+          "CC-5122"
+        ]
+      },
+      {
+        "claim": "Device profile 'SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080' appears in 3 confirmed fraud case(s).",
+        "source": "graph",
+        "ref": "query:closed_cases_by_device(device=SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080)",
+        "entity_ids": [
+          "CC-0334",
+          "CC-0590",
+          "CC-5122"
+        ]
+      },
+      {
+        "claim": "14 prior closed case(s) retrieved by pattern (undocumented) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=undocumented)",
+        "entity_ids": [
+          "CC-4086",
+          "CC-4124",
+          "CC-3907",
+          "CC-3748",
+          "CC-3841",
+          "CC-3035",
+          "CC-2985",
+          "CC-2971",
+          "CC-2649",
+          "CC-5558"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-829658ac",
+        "ref": "evidence_request:ER-0b39e3a3",
         "entity_ids": [
           "C13487"
         ]
       }
     ],
     "similar_prior_cases": [
+      "CC-0334",
+      "CC-0590",
+      "CC-5122",
+      "CC-4086",
+      "CC-4124",
+      "CC-3907",
+      "CC-3748",
+      "CC-3841",
+      "CC-3035",
+      "CC-2985",
+      "CC-2971",
+      "CC-2649",
+      "CC-5558",
       "CC-5556",
-      "CC-5541",
-      "CC-5564",
-      "CC-5515",
-      "CC-5528",
-      "CC-5508",
-      "CC-5428",
-      "CC-5434",
-      "CC-5395",
-      "CC-5446",
-      "CC-5518",
-      "CC-5520",
-      "CC-5539",
-      "CC-5455",
-      "CC-5538"
+      "CC-5541"
     ],
-    "summary": "Case HHG-014 (Card C13487-K1): **Analyst Summary – Case HHG‑014**  \n\nThe online purchase of $74.96 (txn 3478561) on card C13487‑K1 was made from a “new” mobile device (SM‑G935F, Android 7.0, Chrome 62) and an anonymous proxy [HIGH] Device marked ‘New’ for this account; the same device profile is linked to 20 other cards [HIGH] Device profile shared across 20 other card(s). This pattern matches the previously confirmed “card_not_present_new_device” fraud cases (e.g., CC‑5556, CC‑5541) [LOW] 15 prior closed case(s) retrieved by pattern. The fraud probability is 0.53 (MEDIUM risk) and the cardholder has not responded within the 24‑hour window [LOW] Customer response (simulated).  \n\n**Recommended actions:** Create a case and file a SAR per R6 (shared device/region/email), monitor the card and all accounts using the same device, and decline",
+    "summary": "Case HHG-014 investigated undocumented activity on card C13487-K1 (customer C13487) around transaction 3478561 ($74.96, online). Assessed fraud probability 0.95 (CRITICAL risk) from 10 evidence items across 9 independent evidence families. Key signals: new device for this account; proxy/anonymous connection used; 3 prior confirmed fraud case(s) on card/customer; device also used in 3 confirmed fraud case(s). Additional evidence requested (customer_validation, information value 0.75); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-014"
   },
@@ -129,26 +166,26 @@
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "No response received within the 24-hour window.",
+      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession.",
       "status": "received",
-      "info_value": 1.0,
+      "info_value": 0.75,
       "origin": "simulated",
-      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.79); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.15)",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.95); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.81)",
       "alternatives_considered": [
         {
           "type": "step_up_auth",
-          "info_value": 0.45,
-          "decision_relevance": "Outcome A (Authentication fails — device unknown to cardholder) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.74); Outcome B (Authentication succeeds — device is the cardholder's) -> ALLOW_TRANSACTION (p=0.27)"
+          "info_value": -0.05,
+          "decision_relevance": "Outcome A (Authentication fails — device unknown to cardholder) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.94); Outcome B (Authentication succeeds — device is the cardholder's) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.83)"
         },
         {
           "type": "analyst_info",
-          "info_value": 0.45,
-          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.65); Outcome B (Analyst reports no related activity) -> CREATE_CASE, VERIFY_WITH_CUSTOMER (p=0.41)"
+          "info_value": -0.1,
+          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.92); Outcome B (Analyst reports no related activity) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.86)"
         },
         {
           "type": "external_watchlist",
-          "info_value": 0.4,
-          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.62); Outcome B (No watchlist hits) -> CREATE_CASE, VERIFY_WITH_CUSTOMER (p=0.47)"
+          "info_value": -0.15,
+          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.91); Outcome B (No watchlist hits) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.88)"
         }
       ]
     }
@@ -158,43 +195,65 @@
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "R6: shared device/region/email across multiple cards"
+        "reason": "R9: undocumented coordinated pattern"
       },
       {
         "action": "FILE_REPORT",
         "route": "L2",
-        "reason": "R6: shared origin requires report"
+        "reason": "R9"
       },
       {
-        "action": "MONITOR_CONNECTED_CARDS",
+        "action": "ESCALATE_TO_ANALYST",
         "route": "auto",
-        "reason": "R6"
+        "reason": "R9"
       }
     ],
     "final": [
       {
-        "action": "MONITOR_CARD",
-        "route": "auto",
-        "reason": "R4: no reply within 24 hours"
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
       },
       {
-        "action": "DECLINE_TRANSACTION",
-        "route": "L1",
-        "reason": "R4: decline pending authorization"
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2: exposure > $1,000 or shared device/region"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: shared origin detected"
       }
     ],
-    "what_changed": "Added: DECLINE_TRANSACTION, MONITOR_CARD; Removed: CREATE_CASE, MONITOR_CONNECTED_CARDS, FILE_REPORT"
+    "what_changed": "Added: MONITOR_CONNECTED_CARDS, BLOCK_CARD; Removed: ESCALATE_TO_ANALYST"
   },
   "sar": {
-    "file": false,
-    "reason": "FILE_REPORT not recommended; SAR not required",
-    "narrative": "",
-    "subjects": [],
-    "total_amount_usd": 0.0,
-    "activity_dates": []
+    "file": true,
+    "reason": "R6: confirmed fraud connected to shared device profile or card",
+    "narrative": "Between 2016-11-22 and 2016-11-22, customer C13487 and card C13487-K1, connected cards C00255-K1, C00329-K2, C00728-K2, device profile 'SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080' were involved in 1 transaction(s) assessed as fraud (undocumented pattern) with total exposure $74.96. The flagged transaction 3478561 of $74.96 (online, product C) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 10 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the undocumented pattern with assessed fraud probability 0.95. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "subjects": [
+      "C00255-K1",
+      "C00329-K2",
+      "C00773-K2",
+      "C13487-K1",
+      "C00728-K2",
+      "C00750-K2",
+      "C13487",
+      "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
+    ],
+    "total_amount_usd": 74.96,
+    "activity_dates": [
+      "2016-11-22",
+      "2016-11-22"
+    ]
   },
-  "stop_reason": "Borderline probability 0.53; investigation halted per stopping criteria. Escalated for analyst review.",
+  "stop_reason": "Fraud probability 0.95 ≥ 0.85 with 9 independent evidence families.",
   "tool_calls": 16,
-  "tokens": 888,
-  "latency_s": 34.41
+  "tokens": 0,
+  "latency_s": 1.72
 }

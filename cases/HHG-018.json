@@ -1,18 +1,30 @@
 {
   "case_id": "HHG-018",
   "case": {
-    "status": "open",
-    "verdict": "uncertain",
+    "status": "closed_fraud",
+    "verdict": "fraud",
     "fraud_probability": 0.833,
     "pattern": "card_not_present_fraud",
     "pattern_description": "Burst of 12 online transactions within 48h",
     "affected_txn_ids": [
-      "3491361"
+      "3491361",
+      "3488570",
+      "3489428",
+      "3495821",
+      "3491872",
+      "3493830",
+      "3495379",
+      "3494313",
+      "3492168",
+      "3492105",
+      "3497820",
+      "3491794",
+      "3489904"
     ],
-    "first_suspicious_txn_id": "3487659",
+    "first_suspicious_txn_id": "3488570",
     "connected_card_ids": [],
     "connected_device_profiles": [],
-    "exposure_usd": 39.08,
+    "exposure_usd": 869.11,
     "evidence": [
       {
         "claim": "Trigger (customer_report): Customer C02354 message: 'I never made this $39.08 purchase. Please check my card.' Refers to 3491361.",
@@ -37,7 +49,6 @@
         "source": "graph",
         "ref": "query:card_window(card_id=C02354-K2, hours=48)",
         "entity_ids": [
-          "3487659",
           "3488570",
           "3489428",
           "3489904",
@@ -46,7 +57,8 @@
           "3492105",
           "3492168",
           "3493830",
-          "3494313"
+          "3494313",
+          "3495379"
         ]
       },
       {
@@ -81,7 +93,7 @@
       {
         "claim": "Customer response (simulated): Customer reiterates they did not make this purchase and requests it be investigated.",
         "source": "customer",
-        "ref": "evidence_request:ER-e9360cc6",
+        "ref": "evidence_request:ER-80dc730c",
         "entity_ids": [
           "C02354"
         ]
@@ -113,6 +125,7 @@
       "type": "customer_validation",
       "asked_after_step": 4,
       "assumed_response": "Customer reiterates they did not make this purchase and requests it be investigated.",
+      "status": "received",
       "info_value": 0.95,
       "origin": "simulated",
       "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE (p=0.83); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.15)",
@@ -157,5 +170,5 @@
   "stop_reason": "stopping criteria met; no further evidence request is decision-relevant",
   "tool_calls": 13,
   "tokens": 0,
-  "latency_s": 10.82
+  "latency_s": 0.25
 }

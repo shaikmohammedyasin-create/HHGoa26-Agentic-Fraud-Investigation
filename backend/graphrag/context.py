@@ -69,6 +69,8 @@ class GraphRAGContext:
     risk_level: str = "LOW"
     key_signals: list[str] = field(default_factory=list)
     uncertainties: list[str] = field(default_factory=list)
+    final_actions: list[str] = field(default_factory=list)
+    what_changed: str = ""
     fraud_policy: str = FRAUD_POLICY_TEXT
     fraud_patterns: str = FRAUD_PATTERNS_TEXT
 
@@ -167,6 +169,11 @@ def build_context(
         for u in case.uncertainty[:5]
     ]
 
+    final_actions_strs = [
+        f"{a.action.value} ({a.route.value}): {a.reason}"
+        for a in (case.nba_final or [])
+    ]
+
     return GraphRAGContext(
         case_id=case.case_id,
         case_summary=case_summary,
@@ -182,6 +189,8 @@ def build_context(
         risk_level=case.risk_level.value,
         key_signals=case.risk_before.key_signals if case.risk_before else [],
         uncertainties=uncertainty_strs,
+        final_actions=final_actions_strs,
+        what_changed=case.nba_what_changed,
     )
 
 
@@ -238,6 +247,14 @@ def to_llm_prompt(ctx: GraphRAGContext, task: str = "summarize") -> str:
     if ctx.uncertainties:
         lines.append("OPEN UNCERTAINTIES: " + "; ".join(ctx.uncertainties))
 
+    if ctx.final_actions:
+        lines.append("")
+        lines.append("DETERMINISTIC FINAL POLICY ACTIONS (MUST CITE THESE EXACT ACTIONS):")
+        for act in ctx.final_actions:
+            lines.append(f"  - {act}")
+        if ctx.what_changed:
+            lines.append(f"  Transition note: {ctx.what_changed}")
+
     lines.append("")
     lines.append("--- FRAUD POLICY ---")
     lines.append(ctx.fraud_policy)
@@ -248,9 +265,9 @@ def to_llm_prompt(ctx: GraphRAGContext, task: str = "summarize") -> str:
 
     if task == "summarize":
         lines.append(
-            "TASK: Write a 2-6 sentence analyst summary of this investigation. "
-            "Be concise. Reference specific evidence IDs where relevant. "
-            "Do not invent facts not listed above."
+            "TASK: Write a 2-4 sentence analyst summary of this investigation. "
+            "Be concise and complete every sentence. Reference specific evidence IDs where relevant. "
+            "Cite the exact deterministic final policy actions above; do not invent actions or contradict them."
         )
     elif task == "sar_narrative":
         lines.append(

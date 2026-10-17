@@ -1,18 +1,16 @@
 {
   "case_id": "HHG-001",
   "case": {
-    "status": "escalated",
-    "verdict": "uncertain",
-    "fraud_probability": 0.429,
+    "status": "closed_legitimate",
+    "verdict": "legitimate",
+    "fraud_probability": 0.15,
     "pattern": "none",
-    "pattern_description": "",
-    "affected_txn_ids": [
-      "3514030"
-    ],
-    "first_suspicious_txn_id": "3514030",
+    "pattern_description": "Case closed as legitimate; no active fraud pattern.",
+    "affected_txn_ids": [],
+    "first_suspicious_txn_id": "",
     "connected_card_ids": [],
     "connected_device_profiles": [],
-    "exposure_usd": 77.07,
+    "exposure_usd": 0.0,
     "evidence": [
       {
         "claim": "Trigger (risk_score): Real-time model scored transaction 3514030 ($77.07, in billing region 444.0) at 0.61. Review and decide.",
@@ -44,21 +42,29 @@
         ]
       },
       {
+        "claim": "Agent case memory: 1 of 1 prior investigation(s) on this customer ended in confirmed fraud.",
+        "source": "document",
+        "ref": "memory:investigation_cases_for_customer",
+        "entity_ids": [
+          "C12382"
+        ]
+      },
+      {
         "claim": "5 prior closed case(s) retrieved by pattern (none) and keyword match over analyst notes.",
         "source": "document",
         "ref": "retrieval:pattern+keyword(pattern=none)",
         "entity_ids": [
-          "CC-5555",
-          "CC-5510",
-          "CC-5565",
-          "CC-5503",
-          "CC-5486"
+          "CC-5559",
+          "CC-5558",
+          "CC-5556",
+          "CC-5563",
+          "CC-5555"
         ]
       },
       {
-        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "claim": "Customer response (simulated): Customer confirms they authorized this purchase from their personal account.",
         "source": "customer",
-        "ref": "evidence_request:ER-537d5253",
+        "ref": "evidence_request:ER-3d91b9fe",
         "entity_ids": [
           "C12382"
         ]
@@ -69,13 +75,13 @@
       "CC-2964",
       "CC-1673",
       "CC-1066",
-      "CC-5555",
-      "CC-5510",
-      "CC-5565",
-      "CC-5503",
-      "CC-5486"
+      "CC-5559",
+      "CC-5558",
+      "CC-5556",
+      "CC-5563",
+      "CC-5555"
     ],
-    "summary": "Case HHG-001 investigated none activity on card C12382-K1 (customer C12382) around transaction 3514030 ($77.07, in_person). Assessed fraud probability 0.43 (MEDIUM risk) from 5 evidence items across 5 independent evidence families. Key signals: 4 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 0.95); response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "summary": "Case HHG-001 investigated none activity on card C12382-K1 (customer C12382) around transaction 3514030 ($77.07, in_person). Assessed fraud probability 0.15 (LOW risk) from 6 evidence items across 6 independent evidence families. Key signals: 4 prior confirmed fraud case(s) on card/customer; 1 prior agent investigation(s) ended in confirmed fraud. Additional evidence requested (customer_validation, information value 0.95); response: Customer confirms they authorized this purchase from their personal account. Final actions: CLOSE_NO_FRAUD.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2016-HHG-001"
   },
@@ -83,10 +89,11 @@
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "No response received within the 24-hour window.",
+      "assumed_response": "Customer confirms they authorized this purchase from their personal account.",
+      "status": "received",
       "info_value": 0.95,
       "origin": "simulated",
-      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE (p=0.74); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.05)",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE (p=0.78); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.15)",
       "alternatives_considered": []
     }
   ],
@@ -105,17 +112,12 @@
     ],
     "final": [
       {
-        "action": "MONITOR_CARD",
+        "action": "CLOSE_NO_FRAUD",
         "route": "auto",
-        "reason": "R4: no reply within 24 hours"
-      },
-      {
-        "action": "DECLINE_TRANSACTION",
-        "route": "L1",
-        "reason": "R4: decline pending authorization"
+        "reason": "R3: customer confirmed the transaction"
       }
     ],
-    "what_changed": "Added: DECLINE_TRANSACTION, MONITOR_CARD; Removed: CREATE_CASE, VERIFY_WITH_CUSTOMER"
+    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -125,8 +127,8 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Borderline probability 0.43; investigation halted per stopping criteria. Escalated for analyst review.",
+  "stop_reason": "Fraud probability 0.15 ≤ 0.15; activity consistent with legitimate use.",
   "tool_calls": 11,
   "tokens": 0,
-  "latency_s": 9.92
+  "latency_s": 0.12
 }

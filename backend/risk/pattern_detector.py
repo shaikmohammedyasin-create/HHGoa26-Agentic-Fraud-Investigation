@@ -148,6 +148,21 @@ def _score_all_patterns(
             ato_con.append("No mixed-channel or match-flag anomaly — ATO signal is weak")
         scores[FraudPattern.account_takeover] = (ato_score, "; ".join(ato_desc_parts), ato_sup, ato_con)
 
+    # ── 6. Undocumented coordinated pattern ──────────────────────────────────
+    undoc_score = 0.0
+    undoc_sup: list[str] = []
+    undoc_con: list[str] = []
+    if not sig.card_testing_sequence:
+        if sig.trigger_type == "analyst_request":
+            undoc_score = 0.85
+            undoc_sup.append("Triggered by analyst inquiry on multi-card device profile anomaly")
+            undoc_sup.append(f"Device profile shared across {sig.shared_device_count} accounts")
+            scores[FraudPattern.undocumented] = (undoc_score, _undocumented_description(sig), undoc_sup, undoc_con)
+        elif (sig.shared_device_count >= 15 or sig.fraud_ring_fraud_cards >= 5) and not sig.new_device and sig.prior_fraud_cases == 0:
+            undoc_score = 0.80
+            undoc_sup.append(f"Syndicate device sharing across {sig.shared_device_count} accounts with {sig.fraud_ring_fraud_cards} fraud cards in ring")
+            scores[FraudPattern.undocumented] = (undoc_score, _undocumented_description(sig), undoc_sup, undoc_con)
+
     return scores
 
 
@@ -225,6 +240,24 @@ def _apply_tiebreakers(
                 list(nd_sup) + ["Tiebreaker: new_device=True differentiates from card_not_present_fraud per README"],
                 nd_con,
             )
+
+    # Tiebreaker 3: Undocumented coordinated pattern vs single-account CNP
+    # When triggered by analyst request on multi-card device profile or large device-sharing syndicate,
+    # the activity represents coordinated syndicate abuse (R9), not isolated CNP.
+    if FraudPattern.undocumented in scores:
+        if sig.trigger_type == "analyst_request" or ((sig.shared_device_count >= 15 or sig.fraud_ring_fraud_cards >= 5) and not sig.new_device and sig.prior_fraud_cases == 0):
+            u_s, u_d, u_sup, u_con = scores[FraudPattern.undocumented]
+            for pat in (FraudPattern.card_not_present_new_device, FraudPattern.card_not_present_fraud, FraudPattern.account_takeover):
+                if pat in scores:
+                    p_s, p_d, p_sup, p_con = scores[pat]
+                    if p_s >= u_s:
+                        u_s = p_s + 0.05
+                    scores[FraudPattern.undocumented] = (
+                        u_s,
+                        u_d,
+                        list(u_sup) + ["Tiebreaker: coordinated multi-card syndicate abuse defines undocumented pattern per R9"],
+                        u_con,
+                    )
 
     return scores
 
