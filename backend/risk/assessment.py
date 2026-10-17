@@ -162,39 +162,44 @@ def compute_fraud_probability(sig: EvidenceSignals) -> tuple[float, list[dict]]:
     for q, _, _ in channels:
         not_fraud *= (1.0 - q)
 
-    # ── Clearing signals, multiplicative on P(not fraud) ─────────────────────────
-    # Semantics: P(fraud) = 1 - not_fraud.  A clearing factor f > 1 multiplies
-    # not_fraud, which LOWERS the fraud probability.  (Historical note: earlier
-    # revisions multiplied not_fraud by factors < 1 for confirmations, which
-    # raised the probability and only appeared to work because of the post-hoc
-    # cap below; the direction is now correct for all clearing channels.)
+    # ── Bayesian likelihood-ratio odds updating for clearing signals ──────────────
+    # Semantics: Prior odds O_prior = P(fraud) / P(not fraud) = (1 - not_fraud) / not_fraud.
+    # Clearing signals represent likelihood ratios LR < 1.0 that mathematically reduce
+    # the posterior odds: O_post = O_prior * prod(LR_i).
+    # Then posterior probability P_post = O_post / (1 + O_post), strictly in [0, 1).
+    p_prior = 1.0 - not_fraud
+    prior_odds = p_prior / max(0.001, not_fraud)
+
+    lr_total = 1.0
     clearing: list[tuple[float, str, str]] = []
     if sig.customer_confirmed:
-        not_fraud *= 1.0 / 0.60
-        clearing.append((round(1.0 / 0.60, 3), "customer_confirmed", "Cardholder confirmed the transaction (strong clearing signal)"))
+        lr_total *= 0.15
+        clearing.append((0.15, "customer_confirmed", "Cardholder confirmed the transaction (strong clearing signal)"))
     if sig.step_up_passed:
-        not_fraud *= 1.0 / 0.65
-        clearing.append((round(1.0 / 0.65, 3), "step_up_passed", "Step-up authentication succeeded — device belongs to the cardholder"))
+        lr_total *= 0.20
+        clearing.append((0.20, "step_up_passed", "Step-up authentication succeeded — device belongs to the cardholder"))
     if sig.analyst_clears_shared:
-        not_fraud *= 1.0 / 0.80
-        clearing.append((1.25, "analyst_clears_shared", "Analyst reports no related activity on the shared profile"))
+        lr_total *= 0.40
+        clearing.append((0.40, "analyst_clears_shared", "Analyst reports no related activity on the shared profile"))
     if sig.watchlist_clear:
-        not_fraud *= 1.0 / 0.90
-        clearing.append((round(1.0 / 0.90, 3), "watchlist_clear", "No external watchlist hits on linked identifiers"))
+        lr_total *= 0.60
+        clearing.append((0.60, "watchlist_clear", "No external watchlist hits on linked identifiers"))
     if sig.region_streak:
-        not_fraud *= 1.30
-        clearing.append((1.30, "region_streak", "Multi-day new-region purchases consistent with legitimate travel"))
+        lr_total *= 0.35
+        clearing.append((0.35, "region_streak", "Multi-day new-region purchases consistent with legitimate travel"))
     if sig.prior_cleared_cases > 0:
-        factor = 1.0 + min(0.25, sig.prior_cleared_cases * 0.08)
-        not_fraud *= factor
-        clearing.append((factor, "prior_cleared_cases",
+        factor = 1.0 / (1.0 + min(1.5, sig.prior_cleared_cases * 0.30))
+        lr_total *= factor
+        clearing.append((round(factor, 3), "prior_cleared_cases",
                          f"{sig.prior_cleared_cases} prior cleared case(s) support legitimate use"))
 
-    prob = 1.0 - min(0.95, not_fraud)
+    post_odds = prior_odds * lr_total
+    prob = post_odds / (1.0 + post_odds)
 
     # customer confirms → CLOSE_NO_FRAUD).  The risk model score is "a reason
     # to look, never a verdict" (README §0), so it cannot outweigh a
     # confirmation on its own.  Cap the probability in the low band unless hard
+    # fraud indicators are present.
     if sig.customer_confirmed and not (
         sig.card_testing_sequence or sig.device_linked_fraud or sig.connected_card_fraud
     ):

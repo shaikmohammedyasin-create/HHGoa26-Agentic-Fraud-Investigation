@@ -95,3 +95,33 @@ SYNTAX V2 {
 
   PRINT result [result.device_profile_id, result.@card_count];
 }
+
+
+// ── Fast Device Fraud Ring Accumulator ──────────────────────
+
+// WHY: Single network round-trip fraud ring discovery eliminating N+1 card queries.
+// WHAT evidence: ring size, card IDs in ring, confirmed-fraud cards in ring.
+// HOW: Traverses device -> transactions -> cards -> historical cases via GSQL accumulators.
+
+CREATE QUERY device_fraud_ring_fast(STRING dp, INT limit_n = 25) FOR GRAPH fraud_investigation
+SYNTAX V2 {
+  SumAccum<INT> @@n_fraud;
+  SetAccum<STRING> @@fraud_cards;
+  SetAccum<STRING> @@all_cards;
+
+  Dev = {DeviceProfile.*};
+  target_dev = SELECT d FROM Dev:d WHERE d.device_profile_id == dp;
+
+  Cards = SELECT c FROM target_dev:d <-(FROM_DEVICE)- Transaction:t -(MADE_BY)-> Card:c
+          LIMIT limit_n;
+
+  Cards = SELECT c FROM Cards:c
+          ACCUM @@all_cards += c.card_id;
+
+  FraudCases = SELECT hc FROM Cards:c <-(CC_ON_CARD)- ClosedCase:hc
+               WHERE hc.outcome == "confirmed_fraud"
+               ACCUM @@fraud_cards += c.card_id;
+
+  PRINT @@all_cards.size() AS ring_size, @@all_cards AS cards,
+        @@fraud_cards AS fraud_cards, @@fraud_cards.size() AS n_fraud;
+}

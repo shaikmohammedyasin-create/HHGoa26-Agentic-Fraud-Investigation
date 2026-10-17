@@ -1,0 +1,22 @@
+{
+  "HHG-001": {"verdict": "legitimate", "pattern": "none"},
+  "HHG-002": {"verdict": "legitimate", "pattern": "none"},
+  "HHG-003": {"verdict": "legitimate", "pattern": "none"},
+  "HHG-004": {"verdict": "fraud", "pattern": "card_not_present_fraud"},
+  "HHG-005": {"verdict": "fraud", "pattern": "card_not_present_new_device"},
+  "HHG-006": {"verdict": "fraud", "pattern": "card_not_present_fraud"},
+  "HHG-007": {"verdict": "legitimate", "pattern": "none"},
+  "HHG-008": {"verdict": "fraud", "pattern": "card_not_present_fraud"},
+  "HHG-009": {"verdict": "fraud", "pattern": "undocumented"},
+  "HHG-010": {"verdict": "fraud", "pattern": "card_not_present_new_device"},
+  "HHG-011": {"verdict": "fraud", "pattern": "card_not_present_fraud"},
+  "HHG-012": {"verdict": "legitimate", "pattern": "none"},
+  "HHG-013": {"verdict": "fraud", "pattern": "card_not_present_new_device"},
+  "HHG-014": {"verdict": "fraud", "pattern": "undocumented"},
+  "HHG-015": {"verdict": "fraud", "pattern": "card_not_present_new_device"},
+  "HHG-016": {"verdict": "fraud", "pattern": "card_not_present_new_device"},
+  "HHG-017": {"verdict": "fraud", "pattern": "card_not_present_fraud"},
+  "HHG-018": {"verdict": "fraud", "pattern": "card_not_present_fraud"},
+  "HHG-019": {"verdict": "fraud", "pattern": "account_takeover"},
+  "HHG-020": {"verdict": "fraud", "pattern": "card_not_present_new_device"}
+}

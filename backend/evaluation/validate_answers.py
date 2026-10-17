@@ -160,6 +160,44 @@ def validate_all() -> dict:
         "cases_with_failures": [r["case_id"] for r in results if r["failed_checkpoints"]],
         "results": results,
     }
+
+    # Ground-truth evaluation against independent balanced ground truth
+    gt_path = cases_dir / "ground_truth.json"
+    if gt_path.exists():
+        gt = json.loads(gt_path.read_text(encoding="utf-8"))
+        tp = fp = tn = fn = 0
+        matches = 0
+        for r in results:
+            cid = r["case_id"]
+            if cid in gt:
+                expected_v = gt[cid]["verdict"]
+                actual_v = r["verdict"]
+                if actual_v == expected_v:
+                    matches += 1
+                if expected_v == "fraud" and actual_v == "fraud":
+                    tp += 1
+                elif expected_v == "legitimate" and actual_v == "fraud":
+                    fp += 1
+                elif expected_v == "legitimate" and actual_v == "legitimate":
+                    tn += 1
+                elif expected_v == "fraud" and actual_v != "fraud":
+                    fn += 1
+        prec = round(tp / (tp + fp), 4) if (tp + fp) else 0.0
+        rec = round(tp / (tp + fn), 4) if (tp + fn) else 0.0
+        f1 = round(2 * prec * rec / (prec + rec), 4) if (prec + rec) else 0.0
+        acc = round(matches / len(gt), 4) if gt else 0.0
+        out["ground_truth_metrics"] = {
+            "verdict_accuracy": acc,
+            "precision": prec,
+            "recall": rec,
+            "f1_score": f1,
+            "tp": tp,
+            "fp": fp,
+            "tn": tn,
+            "fn": fn,
+        }
+        log.info("ground_truth.evaluation", accuracy=acc, precision=prec, recall=rec, f1=f1)
+
     out_path = cases_dir / "_checkpoint_report.json"
     out_path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     log.info("checkpoint.report", path=str(out_path), pass_rate=out["checkpoint_pass_rate"])

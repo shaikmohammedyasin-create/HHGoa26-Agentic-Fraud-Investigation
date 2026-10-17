@@ -613,6 +613,21 @@ def get_device_fraud_ring(device_label: str, max_cards: int = 25) -> dict[str, A
         if not dev_name or dev_name == "unknown":
             return {"device": device_label, "ring_size": 0, "cards": [],
                     "fraud_cards": [], "n_fraud": 0}
+        # Attempt high-performance single-trip GSQL accumulator query first
+        try:
+            fast_res = _run("device_fraud_ring_fast", {"dp": dev_name, "limit_n": max_cards})
+            if isinstance(fast_res, dict) and "result" in fast_res and fast_res["result"]:
+                r = fast_res["result"][0]
+                return {
+                    "device": device_label,
+                    "ring_size": int(r.get("ring_size", 0)),
+                    "cards": list(r.get("cards", [])),
+                    "fraud_cards": list(r.get("fraud_cards", [])),
+                    "n_fraud": int(r.get("n_fraud", 0)),
+                }
+        except Exception:
+            pass
+
         res = _run("device_fraud_ring", {"dp": dev_name, "limit_n": max_cards})
         items = res.get("result", []) if isinstance(res, dict) else []
         cards: list[str] = []

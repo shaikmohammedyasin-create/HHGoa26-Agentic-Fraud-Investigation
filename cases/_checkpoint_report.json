@@ -93,11 +93,11 @@
     {
       "case_id": "HHG-006",
       "verdict": "fraud",
-      "fraud_probability": 0.97,
+      "fraud_probability": 0.96,
       "pattern": "card_not_present_fraud",
       "status": "closed_fraud",
       "written_to_graph": true,
-      "evidence_count": 10,
+      "evidence_count": 9,
       "evidence_requests": 1,
       "n_initial": 3,
       "n_final": 4,
@@ -212,11 +212,11 @@
     {
       "case_id": "HHG-013",
       "verdict": "fraud",
-      "fraud_probability": 0.951,
+      "fraud_probability": 0.93,
       "pattern": "card_not_present_new_device",
       "status": "closed_fraud",
       "written_to_graph": true,
-      "evidence_count": 9,
+      "evidence_count": 8,
       "evidence_requests": 1,
       "n_initial": 3,
       "n_final": 4,
@@ -345,5 +345,15 @@
       "checkpoints_total": 30,
       "failed_checkpoints": []
     }
-  ]
+  ],
+  "ground_truth_metrics": {
+    "verdict_accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "tp": 15,
+    "fp": 0,
+    "tn": 5,
+    "fn": 0
+  }
 }
