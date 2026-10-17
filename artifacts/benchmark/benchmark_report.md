@@ -28,39 +28,39 @@
 
 | Case | Flagged Txn | Expected Verdict | Actual Verdict | Expected Pattern | Actual Pattern | Prob | SAR | Checkpoints | Match Status |
 |---|---|---|---|---|---|---|---|---|---|
-| **HHG-001** | 3514030 | `uncertain` | `uncertain` | `none` | `none` | 0.429 | False | 30/30 | PASS |
-| **HHG-002** | 3478782 | `uncertain` | `uncertain` | `none` | `none` | 0.326 | False | 30/30 | PASS |
-| **HHG-003** | 3530164 | `uncertain` | `uncertain` | `none` | `none` | 0.763 | False | 30/30 | PASS |
-| **HHG-004** | 3583227 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.889 | True | 30/30 | PASS |
-| **HHG-005** | 3523199 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.921 | True | 30/30 | PASS |
-| **HHG-006** | 3476682 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.960 | True | 30/30 | PASS |
-| **HHG-007** | 3514948 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.546 | False | 30/30 | PASS |
-| **HHG-008** | 3558054 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.848 | True | 30/30 | PASS |
-| **HHG-009** | 3581141 | `uncertain` | `uncertain` | `card_not_present_fraud` | `undocumented` | 0.737 | True | 30/30 | DIVERGENT (EXPLAINED) |
-| **HHG-010** | 3506725 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.933 | True | 30/30 | PASS |
-| **HHG-011** | 3583368 | `fraud` | `fraud` | `card_not_present_fraud` | `card_testing` | 0.946 | False | 30/30 | DIVERGENT (EXPLAINED) |
-| **HHG-012** | 3553342 | `uncertain` | `uncertain` | `none` | `none` | 0.231 | False | 30/30 | PASS |
-| **HHG-013** | 3526826 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.930 | True | 30/30 | PASS |
-| **HHG-014** | 3478561 | `fraud` | `uncertain` | `card_not_present_new_device` | `card_not_present_new_device` | 0.528 | False | 30/30 | PASS (PATTERN) |
-| **HHG-015** | 3464869 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.941 | True | 30/30 | PASS |
-| **HHG-016** | 3534820 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.933 | True | 30/30 | PASS |
-| **HHG-017** | 3450629 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.923 | True | 30/30 | PASS |
-| **HHG-018** | 3491361 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.833 | False | 30/30 | PASS |
-| **HHG-019** | 3503878 | `fraud` | `fraud` | `account_takeover` | `account_takeover` | 0.940 | True | 30/30 | PASS |
-| **HHG-020** | 3509359 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.931 | True | 30/30 | PASS |
+| **CASE-001** | 3514030 | `uncertain` | `uncertain` | `none` | `none` | 0.429 | False | 30/30 | PASS |
+| **CASE-002** | 3478782 | `uncertain` | `uncertain` | `none` | `none` | 0.326 | False | 30/30 | PASS |
+| **CASE-003** | 3530164 | `uncertain` | `uncertain` | `none` | `none` | 0.763 | False | 30/30 | PASS |
+| **CASE-004** | 3583227 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.889 | True | 30/30 | PASS |
+| **CASE-005** | 3523199 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.921 | True | 30/30 | PASS |
+| **CASE-006** | 3476682 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.960 | True | 30/30 | PASS |
+| **CASE-007** | 3514948 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.546 | False | 30/30 | PASS |
+| **CASE-008** | 3558054 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.848 | True | 30/30 | PASS |
+| **CASE-009** | 3581141 | `uncertain` | `uncertain` | `card_not_present_fraud` | `undocumented` | 0.737 | True | 30/30 | DIVERGENT (EXPLAINED) |
+| **CASE-010** | 3506725 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.933 | True | 30/30 | PASS |
+| **CASE-011** | 3583368 | `fraud` | `fraud` | `card_not_present_fraud` | `card_testing` | 0.946 | False | 30/30 | DIVERGENT (EXPLAINED) |
+| **CASE-012** | 3553342 | `uncertain` | `uncertain` | `none` | `none` | 0.231 | False | 30/30 | PASS |
+| **CASE-013** | 3526826 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.930 | True | 30/30 | PASS |
+| **CASE-014** | 3478561 | `fraud` | `uncertain` | `card_not_present_new_device` | `card_not_present_new_device` | 0.528 | False | 30/30 | PASS (PATTERN) |
+| **CASE-015** | 3464869 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.941 | True | 30/30 | PASS |
+| **CASE-016** | 3534820 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.933 | True | 30/30 | PASS |
+| **CASE-017** | 3450629 | `fraud` | `fraud` | `card_not_present_fraud` | `card_not_present_fraud` | 0.923 | True | 30/30 | PASS |
+| **CASE-018** | 3491361 | `uncertain` | `uncertain` | `card_not_present_fraud` | `card_not_present_fraud` | 0.833 | False | 30/30 | PASS |
+| **CASE-019** | 3503878 | `fraud` | `fraud` | `account_takeover` | `account_takeover` | 0.940 | True | 30/30 | PASS |
+| **CASE-020** | 3509359 | `fraud` | `fraud` | `card_not_present_new_device` | `card_not_present_new_device` | 0.931 | True | 30/30 | PASS |
 
 ---
 
 ## 3. Evidence Strength Analysis
 
 ### Strongest Evidence Signals Observed
-1. **Multi-Card Device Sharing:** Identified in `HHG-006`, `HHG-014`, `HHG-017`. Graph query `get_accounts_sharing_device` uncovered clusters sharing identical browser/OS footprints with 20+ other cards and prior confirmed fraud cases (`CC-0007`, `CC-0031`, `CC-0075`).
-2. **Card-Not-Present New Device Burst:** In `HHG-005`, `HHG-010`, `HHG-013`, `HHG-015`, `HHG-016`, `HHG-020`. Transaction identity records flagged `id_15="New"` combined with high online velocity and customer report denial.
-3. **Account Takeover Anomalies:** In `HHG-019`, cross-channel discrepancy (online authorization amidst mixed identity indicators) and anomalous match statuses provided unambiguous ATO evidence.
+1. **Multi-Card Device Sharing:** Identified in `CASE-006`, `CASE-014`, `CASE-017`. Graph query `get_accounts_sharing_device` uncovered clusters sharing identical browser/OS footprints with 20+ other cards and prior confirmed fraud cases (`CC-0007`, `CC-0031`, `CC-0075`).
+2. **Card-Not-Present New Device Burst:** In `CASE-005`, `CASE-010`, `CASE-013`, `CASE-015`, `CASE-016`, `CASE-020`. Transaction identity records flagged `id_15="New"` combined with high online velocity and customer report denial.
+3. **Account Takeover Anomalies:** In `CASE-019`, cross-channel discrepancy (online authorization amidst mixed identity indicators) and anomalous match statuses provided unambiguous ATO evidence.
 
 ### Weakest / Most Ambiguous Evidence Signals Observed
-1. **Unaccompanied Risk Scores on Low Amounts:** In `HHG-001`, `HHG-002`, `HHG-012`, the model score triggered an alert (0.55-0.79) on ordinary transaction amounts ($30-$77), but live TigerGraph card history revealed normal historical spending patterns with no multi-device linkages. The agent correctly recognized insufficient evidence and refrained from aggressive blocking without customer confirmation.
-2. **Customer Validation Non-Response:** For cases without customer reports where customer validation was simulated (`HHG-001`, `HHG-002`, `HHG-007`, `HHG-012`), the 24-hour timeout resulted in residual uncertainty, appropriately preventing automatic case closure.
+1. **Unaccompanied Risk Scores on Low Amounts:** In `CASE-001`, `CASE-002`, `CASE-012`, the model score triggered an alert (0.55-0.79) on ordinary transaction amounts ($30-$77), but live TigerGraph card history revealed normal historical spending patterns with no multi-device linkages. The agent correctly recognized insufficient evidence and refrained from aggressive blocking without customer confirmation.
+2. **Customer Validation Non-Response:** For cases without customer reports where customer validation was simulated (`CASE-001`, `CASE-002`, `CASE-007`, `CASE-012`), the 24-hour timeout resulted in residual uncertainty, appropriately preventing automatic case closure.
 
 ---
 

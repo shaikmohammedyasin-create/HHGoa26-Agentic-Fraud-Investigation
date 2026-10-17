@@ -60,7 +60,7 @@ class TestEvidenceIndependence:
         assert independent_evidence_count(evs) == 2
 
     def test_orchestrator_uses_real_independence(self):
-        case = run_investigation("HHG-002", force=True)
+        case = run_investigation("CASE-002", force=True)
         # The recorded stop reason must cite either decisive probabilities with
         # evidence families, or the borderline/escalation path — never the old
         # broken "independent evidence sources" phrasing with source counts.
@@ -243,7 +243,7 @@ class TestHumanInTheLoop:
         prev = settings.evidence_request_mode
         try:
             settings.evidence_request_mode = "human_in_loop"
-            case = run_investigation("HHG-002", force=True)
+            case = run_investigation("CASE-002", force=True)
             # Must have paused at the request stage
             assert case.state.value in ("MORE_EVIDENCE_REQUIRED", "EVIDENCE_REQUESTED")
             pending = [r for r in case.evidence_requests if r.status == "pending"]
@@ -251,7 +251,7 @@ class TestHumanInTheLoop:
             assert pending[0].origin == "simulated" or pending[0].assumed_response == ""
 
             # Submit a human response: investigation must resume to completion
-            done = submit_evidence("HHG-002", "", "Customer confirms they made this purchase.")
+            done = submit_evidence("CASE-002", "", "Customer confirms they made this purchase.")
             assert done.state.value == "COMPLETED"
             got = [r for r in done.evidence_requests if r.status == "received"]
             assert got and got[0].origin == "human_in_loop"
@@ -261,14 +261,14 @@ class TestHumanInTheLoop:
 
     def test_submit_without_pending_request_rejected(self):
         with pytest.raises(ValueError):
-            submit_evidence("HHG-002", "", "irrelevant", origin="human_in_loop")
+            submit_evidence("CASE-002", "", "irrelevant", origin="human_in_loop")
 
 
 # ─── Approval execution ────────────────────────────────────────────────────────
 
 class TestApprovalExecution:
     def _case_with_approval(self):
-        case = run_investigation("HHG-003", force=True)
+        case = run_investigation("CASE-003", force=True)
         pending_aprs = [a for a in case.approvals if a.status == "pending"]
         return case, pending_aprs
 
@@ -311,19 +311,19 @@ class TestApprovalExecution:
 
 class TestAdaptiveOrchestratorEndToEnd:
     def test_plan_trace_recorded(self):
-        case = run_investigation("HHG-014", force=True)
+        case = run_investigation("CASE-014", force=True)
         rounds = [p for p in case.plan_trace if p.get("round") != "signals"]
         assert len(rounds) >= 2
         assert all(p.get("tools") for p in rounds)
 
     def test_evidence_request_has_info_value(self):
-        case = run_investigation("HHG-014", force=True)
+        case = run_investigation("CASE-014", force=True)
         for r in case.evidence_requests:
             assert r.info_value >= settings.min_evidence_info_value
             assert r.rationale
             assert r.decision_relevance
 
     def test_written_to_graph_with_device_edge(self):
-        case = run_investigation("HHG-014", force=True)
+        case = run_investigation("CASE-014", force=True)
         assert case.written_to_graph is True
         assert case.connected_device_profiles  # IC_ON_DEVICE edges source data

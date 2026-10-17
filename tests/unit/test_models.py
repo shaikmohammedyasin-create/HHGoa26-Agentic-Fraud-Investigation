@@ -11,7 +11,7 @@ from datetime import datetime
 
 def _trigger(**overrides):
     defaults = dict(
-        case_id="HHG-T01",
+        case_id="CASE-T01",
         opened_at=datetime(2016, 12, 1),
         trigger_type=TriggerType.risk_score,
         trigger_text="test trigger",
@@ -26,14 +26,14 @@ def _trigger(**overrides):
 
 def test_trigger_record_happy():
     t = _trigger()
-    assert t.case_id == "HHG-T01"
+    assert t.case_id == "CASE-T01"
     assert t.risk_score == 0.6
 
 
 def test_investigation_case_defaults():
     t = _trigger()
     case = InvestigationCase(
-        case_id="HHG-T01",
+        case_id="CASE-T01",
         trigger=t,
         customer_id=t.customer_id,
         card_id=t.card_id,

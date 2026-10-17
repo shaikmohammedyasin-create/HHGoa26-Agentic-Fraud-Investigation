@@ -24,7 +24,7 @@ from backend.models import (
 
 @pytest.fixture(scope="module")
 def completed_case():
-    return run_investigation("HHG-002", force=True)
+    return run_investigation("CASE-002", force=True)
 
 
 class TestRetrievalIsReal:

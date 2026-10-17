@@ -1,5 +1,5 @@
 {
-  "case_id": "HHG-006",
+  "case_id": "CASE-006",
   "case": {
     "status": "closed_fraud",
     "verdict": "fraud",
@@ -154,9 +154,9 @@
       "CC-5542",
       "CC-5513"
     ],
-    "summary": "Case HHG-006 investigated card_not_present_fraud activity on card C07297-K1 (customer C07297) around transaction 3476682 ($482.12, online). Assessed fraud probability 0.94 (CRITICAL risk) from 9 evidence items across 3 independent sources. Key signals: 4 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-006 investigated card_not_present_fraud activity on card C07297-K1 (customer C07297) around transaction 3476682 ($482.12, online). Assessed fraud probability 0.94 (CRITICAL risk) from 9 evidence items across 3 independent sources. Key signals: 4 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-HHG-006"
+    "graph_case_id": "CASE-2016-CASE-006"
   },
   "evidence_requests": [
     {
@@ -233,7 +233,7 @@
   "latency_s": 20.55,
   "investigation_trace": {
     "1_trigger": {
-      "case_id": "HHG-006",
+      "case_id": "CASE-006",
       "trigger_type": "customer_report",
       "trigger_text": "Customer C07297 message: 'I never made this $482.12 purchase. Please check my card.' Refers to 3476682.",
       "flagged_txn_id": "3476682",
@@ -574,9 +574,9 @@
     },
     "12_persistence_and_summary": {
       "written_to_graph": true,
-      "graph_case_id": "CASE-2016-HHG-006",
+      "graph_case_id": "CASE-2016-CASE-006",
       "audit_events_count": 84,
-      "summary": "Case HHG-006 investigated card_not_present_fraud activity on card C07297-K1 (customer C07297) around transaction 3476682 ($482.12, online). Assessed fraud probability 0.94 (CRITICAL risk) from 9 evidence items across 3 independent sources. Key signals: 4 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+      "summary": "Case CASE-006 investigated card_not_present_fraud activity on card C07297-K1 (customer C07297) around transaction 3476682 ($482.12, online). Assessed fraud probability 0.94 (CRITICAL risk) from 9 evidence items across 3 independent sources. Key signals: 4 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
       "tokens_used": 0,
       "latency_s": 20.55
     }

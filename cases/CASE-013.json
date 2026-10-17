@@ -1,0 +1,238 @@
+{
+  "case_id": "CASE-013",
+  "case": {
+    "status": "closed_fraud",
+    "verdict": "fraud",
+    "fraud_probability": 0.93,
+    "pattern": "card_not_present_new_device",
+    "pattern_description": "Device marked New for this account",
+    "affected_txn_ids": [
+      "3526826"
+    ],
+    "first_suspicious_txn_id": "3526826",
+    "connected_card_ids": [
+      "C09657-K2",
+      "C08836-K1",
+      "C05704-K2",
+      "C12897-K1",
+      "C08958-K1",
+      "C08601-K1",
+      "C11137-K1",
+      "C03157-K1",
+      "C02332-K1",
+      "C02545-K2"
+    ],
+    "connected_device_profiles": [
+      "Windows | unknown | chrome 66.0 | unknown"
+    ],
+    "exposure_usd": 35.66,
+    "evidence": [
+      {
+        "claim": "Trigger (risk_score): Real-time model scored transaction 3526826 ($35.66, online) at 0.76. Review and decide.",
+        "source": "external",
+        "ref": "trigger:risk_score",
+        "entity_ids": [
+          "C07671",
+          "C07671-K2",
+          "3526826"
+        ]
+      },
+      {
+        "claim": "50 previous transactions retrieved for card C07671-K2. Average amount: $112.41.",
+        "source": "graph",
+        "ref": "query:card_transaction_history(card_id=C07671-K2)",
+        "entity_ids": [
+          "C07671-K2"
+        ]
+      },
+      {
+        "claim": "Device marked 'New' for this account: Windows | unknown | chrome 66.0 | unknown.",
+        "source": "graph",
+        "ref": "query:transaction_identity(txn_id=3526826)",
+        "entity_ids": [
+          "3526826"
+        ]
+      },
+      {
+        "claim": "Device profile shared across 20 other card(s): C09657-K2, C08836-K1, C05704-K2, C12897-K1, C08958-K1.",
+        "source": "graph",
+        "ref": "query:accounts_sharing_device(device=Windows | unknown | chrome 66.0 | unknown)",
+        "entity_ids": [
+          "C09657-K2",
+          "C08836-K1",
+          "C05704-K2",
+          "C12897-K1",
+          "C08958-K1",
+          "C08601-K1",
+          "C11137-K1",
+          "C03157-K1",
+          "C02332-K1",
+          "C02545-K2"
+        ]
+      },
+      {
+        "claim": "13 prior confirmed fraud case(s) found for customer C07671 or card C07671-K2: CC-4294, CC-3216, CC-1475, CC-5548, CC-5553.",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=C07671)",
+        "entity_ids": [
+          "CC-4294",
+          "CC-3216",
+          "CC-1475",
+          "CC-5548",
+          "CC-5553"
+        ]
+      },
+      {
+        "claim": "Device profile 'Windows | unknown | chrome 66.0 | unknown' appears in 10 confirmed fraud case(s).",
+        "source": "graph",
+        "ref": "query:closed_cases_by_device(device=Windows | unknown | chrome 66.0 | unknown)",
+        "entity_ids": [
+          "CC-5548",
+          "CC-5553",
+          "CC-5517",
+          "CC-5499",
+          "CC-5439"
+        ]
+      },
+      {
+        "claim": "20 prior closed case(s) retrieved by pattern (card_not_present_new_device) and keyword match over analyst notes.",
+        "source": "document",
+        "ref": "retrieval:pattern+keyword(pattern=card_not_present_new_device)",
+        "entity_ids": [
+          "CC-5556",
+          "CC-5541",
+          "CC-5564",
+          "CC-5515",
+          "CC-5528",
+          "CC-5508",
+          "CC-5428",
+          "CC-5434",
+          "CC-5395",
+          "CC-5446"
+        ]
+      },
+      {
+        "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
+        "source": "customer",
+        "ref": "evidence_request:ER-b9554181",
+        "entity_ids": [
+          "C07671"
+        ]
+      }
+    ],
+    "similar_prior_cases": [
+      "CC-4294",
+      "CC-3761",
+      "CC-3216",
+      "CC-1475",
+      "CC-5548",
+      "CC-5553",
+      "CC-5517",
+      "CC-5499",
+      "CC-5439",
+      "CC-5421",
+      "CC-5556",
+      "CC-5541",
+      "CC-5564",
+      "CC-5515",
+      "CC-5528"
+    ],
+    "summary": "Case CASE-013 (Card C07671-K2): The real‑time model flagged transaction 3526826 ($35.66, online) with a risk score of 0.76, yielding a fraud probability of 0.93 and a CRITICAL risk level (evidence [MEDIUM] Trigger (risk_score)). The transaction originated from a “New” Windows/Chrome 66.0 device that is shared with 20 other cards and has appeared in ten confirmed fraud cases (evidence [HIGH] Device marked ‘New’; [CRITICAL] Device profile … appears in 10 confirmed fraud case(s)), and the cardholder has 13 prior confirmed fraud incidents (evidence [HIGH] 13 prior confirmed fraud case(s)); the customer denied making the purchase (evidence [HIGH] Customer response). Accordingly, the deterministic policy actions are applied: BLOCK_CARD (L1): R2 (customer denied), CREATE_CASE (auto): R2, FILE_REPORT (L2): R2 (shared device), and MONITOR_CONNECTED_CARDS (auto): R6 (shared origin detected).",
+    "written_to_graph": true,
+    "graph_case_id": "CASE-2016-CASE-013"
+  },
+  "evidence_requests": [
+    {
+      "type": "customer_validation",
+      "asked_after_step": 4,
+      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession.",
+      "status": "received",
+      "info_value": 1.0,
+      "origin": "simulated",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.93); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.74)",
+      "alternatives_considered": [
+        {
+          "type": "step_up_auth",
+          "info_value": 0.2,
+          "decision_relevance": "Outcome A (Authentication fails — device unknown to cardholder) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.91); Outcome B (Authentication succeeds — device is the cardholder's) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.76)"
+        },
+        {
+          "type": "analyst_info",
+          "info_value": 0.15,
+          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.88); Outcome B (Analyst reports no related activity) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.81)"
+        },
+        {
+          "type": "external_watchlist",
+          "info_value": 0.1,
+          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.88); Outcome B (No watchlist hits) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.83)"
+        }
+      ]
+    }
+  ],
+  "next_best_actions": {
+    "initial": [
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R6: shared device/region/email across multiple cards"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R6: shared origin requires report"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6"
+      }
+    ],
+    "final": [
+      {
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
+      },
+      {
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2: exposure > $1,000 or shared device/region"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: shared origin detected"
+      }
+    ],
+    "what_changed": "Added: BLOCK_CARD"
+  },
+  "sar": {
+    "file": true,
+    "reason": "R6: confirmed fraud connected to shared device profile or card",
+    "narrative": "**Suspicious Activity Report – Case CASE‑013**\n\n1. The subject is customer C07671, holder of payment card C07671‑K2, who was identified as the owner of a Windows desktop using Chrome 66.0 (operating system and screen details unknown) that the system flagged as a “New” device for this account.  \n2. On 9 December 2016 at 02:39:29 UTC, the card was used for an online purchase of $35.66 (transaction ID 3526826).  \n3. The transaction was scored by the real‑time fraud model with a risk score of 0.76, yielding a fraud probability of 0.93 and a critical risk level.  \n4. The device profile associated with this transaction is linked to twenty other cards in the institution’s database and has appeared in ten previously confirmed fraud cases, indicating a shared‑device fraud vector.  \n5. Customer C07671 has previously been the victim of multiple confirmed fraud incidents on the same card (cases CC‑4294, CC‑3216, CC‑1475) involving account takeover and card‑not‑present activity on new devices.  \n6. In a simulated customer response, the cardholder denied making the $35.66 purchase and confirmed that the physical card remains in their possession.  \n7. The combination of a new, high‑risk device, a history of confirmed fraud on the same card and customer, and the device’s reuse in other fraudulent cases makes this activity highly suspicious.  \n8. Accordingly, the incident meets the criteria for a “card_not_present_new_device” pattern and triggers the mandatory actions of blocking the card, creating a case, filing a SAR, and monitoring all cards that share the same device profile.",
+    "subjects": [
+      "C07671",
+      "C07671-K2",
+      "C05704-K2",
+      "C08958-K1",
+      "C08836-K1",
+      "C09657-K2",
+      "C12897-K1",
+      "Windows | unknown | chrome 66.0 | unknown"
+    ],
+    "total_amount_usd": 35.66,
+    "activity_dates": [
+      "2016-12-09",
+      "2016-12-09"
+    ]
+  },
+  "stop_reason": "Fraud probability 0.93 ≥ 0.85 with 8 independent evidence families.",
+  "tool_calls": 16,
+  "tokens": 5016,
+  "latency_s": 34.88
+}

@@ -1,5 +1,5 @@
 {
-  "case_id": "HHG-016",
+  "case_id": "CASE-016",
   "case": {
     "status": "closed_fraud",
     "verdict": "fraud",
@@ -127,9 +127,9 @@
       "CC-3748",
       "CC-3841"
     ],
-    "summary": "Case HHG-016 investigated undocumented activity on card C09988-K1 (customer C09988) around transaction 3534820 ($59.67, online). Assessed fraud probability 0.92 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-016 investigated undocumented activity on card C09988-K1 (customer C09988) around transaction 3534820 ($59.67, online). Assessed fraud probability 0.92 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-HHG-016"
+    "graph_case_id": "CASE-2016-CASE-016"
   },
   "evidence_requests": [
     {
@@ -206,7 +206,7 @@
   "latency_s": 20.48,
   "investigation_trace": {
     "1_trigger": {
-      "case_id": "HHG-016",
+      "case_id": "CASE-016",
       "trigger_type": "customer_report",
       "trigger_text": "Customer C09988 message: 'I never made this $59.67 purchase. Please check my card.' Refers to 3534820.",
       "flagged_txn_id": "3534820",
@@ -530,9 +530,9 @@
     },
     "12_persistence_and_summary": {
       "written_to_graph": true,
-      "graph_case_id": "CASE-2016-HHG-016",
+      "graph_case_id": "CASE-2016-CASE-016",
       "audit_events_count": 100,
-      "summary": "Case HHG-016 investigated undocumented activity on card C09988-K1 (customer C09988) around transaction 3534820 ($59.67, online). Assessed fraud probability 0.92 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+      "summary": "Case CASE-016 investigated undocumented activity on card C09988-K1 (customer C09988) around transaction 3534820 ($59.67, online). Assessed fraud probability 0.92 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation); assumed response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
       "tokens_used": 0,
       "latency_s": 20.48
     }

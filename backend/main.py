@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Header, Query
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from backend.config import settings
@@ -24,6 +25,14 @@ app = FastAPI(
     version="1.0.0",
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.middleware("http")
 async def add_cache_control_header(request, call_next):
@@ -38,7 +47,7 @@ async def add_cache_control_header(request, call_next):
 # ─── Request / Response models ────────────────────────────────────────────────
 
 class InvestigationRequest(BaseModel):
-    case_id: str = Field(..., description="Case ID from case_pack.csv, e.g. HHG-001")
+    case_id: str = Field(..., pattern=r"^[A-Za-z0-9_-]{1,64}$", description="Case ID from case_pack.csv, e.g. CASE-001")
 
 
 class InvestigationSummary(BaseModel):
@@ -49,13 +58,13 @@ class InvestigationSummary(BaseModel):
 
 class ApprovalDecision(BaseModel):
     decision: str = Field(..., pattern="^(approved|rejected)$")
-    approver: str = Field(..., min_length=1)
+    approver: str = Field(..., min_length=1, max_length=128)
 
 
 class EvidenceSubmission(BaseModel):
-    type: str = ""  # optional; must match the pending request when provided
-    response: str = Field(..., min_length=1)
-    origin: str = "human_in_loop"
+    type: str = Field("", max_length=64)
+    response: str = Field(..., min_length=1, max_length=4096)
+    origin: str = Field("human_in_loop", max_length=64)
 
 
 class HealthResponse(BaseModel):

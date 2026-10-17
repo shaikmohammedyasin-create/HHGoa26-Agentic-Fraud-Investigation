@@ -78,7 +78,7 @@ class TestEvidenceProvenance:
         from backend.agents.orchestrator import _ev
         from backend.models import EvidenceSource, RiskLevel
         ev = _ev(
-            "HHG-TEST",
+            "CASE-TEST",
             "Test claim",
             EvidenceSource.graph,
             "query:card_transaction_history(card_id=C123)",
@@ -94,7 +94,7 @@ class TestEvidenceProvenance:
         from backend.agents.orchestrator import _ev
         from backend.models import EvidenceSource
         ev = _ev(
-            "HHG-TEST",
+            "CASE-TEST",
             "Risk score is 0.9",
             EvidenceSource.external,
             "model:risk_score",

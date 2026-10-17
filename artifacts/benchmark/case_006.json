@@ -1,5 +1,5 @@
 {
-  "case_id": "HHG-018",
+  "case_id": "CASE-018",
   "case": {
     "status": "open",
     "verdict": "uncertain",
@@ -115,9 +115,9 @@
       "CC-5513",
       "CC-5548"
     ],
-    "summary": "Case HHG-018 investigated card_not_present_fraud activity on card C02354-K2 (customer C02354) around transaction 3491361 ($39.08, in_person). Assessed fraud probability 0.83 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 12 online transactions in 48h window; 19 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE.",
+    "summary": "Case CASE-018 investigated card_not_present_fraud activity on card C02354-K2 (customer C02354) around transaction 3491361 ($39.08, in_person). Assessed fraud probability 0.83 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 12 online transactions in 48h window; 19 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-HHG-018"
+    "graph_case_id": "CASE-2016-CASE-018"
   },
   "evidence_requests": [
     {
@@ -167,7 +167,7 @@
   "latency_s": 9.65,
   "investigation_trace": {
     "1_trigger": {
-      "case_id": "HHG-018",
+      "case_id": "CASE-018",
       "trigger_type": "customer_report",
       "trigger_text": "Customer C02354 message: 'I never made this $39.08 purchase. Please check my card.' Refers to 3491361.",
       "flagged_txn_id": "3491361",
@@ -449,9 +449,9 @@
     },
     "12_persistence_and_summary": {
       "written_to_graph": true,
-      "graph_case_id": "CASE-2016-HHG-018",
+      "graph_case_id": "CASE-2016-CASE-018",
       "audit_events_count": 110,
-      "summary": "Case HHG-018 investigated card_not_present_fraud activity on card C02354-K2 (customer C02354) around transaction 3491361 ($39.08, in_person). Assessed fraud probability 0.83 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 12 online transactions in 48h window; 19 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE.",
+      "summary": "Case CASE-018 investigated card_not_present_fraud activity on card C02354-K2 (customer C02354) around transaction 3491361 ($39.08, in_person). Assessed fraud probability 0.83 (CRITICAL risk) from 7 evidence items across 3 independent sources. Key signals: 12 online transactions in 48h window; 19 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: Customer reiterates they did not make this purchase and requests it be investigated. Final actions: BLOCK_CARD, CREATE_CASE.",
       "tokens_used": 0,
       "latency_s": 9.65
     }

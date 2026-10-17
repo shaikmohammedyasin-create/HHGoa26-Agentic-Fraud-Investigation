@@ -88,7 +88,7 @@ CHECKPOINTS = [
         and (a["next_best_actions"]["what_changed"] == "nothing")
         == (a["next_best_actions"]["initial"] == a["next_best_actions"]["final"]))),
     ("no_hardcoded_answers", lambda a, ctx: (
-        a["case_id"].startswith("HHG-") and len(a["case"].get("evidence", [])) >= 1
+        a["case_id"].startswith("CASE-") and len(a["case"].get("evidence", [])) >= 1
         and len(a["case"].get("summary", "")) > 10
     )),
 ]
@@ -119,7 +119,7 @@ def validate_all() -> dict:
     report_path = cases_dir / "_benchmark_report.json"
 
     results: list[dict] = []
-    for path in sorted(cases_dir.glob("HHG-*.json")):
+    for path in sorted(cases_dir.glob("CASE-*.json")):
         case_id = path.stem
         answer = json.loads(path.read_text(encoding="utf-8"))
         persisted = app_db.load_investigation(case_id)

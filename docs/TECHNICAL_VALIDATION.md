@@ -17,7 +17,7 @@ Every metric reported is backed by reproducible automated tests, validated JSON 
 
 ## 2. Benchmark Performance (20 Exam Cases)
 
-The official 20-case IEEE-CIS fraud examination pack (`HHG-001` through `HHG-020`) was executed through the complete agentic pipeline:
+The official 20-case IEEE-CIS fraud examination pack (`CASE-001` through `CASE-020`) was executed through the complete agentic pipeline:
 
 | Metric | Target / Baseline | Result | Percentage | Evaluation Note |
 |---|:---:|:---:|:---:|---|

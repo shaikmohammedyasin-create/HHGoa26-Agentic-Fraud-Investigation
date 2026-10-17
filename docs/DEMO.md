@@ -32,7 +32,7 @@ This guide outlines the end-to-end demonstration sequence for experiencing the *
 ---
 
 ### Phase 2: Live Investigation Demonstration (0:45 – 2:00)
-- **Select Case**: From the Case Selector dropdown, select **`HHG-014`**.
+- **Select Case**: From the Case Selector dropdown, select **`CASE-014`**.
 - **Action**: Click the **`Start Live Investigation`** button.
 - **Narrative**:
   > *"Watch the 8-stage causal story ribbon as the agent executes. It ingests the flagged transaction, initializes graph memory, runs live TigerGraph queries—including 2-hop device co-usage traversals—and synthesizes concrete evidence."*
@@ -49,7 +49,7 @@ This guide outlines the end-to-end demonstration sequence for experiencing the *
 - **Visual**: Scroll to the **Risk Analysis** (Noisy-OR decomposition card) and **Uncertainty Loop** cards.
 - **Narrative**:
   > *"Rather than outputting a black-box score, our engine decomposes fraud probability across independent evidence families, balanced against clearing signals."*
-  > *"When the case is borderline, the agent doesn't blindly ask questions. It scores every possible evidence request by expected decision impact — would either answer actually change the recommended action? Only the highest-value request is made. HHG-014 shows customer validation selected at information value 1.0, with the alternatives and their scores displayed."*
+  > *"When the case is borderline, the agent doesn't blindly ask questions. It scores every possible evidence request by expected decision impact — would either answer actually change the recommended action? Only the highest-value request is made. CASE-014 shows customer validation selected at information value 1.0, with the alternatives and their scores displayed."*
 - **Highlight (Human-in-the-Loop)**:
   - Set `EVIDENCE_REQUEST_MODE=human_in_loop` in `.env` before the demo and the agent **pauses** at `MORE_EVIDENCE_REQUIRED`.
   - The Uncertainty tab shows the request with its info value and a response input with quick-fill presets. Submit a response live (or enter a custom simulated response) and watch the reassessment update probability, risk level, and the NBA set in real time.
@@ -70,7 +70,7 @@ This guide outlines the end-to-end demonstration sequence for experiencing the *
 ---
 
 ### Phase 5: Auditability, Memory & Live Benchmark (4:30 – 5:00)
-- **Visual**: Point to the **Graph Case ID** badge (`CASE-2016-HHG-014`) and open the **Benchmark / Validation** tab.
+- **Visual**: Point to the **Graph Case ID** badge (`CASE-2016-CASE-014`) and open the **Benchmark / Validation** tab.
 - **Narrative**:
   > *"Every completed investigation is persisted as an InvestigationCase vertex — linked to customer, card, transactions, and device profile. Future investigations retrieve this memory through the same graph traversal they use for everything else, and prior agent cases feed a dedicated risk channel. The memory loop genuinely closes."*
   > *"The Benchmark tab shows live per-case results loaded from the actual artifacts — 20/20 cases, 600/600 checkpoints, verified by a 257-test suite."*

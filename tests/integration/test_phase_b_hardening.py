@@ -52,7 +52,7 @@ class TestFailureScenarios:
 
     def test_insufficient_evidence_escalates_and_monitors(self):
         """When evidence is insufficient/borderline, policy must not block card; requires review."""
-        res = run_investigation("HHG-001", force=True)
+        res = run_investigation("CASE-001", force=True)
         action_names = [a.action for a in res.nba_final]
         assert Action.BLOCK_ALL_CARDS not in action_names
         assert res.verdict.value in ("uncertain", "legitimate")
@@ -65,7 +65,7 @@ class TestFailureScenarios:
     def test_llm_unavailable_uses_deterministic_fallback(self):
         """When LLM provider is unavailable, fallback deterministic summary is generated."""
         with patch.object(settings, "llm_provider", "none"):
-            res = run_investigation("HHG-001", force=True)
+            res = run_investigation("CASE-001", force=True)
             assert res.llm_used is False
             assert len(res.summary) > 20
             assert "C12382" in res.summary
@@ -82,19 +82,19 @@ class TestFailureScenarios:
 class TestLifecycleAndProvenance:
     def test_case_lifecycle_creation_and_update(self):
         """Verify case vertex can be created and updated in graph memory."""
-        res = run_investigation("HHG-001", force=True)
+        res = run_investigation("CASE-001", force=True)
         assert res.written_to_graph is True
         assert res.graph_case_id.startswith("CASE-")
 
         # Verify audit trail in app_db contains creation and graph persistence events
-        trail = app_db.get_audit_trail("HHG-001")
+        trail = app_db.get_audit_trail("CASE-001")
         event_types = [e["event_type"] for e in trail]
         assert "case_created_in_graph" in event_types
         assert "case_written_to_graph" in event_types
 
     def test_evidence_provenance_integrity(self):
         """Every evidence claim must have a valid non-empty source and reference."""
-        res = run_investigation("HHG-001", force=True)
+        res = run_investigation("CASE-001", force=True)
         for ev in res.evidence:
             assert ev.source is not None
             assert len(ev.claim) > 0

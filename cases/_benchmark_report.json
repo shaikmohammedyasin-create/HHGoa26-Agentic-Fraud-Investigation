@@ -5,7 +5,7 @@
   "elapsed_s": 587.2,
   "results": [
     {
-      "case_id": "HHG-017",
+      "case_id": "CASE-017",
       "verdict": "fraud",
       "fraud_probability": 0.946,
       "pattern": "card_not_present_fraud",
@@ -20,7 +20,7 @@
       "stop_reason": "Fraud probability 0.95 \u2265 0.85 with 10 independent evidence families."
     },
     {
-      "case_id": "HHG-015",
+      "case_id": "CASE-015",
       "verdict": "fraud",
       "fraud_probability": 0.958,
       "pattern": "card_not_present_new_device",
@@ -35,7 +35,7 @@
       "stop_reason": "Fraud probability 0.96 \u2265 0.85 with 9 independent evidence families."
     },
     {
-      "case_id": "HHG-006",
+      "case_id": "CASE-006",
       "verdict": "fraud",
       "fraud_probability": 0.97,
       "pattern": "card_not_present_fraud",
@@ -50,7 +50,7 @@
       "stop_reason": "Fraud probability 0.97 \u2265 0.85 with 10 independent evidence families."
     },
     {
-      "case_id": "HHG-014",
+      "case_id": "CASE-014",
       "verdict": "uncertain",
       "fraud_probability": 0.669,
       "pattern": "card_not_present_new_device",
@@ -65,7 +65,7 @@
       "stop_reason": "Borderline probability 0.67; investigation halted per stopping criteria. Escalated for analyst review."
     },
     {
-      "case_id": "HHG-002",
+      "case_id": "CASE-002",
       "verdict": "uncertain",
       "fraud_probability": 0.427,
       "pattern": "none",
@@ -80,7 +80,7 @@
       "stop_reason": "Borderline probability 0.43; investigation halted per stopping criteria. Escalated for analyst review."
     },
     {
-      "case_id": "HHG-018",
+      "case_id": "CASE-018",
       "verdict": "uncertain",
       "fraud_probability": 0.833,
       "pattern": "card_not_present_fraud",
@@ -95,7 +95,7 @@
       "stop_reason": "stopping criteria met; no further evidence request is decision-relevant"
     },
     {
-      "case_id": "HHG-019",
+      "case_id": "CASE-019",
       "verdict": "fraud",
       "fraud_probability": 0.958,
       "pattern": "account_takeover",
@@ -110,7 +110,7 @@
       "stop_reason": "Fraud probability 0.96 \u2265 0.85 with 9 independent evidence families."
     },
     {
-      "case_id": "HHG-010",
+      "case_id": "CASE-010",
       "verdict": "fraud",
       "fraud_probability": 0.953,
       "pattern": "card_not_present_new_device",
@@ -125,7 +125,7 @@
       "stop_reason": "Fraud probability 0.95 \u2265 0.85 with 9 independent evidence families."
     },
     {
-      "case_id": "HHG-020",
+      "case_id": "CASE-020",
       "verdict": "fraud",
       "fraud_probability": 0.952,
       "pattern": "card_not_present_new_device",
@@ -140,7 +140,7 @@
       "stop_reason": "Fraud probability 0.95 \u2265 0.85 with 9 independent evidence families."
     },
     {
-      "case_id": "HHG-001",
+      "case_id": "CASE-001",
       "verdict": "uncertain",
       "fraud_probability": 0.429,
       "pattern": "none",
@@ -155,7 +155,7 @@
       "stop_reason": "Borderline probability 0.43; investigation halted per stopping criteria. Escalated for analyst review."
     },
     {
-      "case_id": "HHG-007",
+      "case_id": "CASE-007",
       "verdict": "uncertain",
       "fraud_probability": 0.546,
       "pattern": "card_not_present_fraud",
@@ -170,7 +170,7 @@
       "stop_reason": "Borderline probability 0.55; investigation halted per stopping criteria. Escalated for analyst review."
     },
     {
-      "case_id": "HHG-005",
+      "case_id": "CASE-005",
       "verdict": "fraud",
       "fraud_probability": 0.944,
       "pattern": "card_not_present_new_device",
@@ -185,7 +185,7 @@
       "stop_reason": "Fraud probability 0.94 \u2265 0.85 with 9 independent evidence families."
     },
     {
-      "case_id": "HHG-013",
+      "case_id": "CASE-013",
       "verdict": "fraud",
       "fraud_probability": 0.951,
       "pattern": "card_not_present_new_device",
@@ -200,7 +200,7 @@
       "stop_reason": "Fraud probability 0.95 \u2265 0.85 with 9 independent evidence families."
     },
     {
-      "case_id": "HHG-003",
+      "case_id": "CASE-003",
       "verdict": "uncertain",
       "fraud_probability": 0.763,
       "pattern": "none",
@@ -215,7 +215,7 @@
       "stop_reason": "stopping criteria met; no further evidence request is decision-relevant"
     },
     {
-      "case_id": "HHG-016",
+      "case_id": "CASE-016",
       "verdict": "fraud",
       "fraud_probability": 0.953,
       "pattern": "card_not_present_new_device",
@@ -230,7 +230,7 @@
       "stop_reason": "Fraud probability 0.95 \u2265 0.85 with 9 independent evidence families."
     },
     {
-      "case_id": "HHG-012",
+      "case_id": "CASE-012",
       "verdict": "uncertain",
       "fraud_probability": 0.231,
       "pattern": "none",
@@ -245,7 +245,7 @@
       "stop_reason": "Borderline probability 0.23; investigation halted per stopping criteria. Escalated for analyst review."
     },
     {
-      "case_id": "HHG-008",
+      "case_id": "CASE-008",
       "verdict": "uncertain",
       "fraud_probability": 0.848,
       "pattern": "card_not_present_fraud",
@@ -260,7 +260,7 @@
       "stop_reason": "stopping criteria met; no further evidence request is decision-relevant"
     },
     {
-      "case_id": "HHG-009",
+      "case_id": "CASE-009",
       "verdict": "uncertain",
       "fraud_probability": 0.737,
       "pattern": "undocumented",
@@ -275,7 +275,7 @@
       "stop_reason": "stopping criteria met; no further evidence request is decision-relevant"
     },
     {
-      "case_id": "HHG-011",
+      "case_id": "CASE-011",
       "verdict": "fraud",
       "fraud_probability": 0.963,
       "pattern": "card_testing",
@@ -290,7 +290,7 @@
       "stop_reason": "Fraud probability 0.96 \u2265 0.85 with 10 independent evidence families."
     },
     {
-      "case_id": "HHG-004",
+      "case_id": "CASE-004",
       "verdict": "fraud",
       "fraud_probability": 0.889,
       "pattern": "card_not_present_fraud",

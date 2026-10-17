@@ -6,9 +6,9 @@
   "cases_with_failures": [],
   "results": [
     {
-      "case_id": "HHG-001",
+      "case_id": "CASE-001",
       "verdict": "legitimate",
-      "fraud_probability": 0.15,
+      "fraud_probability": 0.137,
       "pattern": "none",
       "status": "closed_legitimate",
       "written_to_graph": true,
@@ -23,7 +23,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-002",
+      "case_id": "CASE-002",
       "verdict": "legitimate",
       "fraud_probability": 0.05,
       "pattern": "none",
@@ -40,7 +40,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-003",
+      "case_id": "CASE-003",
       "verdict": "legitimate",
       "fraud_probability": 0.122,
       "pattern": "none",
@@ -57,7 +57,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-004",
+      "case_id": "CASE-004",
       "verdict": "fraud",
       "fraud_probability": 0.922,
       "pattern": "card_not_present_fraud",
@@ -74,7 +74,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-005",
+      "case_id": "CASE-005",
       "verdict": "fraud",
       "fraud_probability": 0.952,
       "pattern": "card_not_present_new_device",
@@ -91,7 +91,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-006",
+      "case_id": "CASE-006",
       "verdict": "fraud",
       "fraud_probability": 0.96,
       "pattern": "card_not_present_fraud",
@@ -108,7 +108,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-007",
+      "case_id": "CASE-007",
       "verdict": "legitimate",
       "fraud_probability": 0.15,
       "pattern": "none",
@@ -125,7 +125,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-008",
+      "case_id": "CASE-008",
       "verdict": "fraud",
       "fraud_probability": 0.894,
       "pattern": "card_not_present_fraud",
@@ -142,7 +142,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-009",
+      "case_id": "CASE-009",
       "verdict": "fraud",
       "fraud_probability": 0.849,
       "pattern": "undocumented",
@@ -159,7 +159,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-010",
+      "case_id": "CASE-010",
       "verdict": "fraud",
       "fraud_probability": 0.953,
       "pattern": "card_not_present_new_device",
@@ -176,7 +176,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-011",
+      "case_id": "CASE-011",
       "verdict": "fraud",
       "fraud_probability": 0.928,
       "pattern": "card_not_present_fraud",
@@ -193,7 +193,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-012",
+      "case_id": "CASE-012",
       "verdict": "legitimate",
       "fraud_probability": 0.05,
       "pattern": "none",
@@ -210,7 +210,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-013",
+      "case_id": "CASE-013",
       "verdict": "fraud",
       "fraud_probability": 0.93,
       "pattern": "card_not_present_new_device",
@@ -227,7 +227,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-014",
+      "case_id": "CASE-014",
       "verdict": "fraud",
       "fraud_probability": 0.528,
       "pattern": "undocumented",
@@ -244,7 +244,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-015",
+      "case_id": "CASE-015",
       "verdict": "fraud",
       "fraud_probability": 0.958,
       "pattern": "card_not_present_new_device",
@@ -261,7 +261,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-016",
+      "case_id": "CASE-016",
       "verdict": "fraud",
       "fraud_probability": 0.953,
       "pattern": "card_not_present_new_device",
@@ -278,7 +278,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-017",
+      "case_id": "CASE-017",
       "verdict": "fraud",
       "fraud_probability": 0.946,
       "pattern": "card_not_present_fraud",
@@ -295,7 +295,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-018",
+      "case_id": "CASE-018",
       "verdict": "fraud",
       "fraud_probability": 0.833,
       "pattern": "card_not_present_fraud",
@@ -312,7 +312,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-019",
+      "case_id": "CASE-019",
       "verdict": "fraud",
       "fraud_probability": 0.958,
       "pattern": "account_takeover",
@@ -329,7 +329,7 @@
       "failed_checkpoints": []
     },
     {
-      "case_id": "HHG-020",
+      "case_id": "CASE-020",
       "verdict": "fraud",
       "fraud_probability": 0.952,
       "pattern": "card_not_present_new_device",

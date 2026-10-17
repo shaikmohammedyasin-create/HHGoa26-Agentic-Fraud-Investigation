@@ -6,10 +6,10 @@
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python"></a>
   <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-REST%20API-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
   <a href="https://www.tigergraph.com/"><img src="https://img.shields.io/badge/TigerGraph-Savanna%20Cloud-F36C21" alt="TigerGraph"></a>
-  <a href="./docs/TECHNICAL_VALIDATION.md"><img src="https://img.shields.io/badge/Tests-257%20Passed-2E7D32" alt="Tests"></a>
+  <a href="./docs/TECHNICAL_VALIDATION.md"><img src="https://img.shields.io/badge/Tests-257%20Total%20%7C%20248%20Passed-2E7D32" alt="Tests"></a>
   <a href="./artifacts/benchmark/benchmark_report.md"><img src="https://img.shields.io/badge/Checkpoints-600%2F600%20Verified-2E7D32" alt="Checkpoints"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
-  <a href="./docs/DEMO.md"><img src="https://img.shields.io/badge/Workflow-Production%20Ready-0B5A3C" alt="Status"></a>
+  <a href="./docs/DEMO.md"><img src="https://img.shields.io/badge/Workflow-Enterprise%20Reference-0B5A3C" alt="Status"></a>
 </p>
 
 ---
@@ -244,9 +244,11 @@ The autonomous investigation engine executes through an iterative, evidence-grou
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/shaikmohammedyasin-create/agentic-fraud-investigation.git
+git clone https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation.git agentic-fraud-investigation
 cd agentic-fraud-investigation
 ```
+
+> ℹ️ **Repository Name Note:** The active GitHub repository URL is currently `https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation.git`. To complete the project URL transition to `https://github.com/shaikmohammedyasin-create/agentic-fraud-investigation.git`, update the repository name in **GitHub Settings → General → Repository Name**.
 
 ### 2. Set up a virtual environment
 
@@ -407,7 +409,7 @@ A typical investigation through the Command Center proceeds as follows:
 [7. Persist Memory] ◀── [6. Authorize Action] ◀── [5. Reassess Risk] ◀──────────┘
 ```
 
-1. **Select Dossier**: Choose an active case (e.g., `HHG-014` or `HHG-006`) from the Case Selector.
+1. **Select Dossier**: Choose an active case (e.g., `CASE-014` or `CASE-006`) from the Case Selector.
 2. **Review Trigger Context**: View flagged transaction details, transaction amount, merchant channel, and upstream risk scores.
 3. **Execute Live Investigation**: Click **Start Live Investigation** to trigger agent traversal.
 4. **Inspect Graph Topology**: Use the interactive canvas to inspect nodes (Customer, Card, Transaction, DeviceProfile) and identify sharing links.

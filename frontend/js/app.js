@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       if (cases.length > 0) {
-        const defaultCase = cases.find(c => c.case_id === 'HHG-006') || cases[0];
+        const defaultCase = cases.find(c => c.case_id === 'CASE-006') || cases[0];
         await selectCase(defaultCase.case_id);
       }
     } catch (e) {

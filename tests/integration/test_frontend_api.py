@@ -33,12 +33,12 @@ class TestFrontendAPI:
 
     def test_get_full_investigation_existing(self, client):
         """GET /api/investigations/{case_id}/full must return rich internal case model."""
-        # Ensure HHG-001 is investigated
-        run_investigation("HHG-001", force=False)
-        r = client.get("/api/investigations/HHG-001/full")
+        # Ensure CASE-001 is investigated
+        run_investigation("CASE-001", force=False)
+        r = client.get("/api/investigations/CASE-001/full")
         assert r.status_code == 200
         data = r.json()
-        assert data["case_id"] == "HHG-001"
+        assert data["case_id"] == "CASE-001"
         assert "verdict" in data
         assert "fraud_probability" in data
         assert "pattern" in data
@@ -55,7 +55,7 @@ class TestFrontendAPI:
 
     def test_get_investigation_graph_structure(self, client):
         """GET /api/investigations/{case_id}/graph must return valid node-link subgraph."""
-        r = client.get("/api/investigations/HHG-001/graph")
+        r = client.get("/api/investigations/CASE-001/graph")
         assert r.status_code == 200
         graph_data = r.json()
         assert "nodes" in graph_data
@@ -68,13 +68,13 @@ class TestFrontendAPI:
 
     def test_investigation_timeline_and_evidence(self, client):
         """GET /investigations/{case_id}/timeline and /evidence must return valid lists."""
-        r_ev = client.get("/investigations/HHG-001/evidence")
+        r_ev = client.get("/investigations/CASE-001/evidence")
         assert r_ev.status_code == 200
         evidence = r_ev.json()
         assert isinstance(evidence, list)
         assert len(evidence) >= 1
 
-        r_time = client.get("/investigations/HHG-001/timeline")
+        r_time = client.get("/investigations/CASE-001/timeline")
         assert r_time.status_code == 200
         timeline = r_time.json()
         assert isinstance(timeline, list)
@@ -83,23 +83,23 @@ class TestFrontendAPI:
     def test_approval_decision_workflow(self, client):
         """POST /investigations/{case_id}/approvals/{approval_id} must update decision."""
         # Create an approval if none exists
-        approvals = app_db.list_pending_approvals("HHG-001")
+        approvals = app_db.list_pending_approvals("CASE-001")
         if not approvals:
             from backend.models import ApprovalRequest, Action, ApprovalRoute
             apr = ApprovalRequest(
-                case_id="HHG-001",
-                action=Action.block_card,
+                case_id="CASE-001",
+                action=Action.BLOCK_CARD,
                 reason="Test approval",
                 required_route=ApprovalRoute.L1,
             )
-            app_db.save_approval(apr.approval_id, "HHG-001", apr.model_dump(mode="json"))
+            app_db.save_approval(apr.approval_id, "CASE-001", apr.model_dump(mode="json"))
             approval_id = apr.approval_id
         else:
             approval_id = approvals[0]["approval_id"]
 
         # Approve
         r = client.post(
-            f"/investigations/HHG-001/approvals/{approval_id}",
+            f"/investigations/CASE-001/approvals/{approval_id}",
             json={"decision": "approved", "approver": "TestAnalyst-L1"}
         )
         assert r.status_code == 200

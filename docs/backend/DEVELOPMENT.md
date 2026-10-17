@@ -42,8 +42,8 @@ Health: `http://127.0.0.1:8000/health`
 ```bash
 curl -X POST http://127.0.0.1:8000/investigations \
   -H "Content-Type: application/json" \
-  -H "Idempotency-Key: demo-HHG-001" \
-  -d "{\"case_id\": \"HHG-001\"}"
+  -H "Idempotency-Key: demo-CASE-001" \
+  -d "{\"case_id\": \"CASE-001\"}"
 ```
 
 Or run the pack:
@@ -52,7 +52,7 @@ Or run the pack:
 python -m backend.evaluation.run_benchmark
 ```
 
-Writes `cases/HHG-001.json` … `cases/HHG-020.json`.
+Writes `cases/CASE-001.json` … `cases/CASE-020.json`.
 
 ## Tests
 
@@ -80,4 +80,4 @@ GSQL lives in `tigergraph/`. MCP: follow https://github.com/tigergraph/tigergrap
 
 - `development` allows the local graph store.
 - `production` refuses to start without TigerGraph health = ok (see `backend/config.py`).
-- Benchmark always uses the same orchestrator; it never special-cases `HHG-*` IDs.
+- Benchmark always uses the same orchestrator; it never special-cases `CASE-*` IDs.

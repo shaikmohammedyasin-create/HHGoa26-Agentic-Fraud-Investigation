@@ -1,5 +1,5 @@
 {
-  "case_id": "HHG-007",
+  "case_id": "CASE-007",
   "case": {
     "status": "escalated",
     "verdict": "uncertain",
@@ -98,9 +98,9 @@
       "CC-5542",
       "CC-5513"
     ],
-    "summary": "Case HHG-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 3 independent sources. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+    "summary": "Case CASE-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 3 independent sources. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-HHG-007"
+    "graph_case_id": "CASE-2016-CASE-007"
   },
   "evidence_requests": [
     {
@@ -150,7 +150,7 @@
   "latency_s": 10.9,
   "investigation_trace": {
     "1_trigger": {
-      "case_id": "HHG-007",
+      "case_id": "CASE-007",
       "trigger_type": "risk_score",
       "trigger_text": "Real-time model scored transaction 3514948 ($111.92, in billing region 264.0) at 0.87. Review and decide.",
       "flagged_txn_id": "3514948",
@@ -418,9 +418,9 @@
     },
     "12_persistence_and_summary": {
       "written_to_graph": true,
-      "graph_case_id": "CASE-2016-HHG-007",
+      "graph_case_id": "CASE-2016-CASE-007",
       "audit_events_count": 110,
-      "summary": "Case HHG-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 3 independent sources. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
+      "summary": "Case CASE-007 investigated card_not_present_fraud activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.55 (MEDIUM risk) from 6 evidence items across 3 independent sources. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation); assumed response: No response received within the 24-hour window. Final actions: MONITOR_CARD, DECLINE_TRANSACTION.",
       "tokens_used": 0,
       "latency_s": 10.9
     }

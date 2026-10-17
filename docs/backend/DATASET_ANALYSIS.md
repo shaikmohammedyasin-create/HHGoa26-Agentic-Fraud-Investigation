@@ -61,7 +61,7 @@ Based on the suggested schema and data analysis:
 *   `analyst_notes`: Narrative text describing the historical case.
 
 **case_pack.csv**
-*   `case_id`: PK (e.g. HHG-001)
+*   `case_id`: PK (e.g. CASE-001)
 *   `opened_at`: Timestamp.
 *   `trigger_type`: 'risk_score', 'customer_report', 'analyst_request'.
 *   `trigger_text`: The alert message.

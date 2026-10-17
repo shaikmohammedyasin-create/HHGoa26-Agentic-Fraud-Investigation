@@ -123,7 +123,7 @@ class TestRoutingAndExecution:
         assert statuses[Action.FILE_REPORT] == "pending_approval"
 
     def test_end_to_end_case_has_audit_trail(self):
-        case = run_investigation("HHG-003", force=True)
+        case = run_investigation("CASE-003", force=True)
         trail = app_db.get_audit_trail(case.case_id)
         events = {e["event_type"] for e in trail}
         assert "case_created" in events

@@ -26,6 +26,12 @@ class TestSystemEndpoints:
 
 
 class TestInvestigationEndpoints:
+    @pytest.fixture(autouse=True, scope="class")
+    @classmethod
+    def setup_class(cls):
+        from backend.agents.orchestrator import run_investigation
+        run_investigation("CASE-001", force=False)
+
     def test_list_investigations(self, client):
         r = client.get("/investigations?limit=10")
         assert r.status_code == 200
@@ -34,10 +40,10 @@ class TestInvestigationEndpoints:
         assert len(data) > 0
 
     def test_get_investigation_existing(self, client):
-        r = client.get("/investigations/HHG-001")
+        r = client.get("/investigations/CASE-001")
         assert r.status_code == 200
         data = r.json()
-        assert data["case_id"] == "HHG-001"
+        assert data["case_id"] == "CASE-001"
         assert "case" in data
         assert "evidence_requests" in data
         assert "next_best_actions" in data
@@ -47,21 +53,21 @@ class TestInvestigationEndpoints:
         assert r.status_code == 404
 
     def test_get_evidence(self, client):
-        r = client.get("/investigations/HHG-001/evidence")
+        r = client.get("/investigations/CASE-001/evidence")
         assert r.status_code == 200
         data = r.json()
         assert isinstance(data, list)
         assert len(data) >= 1
 
     def test_get_timeline(self, client):
-        r = client.get("/investigations/HHG-001/timeline")
+        r = client.get("/investigations/CASE-001/timeline")
         assert r.status_code == 200
         data = r.json()
         assert isinstance(data, list)
         assert len(data) >= 1
 
     def test_get_approvals(self, client):
-        r = client.get("/investigations/HHG-001/approvals")
+        r = client.get("/investigations/CASE-001/approvals")
         assert r.status_code == 200
         data = r.json()
         assert isinstance(data, list)
@@ -69,9 +75,9 @@ class TestInvestigationEndpoints:
     def test_create_investigation_idempotency(self, client):
         # Post with an idempotency key
         headers = {"Idempotency-Key": "test-key-api-001"}
-        r1 = client.post("/investigations", json={"case_id": "HHG-001"}, headers=headers)
+        r1 = client.post("/investigations", json={"case_id": "CASE-001"}, headers=headers)
         assert r1.status_code == 200
-        r2 = client.post("/investigations", json={"case_id": "HHG-001"}, headers=headers)
+        r2 = client.post("/investigations", json={"case_id": "CASE-001"}, headers=headers)
         assert r2.status_code == 200
         assert r1.json()["case_id"] == r2.json()["case_id"]
 

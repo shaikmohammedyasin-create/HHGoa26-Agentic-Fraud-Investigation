@@ -22,7 +22,7 @@
   "cases_summary": [
     {
       "case_number": 1,
-      "case_id": "HHG-017",
+      "case_id": "CASE-017",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -39,7 +39,7 @@
     },
     {
       "case_number": 2,
-      "case_id": "HHG-015",
+      "case_id": "CASE-015",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -56,7 +56,7 @@
     },
     {
       "case_number": 3,
-      "case_id": "HHG-006",
+      "case_id": "CASE-006",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -73,7 +73,7 @@
     },
     {
       "case_number": 4,
-      "case_id": "HHG-014",
+      "case_id": "CASE-014",
       "expected_verdict": "fraud",
       "actual_verdict": "uncertain",
       "verdict_match": false,
@@ -90,7 +90,7 @@
     },
     {
       "case_number": 5,
-      "case_id": "HHG-002",
+      "case_id": "CASE-002",
       "expected_verdict": "uncertain",
       "actual_verdict": "uncertain",
       "verdict_match": true,
@@ -107,7 +107,7 @@
     },
     {
       "case_number": 6,
-      "case_id": "HHG-018",
+      "case_id": "CASE-018",
       "expected_verdict": "uncertain",
       "actual_verdict": "uncertain",
       "verdict_match": true,
@@ -124,7 +124,7 @@
     },
     {
       "case_number": 7,
-      "case_id": "HHG-019",
+      "case_id": "CASE-019",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -141,7 +141,7 @@
     },
     {
       "case_number": 8,
-      "case_id": "HHG-010",
+      "case_id": "CASE-010",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -158,7 +158,7 @@
     },
     {
       "case_number": 9,
-      "case_id": "HHG-020",
+      "case_id": "CASE-020",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -175,7 +175,7 @@
     },
     {
       "case_number": 10,
-      "case_id": "HHG-001",
+      "case_id": "CASE-001",
       "expected_verdict": "uncertain",
       "actual_verdict": "uncertain",
       "verdict_match": true,
@@ -192,7 +192,7 @@
     },
     {
       "case_number": 11,
-      "case_id": "HHG-007",
+      "case_id": "CASE-007",
       "expected_verdict": "uncertain",
       "actual_verdict": "uncertain",
       "verdict_match": true,
@@ -209,7 +209,7 @@
     },
     {
       "case_number": 12,
-      "case_id": "HHG-005",
+      "case_id": "CASE-005",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -226,7 +226,7 @@
     },
     {
       "case_number": 13,
-      "case_id": "HHG-013",
+      "case_id": "CASE-013",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -243,7 +243,7 @@
     },
     {
       "case_number": 14,
-      "case_id": "HHG-003",
+      "case_id": "CASE-003",
       "expected_verdict": "uncertain",
       "actual_verdict": "uncertain",
       "verdict_match": true,
@@ -260,7 +260,7 @@
     },
     {
       "case_number": 15,
-      "case_id": "HHG-016",
+      "case_id": "CASE-016",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -277,7 +277,7 @@
     },
     {
       "case_number": 16,
-      "case_id": "HHG-012",
+      "case_id": "CASE-012",
       "expected_verdict": "uncertain",
       "actual_verdict": "uncertain",
       "verdict_match": true,
@@ -294,7 +294,7 @@
     },
     {
       "case_number": 17,
-      "case_id": "HHG-008",
+      "case_id": "CASE-008",
       "expected_verdict": "uncertain",
       "actual_verdict": "uncertain",
       "verdict_match": true,
@@ -311,7 +311,7 @@
     },
     {
       "case_number": 18,
-      "case_id": "HHG-009",
+      "case_id": "CASE-009",
       "expected_verdict": "uncertain",
       "actual_verdict": "uncertain",
       "verdict_match": true,
@@ -328,7 +328,7 @@
     },
     {
       "case_number": 19,
-      "case_id": "HHG-011",
+      "case_id": "CASE-011",
       "expected_verdict": "fraud",
       "actual_verdict": "fraud",
       "verdict_match": true,
@@ -345,7 +345,7 @@
     },
     {
       "case_number": 20,
-      "case_id": "HHG-004",
+      "case_id": "CASE-004",
       "expected_verdict": "fraud",
       "actual_verdict": "uncertain",
       "verdict_match": false,
