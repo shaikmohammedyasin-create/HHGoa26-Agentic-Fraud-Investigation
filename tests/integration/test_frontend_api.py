@@ -124,3 +124,20 @@ class TestFrontendAPI:
 
         r_app = client.get("/js/app.js")
         assert r_app.status_code == 200
+
+        # Verify key analyst workspace DOM anchors exist
+        for element_id in [
+            "commandBar", "caseSelect", "btnInvestigate", "tgStatusDot", "dbStatusDot",
+            "triggerCard", "timelineStepper", "assessmentBanner", "verdictBadge",
+            "probBar", "probVal", "patternVal", "exposureVal", "graphCanvas",
+            "graphInspector", "tabEvidence", "tabUncertainty", "tabNba", "tabPersistence",
+            "tabBenchmark", "toastContainer", "healthModal"
+        ]:
+            assert f'id="{element_id}"' in r_root.text
+
+        # Verify enterprise accessibility structure
+        assert 'role="banner"' in r_root.text
+        assert 'role="main"' in r_root.text
+        assert 'role="tablist"' in r_root.text
+        assert 'role="tab"' in r_root.text
+        assert 'role="tabpanel"' in r_root.text

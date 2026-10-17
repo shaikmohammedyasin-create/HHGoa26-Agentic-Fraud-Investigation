@@ -202,17 +202,17 @@ class GraphRenderer {
   }
 
   getNodeColor(type) {
-    // Professional Dark Green + Beige palette: minimal semantic colors
+    // Enterprise Dark Slate investigation palette: high-contrast, functional semantics
     switch (type) {
-      case 'FlaggedTransaction': return '#B84A4A'; // Muted Burgundy (Flagged / Risk)
-      case 'Customer': return '#F3EBDD';           // Warm Beige (Customer)
-      case 'Card': return '#FAF6EC';               // Cream (Card)
-      case 'DeviceProfile': return '#6F9F84';      // Muted Green (Device Profile)
-      case 'ClosedCase': return '#3F765E';         // Forest Green (Previous Case)
-      case 'InvestigationCase': return '#3F765E';  // Forest Green (Case Record)
-      case 'ConnectedCard': return '#D8CCB8';      // Muted Beige (Other Txn / Card)
-      case 'Transaction': return '#D8CCB8';        // Muted Beige (Other Transaction)
-      default: return '#D8CCB8';
+      case 'FlaggedTransaction': return '#EF4444'; // Crimson Red (Flagged Transaction)
+      case 'Customer': return '#3B82F6';           // Cobalt Blue (Customer Anchor)
+      case 'Card': return '#6366F1';               // Indigo (Payment Card)
+      case 'DeviceProfile': return '#F59E0B';      // Amber (Device Hardware / Fingerprint)
+      case 'ClosedCase': return '#8B5CF6';         // Violet (Historical Dispute Case)
+      case 'InvestigationCase': return '#A855F7';  // Purple (Active Case Memory Record)
+      case 'ConnectedCard': return '#06B6D4';      // Cyan (Linked / Syndicate Card)
+      case 'Transaction': return '#64748B';        // Slate (Standard Transaction)
+      default: return '#64748B';
     }
   }
 
@@ -506,7 +506,7 @@ class GraphRenderer {
         const alpha = Math.max(0, (1 - radius / 185) * 0.2);
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(111, 159, 132, ${alpha})`;
+        ctx.strokeStyle = `rgba(59, 130, 246, ${alpha})`;
         ctx.lineWidth = 1;
         ctx.setLineDash([4, 4]);
         ctx.stroke();
@@ -519,37 +519,37 @@ class GraphRenderer {
       const cardX = cx - cardW / 2;
       const cardY = cy - cardH / 2;
 
-      // Card Background (Dark Green)
-      ctx.fillStyle = 'rgba(6, 59, 42, 0.94)';
+      // Card Background (Dark Slate)
+      ctx.fillStyle = 'rgba(16, 22, 34, 0.95)';
       ctx.beginPath();
       if (ctx.roundRect) {
-        ctx.roundRect(cardX, cardY, cardW, cardH, 6);
+        ctx.roundRect(cardX, cardY, cardW, cardH, 4);
       } else {
         ctx.rect(cardX, cardY, cardW, cardH);
       }
       ctx.fill();
 
       // Card Border
-      ctx.strokeStyle = 'rgba(216, 204, 184, 0.25)';
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.35)';
       ctx.lineWidth = 1;
       ctx.stroke();
 
       // Card Header: Title & Progress Pill
       ctx.font = '700 8.5px Inter, sans-serif';
-      ctx.fillStyle = '#FAF6EC';
+      ctx.fillStyle = '#F8FAFC';
       ctx.textAlign = 'left';
-      ctx.fillText('TIGERGRAPH LIVE TRAVERSAL', cardX + 14, cardY + 22);
+      ctx.fillText('LIVE GRAPH TRAVERSAL', cardX + 14, cardY + 22);
 
       const progressText = this.traversalState?.progress || '1/4';
       ctx.font = '700 8.5px JetBrains Mono, monospace';
-      ctx.fillStyle = '#D8CCB8';
+      ctx.fillStyle = '#94A3B8';
       ctx.textAlign = 'right';
       ctx.fillText(progressText, cardX + cardW - 14, cardY + 22);
 
       // Sub-step text
       const subStepText = this.traversalState?.stepText || 'Querying transaction history...';
       ctx.font = '600 10.5px Inter, sans-serif';
-      ctx.fillStyle = '#FFF7DD';
+      ctx.fillStyle = '#60A5FA';
       ctx.textAlign = 'left';
       ctx.fillText(subStepText, cardX + 14, cardY + 46);
 
@@ -557,22 +557,22 @@ class GraphRenderer {
       const elapsed = this.traversalState?.elapsed || 0;
       ctx.font = '500 8px JetBrains Mono, monospace';
       if (elapsed >= 1.5) {
-        ctx.fillStyle = '#C79A32';
-        ctx.fillText(`Waiting for TigerGraph... ${elapsed.toFixed(1)}s`, cardX + 14, cardY + 67);
+        ctx.fillStyle = '#F59E0B';
+        ctx.fillText(`Waiting for graph cluster... ${elapsed.toFixed(1)}s`, cardX + 14, cardY + 67);
       } else {
-        ctx.fillStyle = '#A3B8AD';
+        ctx.fillStyle = '#94A3B8';
         ctx.fillText(`Executing GSQL query traversal (${elapsed.toFixed(1)}s)`, cardX + 14, cardY + 67);
       }
 
       // Compact slim progress bar (height 3px)
       const barY = cardY + cardH - 10;
       const barW = cardW - 28;
-      ctx.fillStyle = 'rgba(216, 204, 184, 0.15)';
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.15)';
       ctx.fillRect(cardX + 14, barY, barW, 3);
 
       const stepNum = this.traversalState?.step || 1;
       const fillW = Math.min(barW, Math.max(12, (stepNum / 4) * barW));
-      ctx.fillStyle = '#3F765E';
+      ctx.fillStyle = '#3B82F6';
       ctx.fillRect(cardX + 14, barY, fillW, 3);
 
       ctx.restore();
@@ -581,8 +581,8 @@ class GraphRenderer {
 
     if (!this.nodes || this.nodes.length === 0) {
       ctx.save();
-      ctx.font = '500 13px Inter, sans-serif';
-      ctx.fillStyle = '#D8CCB8';
+      ctx.font = '500 12px Inter, sans-serif';
+      ctx.fillStyle = '#64748B';
       ctx.textAlign = 'center';
       ctx.fillText('Case graph will populate upon live investigation execution.', this.width / 2, this.height / 2);
       ctx.restore();
@@ -615,10 +615,10 @@ class GraphRenderer {
       ctx.lineTo(link.target.x, link.target.y);
 
       if (hasSelection) {
-        ctx.strokeStyle = isConnected ? '#FFF7DD' : 'rgba(216, 204, 184, 0.05)';
-        ctx.lineWidth = isConnected ? 2.2 : 0.8;
+        ctx.strokeStyle = isConnected ? '#60A5FA' : 'rgba(100, 116, 139, 0.08)';
+        ctx.lineWidth = isConnected ? 2.0 : 0.8;
       } else {
-        ctx.strokeStyle = isSuspicious ? 'rgba(184, 74, 74, 0.65)' : 'rgba(216, 204, 184, 0.16)';
+        ctx.strokeStyle = isSuspicious ? 'rgba(239, 68, 68, 0.75)' : 'rgba(100, 116, 139, 0.28)';
         ctx.lineWidth = isSuspicious ? 1.5 : 0.9;
       }
 
@@ -636,7 +636,7 @@ class GraphRenderer {
         const my = (link.source.y + link.target.y) / 2;
         const label = this.getHumanRelation(link.type);
         ctx.font = isConnected ? '600 8.5px Inter, sans-serif' : '500 7.5px Inter, sans-serif';
-        ctx.fillStyle = isConnected ? '#FFF7DD' : 'rgba(184, 74, 74, 0.75)';
+        ctx.fillStyle = isConnected ? '#93C5FD' : 'rgba(239, 68, 68, 0.85)';
         ctx.textAlign = 'center';
         ctx.fillText(label, mx, my - 2);
       }
@@ -654,11 +654,11 @@ class GraphRenderer {
       // Halo for Flagged or Selected
       if (node.type === 'FlaggedTransaction' || isSelected) {
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius + (isSelected ? 7 : 5), 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, node.radius + (isSelected ? 6 : 4), 0, Math.PI * 2);
         if (node.type === 'FlaggedTransaction') {
-          ctx.fillStyle = 'rgba(184, 74, 74, 0.25)';
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.25)';
         } else {
-          ctx.fillStyle = 'rgba(255, 247, 221, 0.3)';
+          ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
         }
         ctx.fill();
       }
@@ -669,9 +669,9 @@ class GraphRenderer {
       ctx.fillStyle = node.color;
       ctx.fill();
 
-      // Node border: cream outline #FFF7DD for selected
-      ctx.strokeStyle = isSelected ? '#FFF7DD' : (isHovered ? '#FFF7DD' : 'rgba(6, 59, 42, 0.55)');
-      ctx.lineWidth = isSelected ? 3.0 : (isHovered ? 2.0 : 1.2);
+      // Node border
+      ctx.strokeStyle = isSelected ? '#60A5FA' : (isHovered ? '#93C5FD' : '#0B0F17');
+      ctx.lineWidth = isSelected ? 2.5 : (isHovered ? 2.0 : 1.2);
       ctx.stroke();
 
       // Node label: Entity TYPE prominently, ID smaller
@@ -683,13 +683,13 @@ class GraphRenderer {
 
       // Prominent Type
       ctx.font = isSelected ? '700 8.5px Inter, sans-serif' : '600 8px Inter, sans-serif';
-      ctx.fillStyle = isSelected ? '#FFF7DD' : (node.type === 'FlaggedTransaction' ? '#E8B4B4' : '#FAF6EC');
+      ctx.fillStyle = isSelected ? '#93C5FD' : (node.type === 'FlaggedTransaction' ? '#FCA5A5' : '#F1F5F9');
       ctx.textAlign = 'center';
       ctx.fillText(typeName, node.x, node.y + node.radius + 11);
 
       // Smaller ID
       ctx.font = isSelected ? '600 7.5px JetBrains Mono, monospace' : '500 7px JetBrains Mono, monospace';
-      ctx.fillStyle = isSelected ? '#FAF6EC' : '#D8CCB8';
+      ctx.fillStyle = isSelected ? '#FFFFFF' : '#94A3B8';
       ctx.fillText(idName, node.x, node.y + node.radius + 21);
 
       ctx.restore();

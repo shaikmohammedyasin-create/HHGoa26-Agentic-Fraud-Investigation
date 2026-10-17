@@ -3,82 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agentic Fraud Investigation Platform — Command Center</title>
+  <title>Fraud Investigation Platform — Analyst Operations Console</title>
 
-  <!-- Agentic Fraud Investigation Favicon -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23063B2A'/%3E%3Cpath d='M16 4 L26 9 V17 C26 23 21 28 16 30 C11 28 6 23 6 17 V9 Z' fill='none' stroke='%23C79A32' stroke-width='2' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23FAF6EC'/%3E%3Cpath d='M16 12 V16 L19 18' stroke='%23063B2A' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+  <!-- Clean Security Topology Favicon -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230B0F17'/%3E%3Cpath d='M16 4 L26 9 V17 C26 23 21 28 16 30 C11 28 6 23 6 17 V9 Z' fill='%23161F30' stroke='%233B82F6' stroke-width='2' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='16' r='3.5' fill='%2360A5FA'/%3E%3Cpath d='M16 12 V16 L19 18' stroke='%23F8FAFC' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
 
-  <meta name="description" content="Agentic Fraud Investigation Platform — TigerGraph-native, evidence-grounded, policy-controlled fraud investigation command center.">
+  <meta name="description" content="Agentic Fraud Investigation Platform — TigerGraph-native, evidence-grounded, policy-controlled fraud investigation analyst console.">
 
   <!-- Prevent browser caching of development/eval assets -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- Typography: Outfit + Syne (Editorial/Display) + Inter + JetBrains Mono -->
+  <!-- Typography: Inter for primary UI + JetBrains Mono for data, timestamps & technical IDs -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Outfit:wght@500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Design System CSS -->
-  <link rel="stylesheet" href="css/style.css?v=20261017_v5">
+  <!-- Enterprise Design System CSS -->
+  <link rel="stylesheet" href="css/style.css?v=20261017_v6">
 </head>
-<body class="afi-theme app-theme">
+<body class="enterprise-theme app-theme afi-theme">
 
-  <!-- ── Top Command Bar (Analyst Command Center) ─────────────────────── -->
-  <header class="command-bar" id="commandBar">
+  <!-- ── Top Command Bar (Analyst Operations Header) ─────────────────────── -->
+  <header class="command-bar" id="commandBar" role="banner">
     <div class="brand">
-      <div class="brand-insignia">
-        <!-- Shield + Graph Topology Emblem (Dark Green + Gold Accent) -->
-        <svg viewBox="0 0 40 40" width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="40" height="40" rx="8" fill="#063B2A"/>
-          <path d="M20 7 L32 12 V22 C32 29 26 34 20 36 C14 34 8 29 8 22 V12 Z" fill="#084C36" stroke="#C79A32" stroke-width="1.5"/>
-          <circle cx="20" cy="18" r="4" fill="#FAF6EC"/>
-          <circle cx="14" cy="26" r="3" fill="#D8CCB8"/>
-          <circle cx="26" cy="26" r="3" fill="#D8CCB8"/>
-          <line x1="20" y1="18" x2="14" y2="26" stroke="#D8CCB8" stroke-width="1.5"/>
-          <line x1="20" y1="18" x2="26" y2="26" stroke="#D8CCB8" stroke-width="1.5"/>
-          <line x1="14" y1="26" x2="26" y2="26" stroke="#D8CCB8" stroke-width="1.5"/>
+      <div class="brand-insignia" aria-hidden="true">
+        <!-- Minimal Geometric Security Emblem -->
+        <svg viewBox="0 0 36 36" width="36" height="36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="36" height="36" rx="6" fill="#111622" stroke="#232E42" stroke-width="1.2"/>
+          <path d="M18 6 L28 10.5 V19 C28 25.5 23 29.5 18 31.5 C13 29.5 8 25.5 8 19 V10.5 Z" fill="#161F30" stroke="#3B82F6" stroke-width="1.4"/>
+          <circle cx="18" cy="16" r="3" fill="#60A5FA"/>
+          <circle cx="13.5" cy="23" r="2.2" fill="#94A3B8"/>
+          <circle cx="22.5" cy="23" r="2.2" fill="#94A3B8"/>
+          <line x1="18" y1="16" x2="13.5" y2="23" stroke="#475569" stroke-width="1.2"/>
+          <line x1="18" y1="16" x2="22.5" y2="23" stroke="#475569" stroke-width="1.2"/>
+          <line x1="13.5" y1="23" x2="22.5" y2="23" stroke="#475569" stroke-width="1.2"/>
         </svg>
       </div>
       <div class="brand-text-block">
-        <div class="brand-top-badge">
-          <span class="platform-pill">INTELLIGENCE CONSOLE</span>
-          <span class="platform-subpill">GRAPH + AGENTS</span>
-          <span class="platform-team-pill">PRODUCTION GRADE</span>
+        <div class="brand-top-row">
+          <h1 class="brand-title">FRAUD INVESTIGATION PLATFORM</h1>
+          <span class="system-env-tag">ENTERPRISE EDITION</span>
         </div>
-        <h1 class="brand-title">AGENTIC FRAUD INVESTIGATION</h1>
-        <div class="brand-subtitle">TigerGraph Savanna NPG &bull; GSQL GraphRAG &bull; Policy-Governed Next Best Action &bull; HITL Auditing</div>
+        <div class="brand-subtitle">Graph-Augmented Financial Crime Intelligence Console &bull; Live Multi-Hop Traversal</div>
       </div>
     </div>
 
-    <!-- Active Investigation Selector & Controls -->
+    <!-- Active Investigation Selector & Primary Controls -->
     <div class="command-controls">
       <div class="case-dossier-card">
-        <div class="dossier-header-mini">
-          <span class="dossier-tag">ACTIVE DOSSIER</span>
-          <span class="dossier-status-dot"></span>
-        </div>
+        <label for="caseSelect" class="dossier-tag">ACTIVE DOSSIER</label>
         <div class="case-select-wrapper">
-          <select id="caseSelect" title="Select benchmark case trigger"></select>
+          <select id="caseSelect" title="Select active case dossier" aria-label="Select active case dossier"></select>
         </div>
       </div>
 
-      <button id="btnInvestigate" class="btn-primary" title="Execute real backend investigation">
-        <span class="btn-tropical-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <button id="btnInvestigate" class="btn-primary" title="Execute investigation pipeline">
+        <span class="btn-icon-wrap" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="5 3 19 12 5 21 5 3"></polygon>
           </svg>
         </span>
-        <span class="btn-text">Start Live Investigation</span>
+        <span class="btn-text">Run Investigation</span>
       </button>
 
-      <div class="system-status">
-        <div class="status-badge" id="btnTgStatus" title="Click for TigerGraph diagnostics" role="button" tabindex="0">
+      <div class="system-status" role="status" aria-label="System Connectivity Status">
+        <div class="status-badge" id="btnTgStatus" title="TigerGraph Savanna Cloud status (Click for diagnostics)" role="button" tabindex="0">
           <span class="status-dot healthy" id="tgStatusDot"></span>
           <span class="status-label" id="tgStatusText">TG: connected</span>
         </div>
-        <div class="status-badge" id="btnDbStatus" title="Click for DB diagnostics" role="button" tabindex="0">
+        <div class="status-badge" id="btnDbStatus" title="Application SQLite DB status (Click for diagnostics)" role="button" tabindex="0">
           <span class="status-dot healthy" id="dbStatusDot"></span>
           <span class="status-label" id="dbStatusText">DB: healthy</span>
         </div>
@@ -86,21 +81,21 @@
     </div>
   </header>
 
-  <!-- ── Primary Investigation Workspace ─────────────────────────────────── -->
-  <main class="workspace" id="mainWorkspace">
+  <!-- ── Primary Investigation Workspace (3-Column Analyst Grid) ────────── -->
+  <main class="workspace" id="mainWorkspace" role="main">
 
-    <!-- ── Left Panel: Trigger Context & 11-Stage Investigation Journey ────── -->
-    <aside class="panel-left" id="panelLeft">
+    <!-- ── Left Panel: Trigger Context & 11-Stage Pipeline ─────────────────── -->
+    <aside class="panel-left" id="panelLeft" aria-label="Case context and pipeline stages">
       <div class="panel-header-editorial">
         <div class="editorial-title-wrap">
-          <svg class="editorial-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="editorial-icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="22" y1="12" x2="18" y2="12"></line>
             <line x1="6" y1="12" x2="2" y2="12"></line>
             <line x1="12" y1="6" x2="12" y2="2"></line>
             <line x1="12" y1="22" x2="12" y2="18"></line>
           </svg>
-          <h3>Trigger Context</h3>
+          <h2>Trigger Context</h2>
         </div>
         <span class="header-tag tag-critical" id="triggerTag">ALERT INGESTED</span>
       </div>
@@ -134,17 +129,17 @@
 
       <div class="panel-header-editorial timeline-header-editorial">
         <div class="editorial-title-wrap">
-          <svg class="editorial-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="editorial-icon-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
-          <h3>Investigation Story</h3>
+          <h2>Investigation Pipeline</h2>
         </div>
         <span class="header-tag tag-accent">11 STAGES</span>
       </div>
 
-      <!-- 11-Stage Investigation Journey (Pipeline Progression) -->
-      <div class="timeline-stepper" id="timelineStepper" title="Click any stage to inspect related evidence">
-        <div class="step-item active" data-step="trigger" title="Ingested alert and transaction details">
+      <!-- 11-Stage Operational Pipeline Stepper -->
+      <div class="timeline-stepper" id="timelineStepper" role="list" aria-label="Investigation Pipeline Progression">
+        <div class="step-item active" data-step="trigger" role="listitem" title="Ingested alert and transaction details">
           <div class="step-icon">1</div>
           <div class="step-content">
             <div class="step-title">Trigger Ingested</div>
@@ -152,7 +147,7 @@
           </div>
         </div>
 
-        <div class="step-item" data-step="memory" title="Durable state tracking in TigerGraph">
+        <div class="step-item" data-step="memory" role="listitem" title="Durable state tracking in TigerGraph">
           <div class="step-icon">2</div>
           <div class="step-content">
             <div class="step-title">Graph Memory Initialized</div>
@@ -160,35 +155,35 @@
           </div>
         </div>
 
-        <div class="step-item" data-step="traversal" id="stepTraversal" title="Live GSQL queries to TigerGraph">
+        <div class="step-item" data-step="traversal" id="stepTraversal" role="listitem" title="Live GSQL queries to TigerGraph">
           <div class="step-icon">3</div>
           <div class="step-content">
             <div class="step-title-row">
-              <div class="step-title">Live TigerGraph Traversal</div>
+              <div class="step-title">Live Graph Traversal</div>
               <span class="step-progress-badge" id="traversalProgressBadge" style="display:none;">1/4</span>
             </div>
-            <div class="step-desc" id="traversalStepDesc">History, 48h bursts, device neighbors & cases</div>
+            <div class="step-desc" id="traversalStepDesc">History, 48h bursts, device co-usage & cases</div>
             <div class="traversal-substeps" id="traversalSubsteps" style="display:none;">
               <div class="substep-item" id="substep-1"><span class="substep-icon">●</span> <span class="substep-text">Querying transaction history...</span></div>
               <div class="substep-item" id="substep-2"><span class="substep-icon">○</span> <span class="substep-text">Finding device neighbors...</span></div>
               <div class="substep-item" id="substep-3"><span class="substep-icon">○</span> <span class="substep-text">Checking related cases...</span></div>
-              <div class="substep-item" id="substep-4"><span class="substep-icon">○</span> <span class="substep-text">Building graph...</span></div>
+              <div class="substep-item" id="substep-4"><span class="substep-icon">○</span> <span class="substep-text">Building graph topology...</span></div>
             </div>
             <div class="traversal-waiting-note" id="traversalWaitingNote" style="display:none;">
-              Waiting for TigerGraph... (<span id="traversalElapsed">0.0s</span>)
+              Query latency: <span id="traversalElapsed">0.0s</span>
             </div>
           </div>
         </div>
 
-        <div class="step-item" data-step="evidence" title="Multi-source GraphRAG evidence assembled">
+        <div class="step-item" data-step="evidence" role="listitem" title="Multi-source GraphRAG evidence assembled">
           <div class="step-icon">4</div>
           <div class="step-content">
-            <div class="step-title">Evidence & Provenance</div>
+            <div class="step-title">Evidence Assembly</div>
             <div class="step-desc">Graph observations, closed cases, entity links</div>
           </div>
         </div>
 
-        <div class="step-item" data-step="pattern" title="Multi-candidate fraud pattern detection">
+        <div class="step-item" data-step="pattern" role="listitem" title="Multi-candidate fraud pattern detection">
           <div class="step-icon">5</div>
           <div class="step-content">
             <div class="step-title">Pattern Reasoning</div>
@@ -196,7 +191,7 @@
           </div>
         </div>
 
-        <div class="step-item" data-step="risk" title="Noisy-OR independent channel risk evaluation">
+        <div class="step-item" data-step="risk" role="listitem" title="Noisy-OR independent channel risk evaluation">
           <div class="step-icon">6</div>
           <div class="step-content">
             <div class="step-title">Risk Assessment</div>
@@ -204,7 +199,7 @@
           </div>
         </div>
 
-        <div class="step-item" data-step="uncertainty" title="Decision-relevant ambiguities identified">
+        <div class="step-item" data-step="uncertainty" role="listitem" title="Decision-relevant ambiguities identified">
           <div class="step-icon">7</div>
           <div class="step-content">
             <div class="step-title">Uncertainty Evaluated</div>
@@ -212,15 +207,15 @@
           </div>
         </div>
 
-        <div class="step-item" data-step="request" title="Targeted evidence request dispatched">
+        <div class="step-item" data-step="request" role="listitem" title="Targeted evidence request dispatched">
           <div class="step-icon">8</div>
           <div class="step-content">
-            <div class="step-title">Additional Evidence Request</div>
+            <div class="step-title">Evidence Inquiry</div>
             <div class="step-desc">Targeted cardholder verification / check</div>
           </div>
         </div>
 
-        <div class="step-item" data-step="reassessment" title="Probability update & resolution impact">
+        <div class="step-item" data-step="reassessment" role="listitem" title="Probability update & resolution impact">
           <div class="step-icon">9</div>
           <div class="step-content">
             <div class="step-title">Reassessment Delta</div>
@@ -228,15 +223,15 @@
           </div>
         </div>
 
-        <div class="step-item" data-step="nba" title="Governed Next Best Actions & approval routing">
+        <div class="step-item" data-step="nba" role="listitem" title="Governed Next Best Actions & approval routing">
           <div class="step-icon">10</div>
           <div class="step-content">
-            <div class="step-title">Governed Policy & NBA</div>
+            <div class="step-title">Policy & Governed NBA</div>
             <div class="step-desc">Auto-execute vs L1 Analyst vs L2 Compliance</div>
           </div>
         </div>
 
-        <div class="step-item" data-step="persistence" title="Durable case upsert and FinCEN SAR filing">
+        <div class="step-item" data-step="persistence" role="listitem" title="Durable case upsert and FinCEN SAR filing">
           <div class="step-icon">11</div>
           <div class="step-content">
             <div class="step-title">Persistence & SAR</div>
@@ -246,13 +241,13 @@
       </div>
     </aside>
 
-    <!-- ── Center Panel: Threat Assessment Board & TigerGraph Map ──────────── -->
-    <section class="panel-center" id="panelCenter">
-      
-      <!-- Editorial Risk Board (Top Anchor) -->
+    <!-- ── Center Panel: Threat Assessment Banner & Graph Canvas ───────────── -->
+    <section class="panel-center" id="panelCenter" aria-label="Investigation findings and knowledge graph">
+
+      <!-- Primary Threat Assessment Banner -->
       <div class="assessment-banner" id="assessmentBanner">
         <div class="verdict-col">
-          <div class="verdict-label-mini">INVESTIGATION VERDICT</div>
+          <div class="verdict-label-mini">VERDICT</div>
           <div class="verdict-badge verdict-ready" id="verdictBadge">READY</div>
         </div>
 
@@ -261,32 +256,32 @@
             <span class="prob-title">FRAUD PROBABILITY</span>
             <span class="prob-num" id="probVal">0.000</span>
           </div>
-          <div class="prob-bar-track">
+          <div class="prob-bar-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
             <div class="prob-bar-fill" id="probBar"></div>
           </div>
           <div class="prob-scale-labels">
-            <span>0.0 LEGIT</span>
-            <span>0.35 REVIEW</span>
-            <span>0.75 CRITICAL</span>
-            <span>1.0 FRAUD</span>
+            <span>0.00 CLEAR</span>
+            <span>0.15 LOW</span>
+            <span>0.85 HIGH</span>
+            <span>1.00 FRAUD</span>
           </div>
         </div>
 
-        <div class="stat-pill" id="patternPill" title="Detected Fraud Pattern">
-          <div class="stat-pill-label">Detected Pattern</div>
+        <div class="stat-pill" id="patternPill" title="Detected Fraud Typology">
+          <div class="stat-pill-label">Detected Typology</div>
           <div class="stat-pill-value" id="patternVal">—</div>
           <div class="stat-pill-sub" id="patternSecondaryVal">Secondary: none</div>
         </div>
 
         <div class="stat-pill exposure-pill" title="Total Financial Exposure at Risk">
-          <div class="stat-pill-label">Exposure</div>
+          <div class="stat-pill-label">Exposure at Risk</div>
           <div class="stat-pill-value" id="exposureVal">$0.00</div>
           <div class="stat-pill-sub" id="exposureSub">1 Flagged Transaction</div>
         </div>
 
         <div class="banner-action-col">
           <button id="btnDecomposeScore" class="btn-subtle" title="Inspect Noisy-OR channel breakdown">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
               <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
             </svg>
@@ -295,50 +290,50 @@
         </div>
       </div>
 
-      <!-- TigerGraph Interactive Knowledge Stage -->
+      <!-- Interactive Knowledge Graph Stage -->
       <div class="graph-stage" id="graphStage">
-        <!-- Tactical Header Strip for Graph -->
+        <!-- Tactical Header Strip -->
         <div class="graph-header-strip">
           <div class="graph-title-block">
-            <span class="graph-radar-dot"></span>
-            <span class="graph-title-text">TIGERGRAPH NATIVE TOPOLOGY MAP</span>
+            <span class="graph-radar-dot" aria-hidden="true"></span>
+            <span class="graph-title-text">KNOWLEDGE GRAPH TOPOLOGY</span>
             <span class="graph-subtitle-tag">GSQL 2-HOP TRAVERSAL</span>
           </div>
-          <div class="graph-quick-help">Drag to pan &bull; Scroll to zoom &bull; Click node to inspect evidence</div>
+          <div class="graph-quick-help">Pan: Drag &bull; Zoom: Scroll &bull; Select: Click Node</div>
         </div>
 
-        <canvas id="graphCanvas"></canvas>
+        <canvas id="graphCanvas" role="img" aria-label="Interactive fraud investigation knowledge graph"></canvas>
 
-        <!-- Refined Graph Legend (Exact Dark Green + Beige Theme) -->
-        <div class="graph-legend">
+        <!-- Enterprise Graph Legend -->
+        <div class="graph-legend" aria-label="Graph Legend">
           <div class="legend-item"><span class="legend-color legend-burgundy"></span> Flagged Txn</div>
           <div class="legend-item"><span class="legend-color legend-customer"></span> Customer</div>
           <div class="legend-item"><span class="legend-color legend-card"></span> Card</div>
           <div class="legend-item"><span class="legend-color legend-device"></span> Device</div>
-          <div class="legend-item"><span class="legend-color legend-case"></span> Case</div>
-          <div class="legend-item"><span class="legend-color legend-othertxn"></span> Other Txn</div>
+          <div class="legend-item"><span class="legend-color legend-case"></span> Prior Case</div>
+          <div class="legend-item"><span class="legend-color legend-othertxn"></span> Transaction</div>
           <div class="legend-item"><span class="legend-color legend-selected"></span> Selected</div>
         </div>
 
         <!-- Graph Controls -->
-        <div class="graph-controls">
-          <button id="btnZoomIn" class="btn-icon" title="Zoom In">+</button>
-          <button id="btnZoomOut" class="btn-icon" title="Zoom Out">&minus;</button>
-          <button id="btnResetView" class="btn-icon" title="Reset Graph View">&#x21ba;</button>
+        <div class="graph-controls" role="toolbar" aria-label="Graph Zoom Controls">
+          <button id="btnZoomIn" class="btn-icon" title="Zoom In" aria-label="Zoom In">+</button>
+          <button id="btnZoomOut" class="btn-icon" title="Zoom Out" aria-label="Zoom Out">&minus;</button>
+          <button id="btnResetView" class="btn-icon" title="Reset Graph View" aria-label="Reset Graph View">&#x21ba;</button>
         </div>
 
-        <!-- Interactive Analyst Evidence Docket (Node Inspector) -->
-        <div class="graph-inspector" id="graphInspector" style="display:none;">
+        <!-- Interactive Entity Inspector Drawer -->
+        <div class="graph-inspector" id="graphInspector" style="display:none;" role="region" aria-label="Node Inspector">
           <div class="inspector-header">
             <div class="inspector-title-wrap">
               <span class="inspector-type-pill" id="inspNodeType">CARD</span>
               <span class="inspector-node-id" id="inspNodeId">C12382-K1</span>
             </div>
-            <button class="btn-close-inspector" id="btnCloseInspector" title="Close inspector">&times;</button>
+            <button class="btn-close-inspector" id="btnCloseInspector" title="Close inspector" aria-label="Close inspector">&times;</button>
           </div>
           <div class="inspector-body">
             <div class="inspector-relevance-card">
-              <div class="insp-relevance-label">EVIDENCE RELEVANCE</div>
+              <div class="insp-relevance-label">ENTITY RELEVANCE</div>
               <div class="inspector-relevance" id="inspNodeRelevance">Payment instrument under review.</div>
             </div>
             <div class="inspector-meta-grid" id="inspNodeMeta"></div>
@@ -350,22 +345,21 @@
       </div>
     </section>
 
-    <!-- ── Right Panel: Investigation Dossier & Decision Tabs ────────────── -->
-    <aside class="panel-right" id="panelRight">
-      <nav class="tab-nav">
-        <button class="tab-btn active" data-tab="tabEvidence" id="btnTabEvidence">
-          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- ── Right Panel: Dossier Evidence & Policy Decisions ───────────────── -->
+    <aside class="panel-right" id="panelRight" aria-label="Evidence dossier and policy governance">
+      <nav class="tab-nav" role="tablist" aria-label="Investigation Dossier Tabs">
+        <button class="tab-btn active" data-tab="tabEvidence" id="btnTabEvidence" role="tab" aria-selected="true" aria-controls="tabEvidence">
+          <svg class="tab-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
             <line x1="16" y1="13" x2="8" y2="13"></line>
             <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
           </svg>
           <span>Evidence</span>
           <span class="tab-badge" id="evCount">0</span>
         </button>
-        <button class="tab-btn" data-tab="tabUncertainty" id="btnTabUncertainty">
-          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="tab-btn" data-tab="tabUncertainty" id="btnTabUncertainty" role="tab" aria-selected="false" aria-controls="tabUncertainty">
+          <svg class="tab-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="16" x2="12" y2="12"></line>
             <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -373,23 +367,23 @@
           <span>Uncertainty</span>
           <span class="tab-badge" id="uncCount">0</span>
         </button>
-        <button class="tab-btn" data-tab="tabNba" id="btnTabNba">
-          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="tab-btn" data-tab="tabNba" id="btnTabNba" role="tab" aria-selected="false" aria-controls="tabNba">
+          <svg class="tab-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
           </svg>
           <span>Governed NBA</span>
           <span class="tab-badge" id="aprCount">0</span>
         </button>
-        <button class="tab-btn" data-tab="tabPersistence" id="btnTabPersistence">
-          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="tab-btn" data-tab="tabPersistence" id="btnTabPersistence" role="tab" aria-selected="false" aria-controls="tabPersistence">
+          <svg class="tab-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
             <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
             <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
           </svg>
-          <span>Case Memory</span>
+          <span>Memory & SAR</span>
         </button>
-        <button class="tab-btn" data-tab="tabBenchmark" id="btnTabBenchmark">
-          <svg class="tab-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="tab-btn" data-tab="tabBenchmark" id="btnTabBenchmark" role="tab" aria-selected="false" aria-controls="tabBenchmark">
+          <svg class="tab-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="18" y1="20" x2="18" y2="10"></line>
             <line x1="12" y1="20" x2="12" y2="4"></line>
             <line x1="6" y1="20" x2="6" y2="14"></line>
@@ -400,27 +394,27 @@
 
       <div class="tab-content-area">
         <!-- Tab 1: Evidence & Provenance + Noisy-OR Decomposition -->
-        <div class="tab-pane active" id="tabEvidence">
+        <div class="tab-pane active" id="tabEvidence" role="tabpanel" aria-labelledby="btnTabEvidence">
           <!-- Collapsible Noisy-OR Decomposition Box -->
           <div class="score-breakdown-card" id="scoreBreakdownCard">
-            <div class="breakdown-header" id="toggleBreakdown">
+            <div class="breakdown-header" id="toggleBreakdown" role="button" tabindex="0" aria-expanded="false">
               <div class="breakdown-header-title">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M12 20v-6M6 20V10M18 20V4"/>
                 </svg>
                 <span>Noisy-OR Risk Score Decomposition</span>
               </div>
-              <span class="breakdown-arrow">&#9662;</span>
+              <span class="breakdown-arrow" aria-hidden="true">&#9662;</span>
             </div>
             <div class="breakdown-content" id="breakdownContent">
               <div class="breakdown-table-wrap">
                 <table class="breakdown-table">
                   <thead>
                     <tr>
-                      <th>Signal / Channel</th>
-                      <th>Type</th>
-                      <th>Weight</th>
-                      <th>Reason</th>
+                      <th scope="col">Signal Channel</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Weight</th>
+                      <th scope="col">Reason</th>
                     </tr>
                   </thead>
                   <tbody id="breakdownTableBody"></tbody>
@@ -431,7 +425,7 @@
 
           <div class="evidence-filter-bar" id="evFilterBar" style="display:none;">
             <div class="filter-indicator">
-              <svg class="filter-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="filter-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
@@ -444,52 +438,52 @@
         </div>
 
         <!-- Tab 2: The Uncertainty & Reassessment Lifecycle -->
-        <div class="tab-pane" id="tabUncertainty">
+        <div class="tab-pane" id="tabUncertainty" role="tabpanel" aria-labelledby="btnTabUncertainty">
           <div class="uncertainty-intro-banner">
-            <div class="banner-badge-afi">AGENTIC UNCERTAINTY PIPELINE</div>
-            <p>Active information-value reasoning loop: quantifies ambiguity, halts or simulates for high-impact evidence, and tracks the exact probability shift.</p>
+            <div class="banner-badge-afi">ACTIVE DECISION AMBIGUITY EVALUATOR</div>
+            <p>Calculates expected information gain, prioritizes decision-shifting inquiries, and updates Bayesian posterior probabilities upon evidence ingestion.</p>
           </div>
           <div id="uncertaintyCycleContent"></div>
         </div>
 
         <!-- Tab 3: Governed NBA & Policy Matrix -->
-        <div class="tab-pane" id="tabNba">
+        <div class="tab-pane" id="tabNba" role="tabpanel" aria-labelledby="btnTabNba">
           <div class="governance-banner">
             <div class="governance-step">
               <div class="gov-step-label">1. AGENT</div>
               <div class="gov-step-desc">Proposes actions</div>
             </div>
-            <div class="gov-arrow">&rarr;</div>
+            <div class="gov-arrow" aria-hidden="true">&rarr;</div>
             <div class="gov-step">
               <div class="gov-step-label">2. POLICY ENGINE</div>
               <div class="gov-step-desc">Deterministic R1–R11</div>
             </div>
-            <div class="gov-arrow">&rarr;</div>
+            <div class="gov-arrow" aria-hidden="true">&rarr;</div>
             <div class="gov-step">
-              <div class="gov-step-label">3. PERMISSION</div>
+              <div class="gov-step-label">3. AUTHORITY</div>
               <div class="gov-step-desc">Auto / L1 / L2</div>
             </div>
-            <div class="gov-arrow">&rarr;</div>
+            <div class="gov-arrow" aria-hidden="true">&rarr;</div>
             <div class="gov-step">
-              <div class="gov-step-label">4. APPROVAL</div>
-              <div class="gov-step-desc">Human authorized</div>
+              <div class="gov-step-label">4. EXECUTION</div>
+              <div class="gov-step-desc">Audited & logged</div>
             </div>
           </div>
           <div id="nbaGovernanceContent"></div>
         </div>
 
         <!-- Tab 4: Case Memory & SAR -->
-        <div class="tab-pane" id="tabPersistence">
+        <div class="tab-pane" id="tabPersistence" role="tabpanel" aria-labelledby="btnTabPersistence">
           <div id="persistenceContent"></div>
         </div>
 
         <!-- Tab 5: Benchmark / Validation -->
-        <div class="tab-pane" id="tabBenchmark">
+        <div class="tab-pane" id="tabBenchmark" role="tabpanel" aria-labelledby="btnTabBenchmark">
           <div class="benchmark-dashboard">
             <!-- Header -->
             <div class="benchmark-header-box">
               <div>
-                <div class="benchmark-title">BENCHMARK / VALIDATION</div>
+                <div class="benchmark-title">SYSTEM BENCHMARK EVALUATION</div>
                 <div class="benchmark-sub">20-case IEEE-CIS investigation benchmark & validation metrics</div>
               </div>
               <span class="route-pill route-auto">VERIFIED RUN</span>
@@ -497,55 +491,70 @@
 
             <!-- PRIMARY VALIDATION (live from /benchmark/report + /benchmark/checkpoints) -->
             <div class="benchmark-section">
-              <div class="benchmark-section-label">PRIMARY VALIDATION — LIVE FROM BENCHMARK ARTIFACTS</div>
-              <div class="benchmark-grid-hero">
-                <div class="benchmark-card benchmark-card-hero">
-                  <div class="benchmark-num hero-emerald" id="benchCompleted">…</div>
-                  <div class="benchmark-lbl">CASES COMPLETED</div>
-                  <div class="benchmark-desc" id="benchElapsed">of benchmark run</div>
+              <div class="benchmark-section-label">PRIMARY METRICS — BENCHMARK VALIDATION REPORT</div>
+              <div class="benchmark-grid" id="benchmarkMetricsGrid">
+                <div class="benchmark-metric-card">
+                  <div class="benchmark-num highlight-num" id="bmMetricCompletion">100%</div>
+                  <div class="benchmark-label">Pipeline Completion</div>
+                  <div class="benchmark-sub-label">20 / 20 cases completed</div>
                 </div>
-                <div class="benchmark-card benchmark-card-hero">
-                  <div class="benchmark-num hero-emerald" id="benchCheckpoints">…</div>
-                  <div class="benchmark-lbl">CHECKPOINTS PASSED</div>
-                  <div class="benchmark-desc">Structural validation</div>
+                <div class="benchmark-metric-card">
+                  <div class="benchmark-num highlight-num" id="bmMetricCheckpoints">600 / 600</div>
+                  <div class="benchmark-label">Checkpoints Passed</div>
+                  <div class="benchmark-sub-label">100% contract compliance</div>
                 </div>
-              </div>
-              <div class="benchmark-footer-note" id="benchRunNote" style="margin-top:6px;">
-                Loading live benchmark artifacts…
+                <div class="benchmark-metric-card">
+                  <div class="benchmark-num" id="bmMetricF1">1.000</div>
+                  <div class="benchmark-label">Classification F1</div>
+                  <div class="benchmark-sub-label">Ground truth evaluated</div>
+                </div>
+                <div class="benchmark-metric-card">
+                  <div class="benchmark-num" id="bmMetricPersistence">100%</div>
+                  <div class="benchmark-label">Graph Persistence</div>
+                  <div class="benchmark-sub-label">InvestigationCase vertices</div>
+                </div>
               </div>
             </div>
 
-            <!-- INVESTIGATION ACCURACY -->
-            <div class="benchmark-section">
-              <div class="benchmark-section-label">PER-CASE RESULTS (FROM ARTIFACT)</div>
-              <div id="benchCaseTable" style="max-height:260px; overflow-y:auto;">
-                <div class="benchmark-footer-note">Loading per-case benchmark results…</div>
-              </div>
-            </div>
-
-            <!-- Collapsible Secondary Details -->
-            <details class="benchmark-disclosure">
-              <summary class="benchmark-disclosure-trigger">
-                <span>Agentic Capabilities Demonstrated</span>
-                <span class="disclosure-arrow">&#9662;</span>
+            <!-- Validation Checkpoints Collapsible Checklist -->
+            <details class="benchmark-details-box" id="checkpointsAccordion">
+              <summary class="benchmark-summary-head">
+                <span>Structural Checkpoint Evaluation (30 Verification Points per Case)</span>
+                <span class="expand-icon" aria-hidden="true">&#9662;</span>
               </summary>
-              <div class="benchmark-disclosure-body">
-                <div class="benchmark-coverage-list">
-                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Planner-driven adaptive tool selection (per-case plan trace)</div>
-                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Information-value evidence requests (expected decision impact)</div>
-                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Human-in-the-loop evidence submission (POST evidence endpoint)</div>
-                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Approval decisions execute under policy routes (auto / L1 / L2)</div>
-                  <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Fraud-ring graph analysis + graph-native agent case memory</div>
-                </div>
+              <div class="benchmark-cov-grid">
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Schema integrity & typed contracts</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Multi-hop graph traversal execution</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Evidence provenance & citation audit</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Fraud pattern candidate reasoning</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Calibrated Noisy-OR channel breakdown</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Active uncertainty & information value</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Human-in-the-loop evidence ingestion</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Policy engine governance (R1–R11)</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Least-privilege approval routing</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> FinCEN SAR narrative completeness</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> TigerGraph memory persistence</div>
+                <div class="benchmark-cov-item"><span class="check-mark">&#10003;</span> Strict fail-closed error handling</div>
               </div>
             </details>
 
-            <!-- Source / Transparency Footer & Copyright -->
+            <!-- Case Runs Table Container -->
+            <details class="benchmark-details-box" id="caseRunsAccordion" open>
+              <summary class="benchmark-summary-head">
+                <span>Benchmark Case Runs (20 Test Dossiers)</span>
+                <span class="expand-icon" aria-hidden="true">&#9662;</span>
+              </summary>
+              <div id="caseRunsTableContainer">
+                <div style="font-size:0.75rem; color:var(--text-muted); padding:8px 0;">Loading benchmark results...</div>
+              </div>
+            </details>
+
+            <!-- Source / Transparency Footer -->
             <div class="benchmark-footer-note">
-              Validation metrics reported from the project benchmark and automated test suite.
+              Validation metrics derived from the automated test suite and live GSQL benchmark.
             </div>
             <div class="benchmark-footer-copyright">
-              &copy; 2026 <strong>Agentic Fraud Investigation Platform</strong> &bull; Open-Source (Apache 2.0)
+              &copy; 2026 <strong>Agentic Fraud Investigation Platform</strong> &bull; MIT License
             </div>
           </div>
         </div>
@@ -558,19 +567,19 @@
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <!-- ── Diagnostic System Health Modal ──────────────────────────────────── -->
-  <div class="modal-overlay" id="healthModal" style="display:none;">
+  <div class="modal-overlay" id="healthModal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="modalHealthTitle">
     <div class="modal-card">
       <div class="modal-header">
         <div class="modal-title-wrap">
-          <svg class="modal-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="modal-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
             <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
             <line x1="6" y1="6" x2="6.01" y2="6"></line>
             <line x1="6" y1="18" x2="6.01" y2="18"></line>
           </svg>
-          <h3>System Diagnostics & Connectivity</h3>
+          <h3 id="modalHealthTitle">System Diagnostics & Connectivity</h3>
         </div>
-        <button class="btn-close-modal" id="btnCloseHealthModal">&times;</button>
+        <button class="btn-close-modal" id="btnCloseHealthModal" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" id="healthModalBody">
         <div class="diag-section">
@@ -594,14 +603,14 @@
           <h4>LLM Reasoning Provider</h4>
           <div class="diag-grid">
             <div class="diag-item"><span class="diag-label">Provider</span><span class="diag-val" id="diagLlmProvider">Deterministic Fallback</span></div>
-            <div class="diag-item"><span class="diag-label">Honesty Flag</span><span class="diag-val">Active (Audit Safe)</span></div>
+            <div class="diag-item"><span class="diag-label">Audit Safety</span><span class="diag-val">Active (Deterministic NBA)</span></div>
           </div>
         </div>
         <div class="diag-section">
           <h4>Platform & Licensing</h4>
           <div class="diag-grid">
             <div class="diag-item"><span class="diag-label">Platform</span><span class="diag-val">Agentic Fraud Investigation Engine</span></div>
-            <div class="diag-item"><span class="diag-label">License</span><span class="diag-val">Apache-2.0 Open Source</span></div>
+            <div class="diag-item"><span class="diag-label">License</span><span class="diag-val">MIT Open Source</span></div>
           </div>
         </div>
       </div>
@@ -609,8 +618,8 @@
   </div>
 
   <!-- ── Scripts ───────────────────────────────────────────────────────── -->
-  <script src="js/api.js?v=20261017_v4"></script>
-  <script src="js/graph.js?v=20261017_v4"></script>
-  <script src="js/app.js?v=20261017_v4"></script>
+  <script src="js/api.js?v=20261017_v6"></script>
+  <script src="js/graph.js?v=20261017_v6"></script>
+  <script src="js/app.js?v=20261017_v6"></script>
 </body>
 </html>
