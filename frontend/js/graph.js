@@ -30,12 +30,18 @@ class GraphRenderer {
   resize() {
     if (!this.canvas || !this.canvas.parentElement) return;
     const rect = this.canvas.parentElement.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
     this.width = rect.width;
     this.height = rect.height;
     this.canvas.width = this.width * window.devicePixelRatio;
     this.canvas.height = this.height * window.devicePixelRatio;
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    this.render();
+    if (this.nodes && this.nodes.length > 0) {
+      this.fitToView(true);
+    } else {
+      this.render();
+    }
   }
 
   setTraversalLoading(isLoading, state = {}) {
@@ -70,7 +76,12 @@ class GraphRenderer {
   }
 
   setData(graphData) {
-    if (!graphData || !graphData.nodes) {
+    if (this.simAnimId) {
+      cancelAnimationFrame(this.simAnimId);
+      this.simAnimId = null;
+    }
+
+    if (!graphData || !graphData.nodes || graphData.nodes.length === 0) {
       this.nodes = [];
       this.links = [];
       this.selectedNode = null;
@@ -79,20 +90,37 @@ class GraphRenderer {
       return;
     }
 
+    // Refresh canvas dimensions accurately from parent
+    const rect = this.canvas.parentElement ? this.canvas.parentElement.getBoundingClientRect() : null;
+    if (rect && rect.width > 0 && rect.height > 0) {
+      this.width = rect.width;
+      this.height = rect.height;
+      this.canvas.width = this.width * window.devicePixelRatio;
+      this.canvas.height = this.height * window.devicePixelRatio;
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    } else {
+      this.width = this.width || 700;
+      this.height = this.height || 500;
+    }
+
     const cx = this.width / 2;
     const cy = this.height / 2;
 
     this.nodes = graphData.nodes.map((n, i) => {
-      const angle = (i / graphData.nodes.length) * Math.PI * 2;
-      const radius = n.type === 'FlaggedTransaction' ? 0 : 130 + (i % 3) * 65;
+      const isAnchor = n.type === 'FlaggedTransaction' || n.type === 'InvestigationCase';
+      const angle = (i / Math.max(1, graphData.nodes.length)) * Math.PI * 2;
+      const ringRadius = isAnchor ? 0 : (n.type === 'Customer' || n.type === 'Card' ? 95 : (n.type === 'DeviceProfile' ? 160 : 215 + (i % 3) * 35));
+
       return {
         ...n,
-        x: cx + Math.cos(angle) * radius + (Math.random() - 0.5) * 20,
-        y: cy + Math.sin(angle) * radius + (Math.random() - 0.5) * 20,
+        x: cx + Math.cos(angle) * ringRadius + (Math.random() - 0.5) * 12,
+        y: cy + Math.sin(angle) * ringRadius + (Math.random() - 0.5) * 12,
         vx: 0,
         vy: 0,
         radius: this.getNodeRadius(n.type),
-        color: this.getNodeColor(n.type)
+        color: this.getNodeColor(n.type),
+        isAnchor
       };
     });
 
@@ -108,8 +136,10 @@ class GraphRenderer {
     this.selectedNode = null;
     if (this.onNodeSelected) this.onNodeSelected(null);
 
-    this.simulate(70);
-    this.render();
+    // Warm-up physics steps so nodes don't start overlapping, then fit and smoothly settle
+    this.stepPhysics(45, 1.0);
+    this.fitToView(false);
+    this.startSettlingAnimation();
   }
 
   getNodeRadius(type) {
@@ -201,12 +231,17 @@ class GraphRenderer {
     return { typeName, idName };
   }
 
-  simulate(steps = 1) {
-    const k = 0.05;
-    const repulse = 1400;
-    const damping = 0.85;
+  stepPhysics(steps = 1, alpha = 1.0) {
+    if (!this.nodes || this.nodes.length === 0) return;
+
+    const cx = this.width / 2;
+    const cy = this.height / 2;
+    const repulseStrength = 4200;
+    const springK = 0.045;
+    const damping = 0.82;
 
     for (let s = 0; s < steps; s++) {
+      // 1. Repulsion between all node pairs (Coulomb force with collision boundary)
       for (let i = 0; i < this.nodes.length; i++) {
         for (let j = i + 1; j < this.nodes.length; j++) {
           const n1 = this.nodes[i];
@@ -214,8 +249,11 @@ class GraphRenderer {
           const dx = n2.x - n1.x;
           const dy = n2.y - n1.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          if (dist < 320) {
-            const force = repulse / (dist * dist);
+          const minDist = n1.radius + n2.radius + 24;
+
+          if (dist < 420) {
+            const effectiveDist = Math.max(dist, minDist);
+            const force = (repulseStrength / (effectiveDist * effectiveDist)) * alpha;
             const fx = (dx / dist) * force;
             const fy = (dy / dist) * force;
             n1.vx -= fx;
@@ -226,12 +264,13 @@ class GraphRenderer {
         }
       }
 
+      // 2. Spring attraction along links (Hooke's law)
       for (const link of this.links) {
         const dx = link.target.x - link.source.x;
         const dy = link.target.y - link.source.y;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const targetDist = 120;
-        const force = (dist - targetDist) * k;
+        const targetDist = link.type === 'SHARED_DEVICE' ? 130 : 95;
+        const force = (dist - targetDist) * springK * alpha;
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
         link.source.vx += fx;
@@ -240,16 +279,67 @@ class GraphRenderer {
         link.target.vy -= fy;
       }
 
-      const cx = this.width / 2;
-      const cy = this.height / 2;
+      // 3. Center gravity & velocity integration
       for (const n of this.nodes) {
-        n.vx += (cx - n.x) * 0.005;
-        n.vy += (cy - n.y) * 0.005;
+        if (n === this.dragNode) continue;
+        n.vx += (cx - n.x) * 0.003 * alpha;
+        n.vy += (cy - n.y) * 0.003 * alpha;
+
         n.vx *= damping;
         n.vy *= damping;
         n.x += n.vx;
         n.y += n.vy;
       }
+    }
+  }
+
+  simulate(steps = 1) {
+    this.stepPhysics(steps, 1.0);
+  }
+
+  startSettlingAnimation() {
+    if (this.simAnimId) {
+      cancelAnimationFrame(this.simAnimId);
+    }
+    this.alpha = 1.0;
+
+    const tick = () => {
+      if (this.traversalLoading) {
+        this.simAnimId = null;
+        return;
+      }
+
+      if (this.alpha > 0.015) {
+        this.stepPhysics(2, this.alpha);
+        this.alpha *= 0.94;
+        this.render();
+        this.simAnimId = requestAnimationFrame(tick);
+      } else {
+        this.alpha = 0;
+        this.simAnimId = null;
+        this.fitToView(true);
+      }
+    };
+
+    this.simAnimId = requestAnimationFrame(tick);
+  }
+
+  reheat(level = 0.25) {
+    this.alpha = Math.max(this.alpha || 0, level);
+    if (!this.simAnimId) {
+      const tick = () => {
+        if (this.alpha > 0.02) {
+          this.stepPhysics(1, this.alpha);
+          this.alpha *= 0.95;
+          this.render();
+          this.simAnimId = requestAnimationFrame(tick);
+        } else {
+          this.alpha = 0;
+          this.simAnimId = null;
+          this.render();
+        }
+      };
+      this.simAnimId = requestAnimationFrame(tick);
     }
   }
 
@@ -276,6 +366,7 @@ class GraphRenderer {
         this.dragNode.x = pos.x;
         this.dragNode.y = pos.y;
         this.dragDistance += 1;
+        this.reheat(0.12);
         this.render();
       } else if (this.isDragging) {
         const dx = e.clientX - this.lastMouse.x;
@@ -317,34 +408,43 @@ class GraphRenderer {
     });
   }
 
-  getCanvasPos(e) {
-    const rect = this.canvas.getBoundingClientRect();
-    const rawX = e.clientX - rect.left;
-    const rawY = e.clientY - rect.top;
-    return {
-      x: (rawX - this.offsetX) / this.scale,
-      y: (rawY - this.offsetY) / this.scale
-    };
-  }
+  fitToView(render = true) {
+    if (!this.nodes || this.nodes.length === 0) return;
+    if (!this.width || !this.height) return;
 
-  findNode(x, y) {
-    for (let i = this.nodes.length - 1; i >= 0; i--) {
-      const n = this.nodes[i];
-      const dx = n.x - x;
-      const dy = n.y - y;
-      if (Math.sqrt(dx * dx + dy * dy) <= n.radius + 6) {
-        return n;
-      }
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const n of this.nodes) {
+      const r = n.radius || 15;
+      if (n.x - r < minX) minX = n.x - r;
+      if (n.x + r > maxX) maxX = n.x + r;
+      if (n.y - r < minY) minY = n.y - r;
+      if (n.y + r > maxY) maxY = n.y + r;
     }
-    return null;
+
+    const bw = Math.max(60, maxX - minX);
+    const bh = Math.max(60, maxY - minY);
+    const midX = (minX + maxX) / 2;
+    const midY = (minY + maxY) / 2;
+
+    const padX = 75;
+    const padY = 65;
+    const availW = Math.max(100, this.width - padX * 2);
+    const availH = Math.max(100, this.height - padY * 2);
+
+    const fitScale = Math.min(availW / bw, availH / bh);
+    this.scale = Math.max(0.60, Math.min(1.20, fitScale));
+
+    this.offsetX = (this.width / 2) - midX * this.scale;
+    this.offsetY = (this.height / 2) - midY * this.scale;
+
+    if (render) {
+      this.render();
+    }
   }
 
   resetView() {
-    this.scale = 1;
-    this.offsetX = 0;
-    this.offsetY = 0;
+    this.fitToView(true);
     this.selectedNode = null;
-    this.render();
     if (this.onNodeSelected) this.onNodeSelected(null);
   }
 

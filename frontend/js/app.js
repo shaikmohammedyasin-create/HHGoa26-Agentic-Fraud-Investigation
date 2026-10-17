@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       .replace(/\b\w/g, l => l.toUpperCase());
   }
 
-  // ── Case Selection (Clean State for Demo Recording) ──────────────────────
+  // ── Case Selection (Load Completed Investigation & Graph if present) ─────
   async function selectCase(caseId) {
     activeCaseId = caseId;
     activeCaseData = null;
@@ -208,7 +208,41 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Reset active tab to first tab (Evidence)
     switchTab('tabEvidence');
 
-    // Default to clean empty state (only start live investigation when analyst clicks "Start Live Investigation")
+    // Attempt to load existing completed investigation and graph (already done)
+    try {
+      const [fullData, graphData] = await Promise.all([
+        API.getInvestigationFull(caseId).catch(() => null),
+        API.getInvestigationGraph(caseId).catch(() => null)
+      ]);
+
+      if (fullData && fullData.verdict && graphData && graphData.nodes && graphData.nodes.length > 0) {
+        activeCaseData = fullData;
+        activeGraphData = graphData;
+
+        // Populate completed assessment, NBA, evidence, and settled center graph!
+        setTimelineStep(10, 'completed');
+        renderInvestigation(fullData);
+        if (graphRenderer) {
+          graphRenderer.setData(graphData);
+        }
+        if (btnInvestigate) {
+          btnInvestigate.disabled = false;
+          btnInvestigate.innerHTML = `
+            <span class="btn-tropical-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </span>
+            <span class="btn-text">Re-Run Live Investigation</span>
+          `;
+        }
+        return;
+      }
+    } catch (err) {
+      console.warn('Could not load existing case investigation:', err);
+    }
+
+    // Default to clean empty state only if not yet investigated
     resetTimeline();
     resetAssessment();
     if (graphRenderer) {
@@ -935,8 +969,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         graphRenderer.setData(graphData);
       }
 
-      // Immediately advance to Phase 4 (Evidence & Provenance)
-      setTimelineStep(3, 'active');
+      // Advance to completed stage
+      setTimelineStep(10, 'completed');
 
       // Render full investigation dossier
       renderInvestigation(fullData);
