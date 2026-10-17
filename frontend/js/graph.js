@@ -25,6 +25,10 @@ class GraphRenderer {
     this.initEvents();
     this.resize();
     window.addEventListener('resize', () => this.resize());
+    if (window.ResizeObserver && this.canvas.parentElement) {
+      this.ro = new ResizeObserver(() => this.resize());
+      this.ro.observe(this.canvas.parentElement);
+    }
   }
 
   resize() {
@@ -100,29 +104,72 @@ class GraphRenderer {
       this.ctx.setTransform(1, 0, 0, 1, 0, 0);
       this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     } else {
-      this.width = this.width || 700;
-      this.height = this.height || 500;
+      this.width = this.width || 740;
+      this.height = this.height || 520;
     }
 
     const cx = this.width / 2;
     const cy = this.height / 2;
 
-    this.nodes = graphData.nodes.map((n, i) => {
-      const isAnchor = n.type === 'FlaggedTransaction' || n.type === 'InvestigationCase';
-      const angle = (i / Math.max(1, graphData.nodes.length)) * Math.PI * 2;
-      const ringRadius = isAnchor ? 0 : (n.type === 'Customer' || n.type === 'Card' ? 95 : (n.type === 'DeviceProfile' ? 160 : 215 + (i % 3) * 35));
+    // Semantic topological grouping
+    let flagged = null, card = null, customer = null, dev = null;
+    const otherTxns = [], connCards = [], closedCases = [], otherNodes = [];
 
-      return {
+    graphData.nodes.forEach(n => {
+      if (n.type === 'FlaggedTransaction') flagged = n;
+      else if (n.type === 'Card' && !card) card = n;
+      else if (n.type === 'Customer' && !customer) customer = n;
+      else if (n.type === 'DeviceProfile' && !dev) dev = n;
+      else if (n.type === 'ConnectedCard') connCards.push(n);
+      else if (n.type === 'Transaction') otherTxns.push(n);
+      else if (n.type === 'ClosedCase') closedCases.push(n);
+      else otherNodes.push(n);
+    });
+
+    const nodes = [];
+    const addNode = (n, x, y) => {
+      if (!n) return;
+      nodes.push({
         ...n,
-        x: cx + Math.cos(angle) * ringRadius + (Math.random() - 0.5) * 12,
-        y: cy + Math.sin(angle) * ringRadius + (Math.random() - 0.5) * 12,
-        vx: 0,
-        vy: 0,
+        x, y,
+        vx: 0, vy: 0,
         radius: this.getNodeRadius(n.type),
         color: this.getNodeColor(n.type),
-        isAnchor
-      };
+      });
+    };
+
+    // 1. Core anchors in center
+    addNode(flagged, cx, cy);
+    addNode(card, cx - 85, cy - 45);
+    addNode(customer, cx - 170, cy - 90);
+    addNode(dev, cx + 125, cy + 15);
+
+    // 2. 48h transactions clustered around card
+    otherTxns.forEach((t, i) => {
+      const a = -Math.PI / 2 + (i / Math.max(1, otherTxns.length)) * Math.PI;
+      addNode(t, (cx - 85) + Math.cos(a) * 80, (cy - 45) + Math.sin(a) * 80);
     });
+
+    // 3. Connected syndicate cards fan out to the right from DeviceProfile
+    connCards.forEach((c, i) => {
+      const a = -Math.PI / 2.2 + (i / Math.max(1, connCards.length - 1 || 1)) * (Math.PI * 0.95);
+      const r = 110 + (i % 2) * 35;
+      addNode(c, (cx + 125) + Math.cos(a) * r, (cy + 15) + Math.sin(a) * r);
+    });
+
+    // 4. Closed cases fan out to top-left from Customer
+    closedCases.forEach((c, i) => {
+      const a = Math.PI * 0.8 + (i / Math.max(1, closedCases.length - 1 || 1)) * (Math.PI * 0.6);
+      addNode(c, (cx - 170) + Math.cos(a) * 95, (cy - 90) + Math.sin(a) * 95);
+    });
+
+    // 5. Remaining nodes (InvestigationCase etc.)
+    otherNodes.forEach((o, i) => {
+      const a = (i / Math.max(1, otherNodes.length)) * Math.PI * 2;
+      addNode(o, cx + Math.cos(a) * 160, cy + Math.sin(a) * 160);
+    });
+
+    this.nodes = nodes;
 
     const nodeMap = new Map(this.nodes.map(n => [n.id, n]));
     this.links = (graphData.links || [])
@@ -136,10 +183,9 @@ class GraphRenderer {
     this.selectedNode = null;
     if (this.onNodeSelected) this.onNodeSelected(null);
 
-    // Warm-up physics steps so nodes don't start overlapping, then fit and smoothly settle
-    this.stepPhysics(45, 1.0);
-    this.fitToView(false);
-    this.startSettlingAnimation();
+    // Settle layout in memory in ~15ms so it appears instantly rock-solid and stable
+    this.stepPhysics(140);
+    this.fitToView(true);
   }
 
   getNodeRadius(type) {
@@ -231,16 +277,18 @@ class GraphRenderer {
     return { typeName, idName };
   }
 
-  stepPhysics(steps = 1, alpha = 1.0) {
+  stepPhysics(steps = 1) {
     if (!this.nodes || this.nodes.length === 0) return;
 
     const cx = this.width / 2;
     const cy = this.height / 2;
-    const repulseStrength = 4200;
-    const springK = 0.045;
+    const repulseStrength = 3600;
+    const springK = 0.04;
     const damping = 0.82;
 
     for (let s = 0; s < steps; s++) {
+      const alpha = Math.max(0.08, 1.0 - (s / Math.max(1, steps)));
+
       // 1. Repulsion between all node pairs (Coulomb force with collision boundary)
       for (let i = 0; i < this.nodes.length; i++) {
         for (let j = i + 1; j < this.nodes.length; j++) {
@@ -249,11 +297,11 @@ class GraphRenderer {
           const dx = n2.x - n1.x;
           const dy = n2.y - n1.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const minDist = n1.radius + n2.radius + 24;
+          const minDist = n1.radius + n2.radius + 36;
 
-          if (dist < 420) {
-            const effectiveDist = Math.max(dist, minDist);
-            const force = (repulseStrength / (effectiveDist * effectiveDist)) * alpha;
+          if (dist < 380) {
+            const effDist = Math.max(dist, minDist);
+            const force = (repulseStrength / (effDist * effDist)) * alpha;
             const fx = (dx / dist) * force;
             const fy = (dy / dist) * force;
             n1.vx -= fx;
@@ -269,7 +317,7 @@ class GraphRenderer {
         const dx = link.target.x - link.source.x;
         const dy = link.target.y - link.source.y;
         const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const targetDist = link.type === 'SHARED_DEVICE' ? 130 : 95;
+        const targetDist = link.type === 'SHARED_DEVICE' ? 105 : 85;
         const force = (dist - targetDist) * springK * alpha;
         const fx = (dx / dist) * force;
         const fy = (dy / dist) * force;
@@ -282,8 +330,8 @@ class GraphRenderer {
       // 3. Center gravity & velocity integration
       for (const n of this.nodes) {
         if (n === this.dragNode) continue;
-        n.vx += (cx - n.x) * 0.003 * alpha;
-        n.vy += (cy - n.y) * 0.003 * alpha;
+        n.vx += (cx - n.x) * 0.0025 * alpha;
+        n.vy += (cy - n.y) * 0.0025 * alpha;
 
         n.vx *= damping;
         n.vy *= damping;
@@ -294,53 +342,7 @@ class GraphRenderer {
   }
 
   simulate(steps = 1) {
-    this.stepPhysics(steps, 1.0);
-  }
-
-  startSettlingAnimation() {
-    if (this.simAnimId) {
-      cancelAnimationFrame(this.simAnimId);
-    }
-    this.alpha = 1.0;
-
-    const tick = () => {
-      if (this.traversalLoading) {
-        this.simAnimId = null;
-        return;
-      }
-
-      if (this.alpha > 0.015) {
-        this.stepPhysics(2, this.alpha);
-        this.alpha *= 0.94;
-        this.render();
-        this.simAnimId = requestAnimationFrame(tick);
-      } else {
-        this.alpha = 0;
-        this.simAnimId = null;
-        this.fitToView(true);
-      }
-    };
-
-    this.simAnimId = requestAnimationFrame(tick);
-  }
-
-  reheat(level = 0.25) {
-    this.alpha = Math.max(this.alpha || 0, level);
-    if (!this.simAnimId) {
-      const tick = () => {
-        if (this.alpha > 0.02) {
-          this.stepPhysics(1, this.alpha);
-          this.alpha *= 0.95;
-          this.render();
-          this.simAnimId = requestAnimationFrame(tick);
-        } else {
-          this.alpha = 0;
-          this.simAnimId = null;
-          this.render();
-        }
-      };
-      this.simAnimId = requestAnimationFrame(tick);
-    }
+    this.stepPhysics(steps);
   }
 
   initEvents() {
@@ -366,7 +368,6 @@ class GraphRenderer {
         this.dragNode.x = pos.x;
         this.dragNode.y = pos.y;
         this.dragDistance += 1;
-        this.reheat(0.12);
         this.render();
       } else if (this.isDragging) {
         const dx = e.clientX - this.lastMouse.x;
@@ -415,10 +416,10 @@ class GraphRenderer {
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     for (const n of this.nodes) {
       const r = n.radius || 15;
-      if (n.x - r < minX) minX = n.x - r;
-      if (n.x + r > maxX) maxX = n.x + r;
-      if (n.y - r < minY) minY = n.y - r;
-      if (n.y + r > maxY) maxY = n.y + r;
+      minX = Math.min(minX, n.x - Math.max(r, 45));
+      maxX = Math.max(maxX, n.x + Math.max(r, 45));
+      minY = Math.min(minY, n.y - r);
+      maxY = Math.max(maxY, n.y + r + 26);
     }
 
     const bw = Math.max(60, maxX - minX);
@@ -426,16 +427,19 @@ class GraphRenderer {
     const midX = (minX + maxX) / 2;
     const midY = (minY + maxY) / 2;
 
-    const padX = 75;
-    const padY = 65;
+    const padTop = 52;
+    const padBottom = 54;
+    const padX = 45;
+
     const availW = Math.max(100, this.width - padX * 2);
-    const availH = Math.max(100, this.height - padY * 2);
+    const availH = Math.max(100, this.height - (padTop + padBottom));
 
     const fitScale = Math.min(availW / bw, availH / bh);
-    this.scale = Math.max(0.60, Math.min(1.20, fitScale));
+    this.scale = Math.max(0.65, Math.min(1.25, fitScale));
 
+    const effectiveCenterY = padTop + availH / 2;
     this.offsetX = (this.width / 2) - midX * this.scale;
-    this.offsetY = (this.height / 2) - midY * this.scale;
+    this.offsetY = effectiveCenterY - midY * this.scale;
 
     if (render) {
       this.render();

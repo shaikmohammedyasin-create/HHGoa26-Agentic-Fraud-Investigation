@@ -607,11 +607,13 @@ select#caseSelect option {
 .step-item.completed .step-icon {
   background: var(--hh-semantic-success);
   border-color: var(--hh-semantic-success);
-  color: #FFFDF8;
+  color: transparent;
+  font-size: 0;
 }
 
 .step-item.completed .step-icon::before {
   content: '✓';
+  color: #FFFDF8;
   font-size: 0.65rem;
   font-weight: 800;
 }
