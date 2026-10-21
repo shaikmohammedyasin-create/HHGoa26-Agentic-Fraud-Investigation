@@ -194,6 +194,22 @@ def list_pending_approvals(case_id: str) -> list[dict[str, Any]]:
     return results
 
 
+def list_all_approvals(status: str | None = None) -> list[dict[str, Any]]:
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT payload FROM approvals ORDER BY created_at DESC"
+    ).fetchall()
+    results = []
+    for r in rows:
+        try:
+            p = json.loads(r["payload"])
+            if status is None or p.get("status") == status:
+                results.append(p)
+        except Exception:
+            pass
+    return results
+
+
 # ─── idempotency ──────────────────────────────────────────────────────────────
 
 def check_idempotency(key: str) -> str | None:

@@ -64,7 +64,7 @@
       {
         "claim": "Customer response (simulated): Customer confirms they authorized this purchase from their personal account.",
         "source": "customer",
-        "ref": "evidence_request:ER-1313a523",
+        "ref": "evidence_request:ER-8c2eb5fb",
         "entity_ids": [
           "C12382"
         ]
@@ -82,8 +82,8 @@
       "CC-5555"
     ],
     "summary": "Case CASE-001 investigated none activity on card C12382-K1 (customer C12382) around transaction 3514030 ($77.07, in_person). Assessed fraud probability 0.14 (LOW risk) from 6 evidence items across 6 independent evidence families. Key signals: 4 prior confirmed fraud case(s) on card/customer; 1 prior agent investigation(s) ended in confirmed fraud. Additional evidence requested (customer_validation, information value 0.95); response: Customer confirms they authorized this purchase from their personal account. Final actions: CLOSE_NO_FRAUD.",
-    "written_to_graph": true,
-    "graph_case_id": "CASE-2016-CASE-001"
+    "written_to_graph": false,
+    "graph_case_id": ""
   },
   "evidence_requests": [
     {
@@ -128,7 +128,7 @@
     "activity_dates": []
   },
   "stop_reason": "Fraud probability 0.14 ≤ 0.15; activity consistent with legitimate use.",
-  "tool_calls": 11,
+  "tool_calls": 10,
   "tokens": 0,
-  "latency_s": 0.05
+  "latency_s": 313.56
 }

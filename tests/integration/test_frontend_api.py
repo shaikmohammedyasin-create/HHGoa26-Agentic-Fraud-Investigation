@@ -141,3 +141,20 @@ class TestFrontendAPI:
         assert 'role="tablist"' in r_root.text
         assert 'role="tab"' in r_root.text
         assert 'role="tabpanel"' in r_root.text
+
+    def test_get_all_approvals_endpoint(self, client):
+        """GET /api/approvals returns list of approvals across cases."""
+        r = client.get("/api/approvals")
+        assert r.status_code == 200
+        approvals = r.json()
+        assert isinstance(approvals, list)
+
+    def test_reprove_query_endpoint(self, client):
+        """POST /api/reprove executes or verifies a query cited in evidence."""
+        r = client.post("/api/reprove", json={"ref": "query:get_transaction(txn_id='3514030')"})
+        assert r.status_code == 200
+        res = r.json()
+        assert res["ok"] is True
+        assert res["query"] == "get_transaction"
+        assert "ms" in res
+        assert "rows" in res

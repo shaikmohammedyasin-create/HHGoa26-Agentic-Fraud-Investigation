@@ -52,6 +52,28 @@ const API = {
     return await res.json();
   },
 
+  async getAllApprovals(status = null) {
+    const url = status
+      ? `${this.baseUrl}/api/approvals?status=${encodeURIComponent(status)}`
+      : `${this.baseUrl}/api/approvals`;
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    return await res.json();
+  },
+
+  async reproveQuery(ref) {
+    const res = await fetch(`${this.baseUrl}/api/reprove`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Reprove failed: ${res.statusText}`);
+    }
+    return await res.json();
+  },
+
   async decideApproval(caseId, approvalId, decision, approver = 'FraudAnalyst-L1') {
     const res = await fetch(`${this.baseUrl}/investigations/${encodeURIComponent(caseId)}/approvals/${encodeURIComponent(approvalId)}`, {
       method: 'POST',

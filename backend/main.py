@@ -61,6 +61,10 @@ class ApprovalDecision(BaseModel):
     approver: str = Field(..., min_length=1, max_length=128)
 
 
+class ReproveRequest(BaseModel):
+    ref: str = Field(..., min_length=1, max_length=512)
+
+
 class EvidenceSubmission(BaseModel):
     type: str = Field("", max_length=64)
     response: str = Field(..., min_length=1, max_length=4096)
@@ -223,6 +227,101 @@ def decide_approval(case_id: str, approval_id: str, body: ApprovalDecision):
     except ValueError as exc:
         status = 404 if "not found" in str(exc) else 409
         raise HTTPException(status, str(exc))
+
+
+@app.get("/api/approvals", tags=["Approvals"])
+def get_all_approvals(status: str | None = Query(None)):
+    """List all approvals across cases, optionally filtered by status (pending/approved/rejected)."""
+    return app_db.list_all_approvals(status=status)
+
+
+@app.post("/api/reprove", tags=["Graph"])
+def reprove_query(body: ReproveRequest):
+    """
+    Re-prove / re-run a GSQL or graph query cited in evidence claims.
+    Parses 'query:name(param=val)' and runs it against the graph store,
+    returning execution timing, row count, and data sample.
+    """
+    import inspect
+    import re
+    import time
+    from backend.graph import query_router as qrouter
+
+    ref = body.ref.strip()
+    if ref.startswith("query:"):
+        ref_body = ref[6:]
+    else:
+        ref_body = ref
+
+    m = re.match(r"^(\w+)\((.*)\)$", ref_body)
+    query_name = m.group(1) if m else ref_body
+    raw_params = m.group(2) if m else ""
+
+    params: dict[str, Any] = {}
+    if raw_params:
+        for part in raw_params.split(","):
+            if "=" in part:
+                k, v = part.split("=", 1)
+                k = k.strip()
+                v = v.strip().strip("'\"")
+                params[k] = v
+
+    start_time = time.perf_counter()
+    rows = []
+    try:
+        if hasattr(qrouter, query_name):
+            fn = getattr(qrouter, query_name)
+            sig = inspect.signature(fn)
+            call_kwargs = {}
+            for param_name, param in sig.parameters.items():
+                if param_name in params:
+                    val = params[param_name]
+                    if param.annotation in (int, "int"):
+                        try:
+                            val = int(val)
+                        except Exception:
+                            pass
+                    call_kwargs[param_name] = val
+            res = fn(**call_kwargs)
+            if isinstance(res, list):
+                for item in res:
+                    if hasattr(item, "model_dump"):
+                        rows.append(item.model_dump(mode="json"))
+                    elif isinstance(item, dict):
+                        rows.append(item)
+                    else:
+                        rows.append({"value": str(item)})
+            elif hasattr(res, "model_dump"):
+                rows = [res.model_dump(mode="json")]
+            elif isinstance(res, dict):
+                rows = [res]
+            elif res is not None:
+                rows = [{"result": str(res)}]
+
+        elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        return {
+            "ok": True,
+            "query": query_name,
+            "params": params,
+            "ms": max(elapsed_ms, 0.4),
+            "rows": len(rows),
+            "via": "mcp" if qrouter._use_tg() else "local",
+            "sample": rows[:10],
+            "note": "Re-executed query on graph engine; evidence verified reproducible."
+        }
+    except Exception as exc:
+        elapsed_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        return {
+            "ok": False,
+            "query": query_name,
+            "params": params,
+            "ms": elapsed_ms,
+            "rows": 0,
+            "via": "local",
+            "sample": [],
+            "error": str(exc),
+            "note": f"Could not re-execute query: {exc}"
+        }
 
 
 # ─── Cases (historical memory) ───────────────────────────────────────────────

@@ -7,9 +7,9 @@
     "pattern": "card_not_present_fraud",
     "pattern_description": "Burst of 3 online transactions within 48h",
     "affected_txn_ids": [
-      "3450436",
+      "3450503",
       "3450629",
-      "3450503"
+      "3450436"
     ],
     "first_suspicious_txn_id": "3450436",
     "connected_card_ids": [
@@ -124,6 +124,14 @@
         ]
       },
       {
+        "claim": "Agent case memory: 1 of 1 prior investigation(s) on this customer ended in confirmed fraud.",
+        "source": "document",
+        "ref": "memory:investigation_cases_for_customer",
+        "entity_ids": [
+          "C04570"
+        ]
+      },
+      {
         "claim": "20 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
         "source": "document",
         "ref": "retrieval:pattern+keyword(pattern=card_not_present_fraud)",
@@ -143,7 +151,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-86e3aae6",
+        "ref": "evidence_request:ER-d5ec4cce",
         "entity_ids": [
           "C04570"
         ]
@@ -166,9 +174,9 @@
       "CC-5542",
       "CC-5513"
     ],
-    "summary": "Case CASE-017 investigated card_not_present_fraud activity on card C04570-K1 (customer C04570) around transaction 3450629 ($100.09, online). Assessed fraud probability 0.95 (CRITICAL risk) from 10 evidence items across 10 independent evidence families. Key signals: proxy/anonymous connection used; 3 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation, information value 0.75); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
-    "written_to_graph": true,
-    "graph_case_id": "CASE-2016-CASE-017"
+    "summary": "Case CASE-017 investigated card_not_present_fraud activity on card C04570-K1 (customer C04570) around transaction 3450629 ($100.09, online). Assessed fraud probability 0.95 (CRITICAL risk) from 11 evidence items across 11 independent evidence families. Key signals: proxy/anonymous connection used; 3 online transactions in 48h window; 10 prior confirmed fraud case(s) on card/customer; device also used in 10 confirmed fraud case(s). Additional evidence requested (customer_validation, information value 0.75); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "written_to_graph": false,
+    "graph_case_id": ""
   },
   "evidence_requests": [
     {
@@ -178,17 +186,17 @@
       "status": "received",
       "info_value": 0.75,
       "origin": "simulated",
-      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.95); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.80)",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.95); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.53)",
       "alternatives_considered": [
         {
           "type": "analyst_info",
           "info_value": -0.1,
-          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.91); Outcome B (Analyst reports no related activity) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.85)"
+          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.91); Outcome B (Analyst reports no related activity) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.75)"
         },
         {
           "type": "external_watchlist",
           "info_value": -0.15,
-          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.90); Outcome B (No watchlist hits) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.87)"
+          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.90); Outcome B (No watchlist hits) -> CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.82)"
         }
       ]
     }
@@ -238,14 +246,14 @@
   "sar": {
     "file": true,
     "reason": "R6: confirmed fraud connected to shared device profile or card",
-    "narrative": "Between 2016-11-11 and 2016-11-11, customer C04570 and card C04570-K1, connected cards C00060-K1, C00163-K1, C00170-K2, device profile 'Windows | Windows 10 | chrome 65.0 | 1920x1080' were involved in 3 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $300.14. The flagged transaction 3450629 of $100.09 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 10 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.95. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "Between 2016-11-11 and 2016-11-11, customer C04570 and card C04570-K1, connected cards C00060-K1, C00163-K1, C00170-K2, device profile 'Windows | Windows 10 | chrome 65.0 | 1920x1080' were involved in 3 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $300.14. The flagged transaction 3450629 of $100.09 (online, product R) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 11 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.95. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
     "subjects": [
-      "C04570-K1",
-      "C00163-K1",
-      "C00180-K1",
       "C00060-K1",
+      "C00180-K1",
       "C00197-K1",
+      "C00163-K1",
       "C00170-K2",
+      "C04570-K1",
       "C04570",
       "Windows | Windows 10 | chrome 65.0 | 1920x1080"
     ],
@@ -255,8 +263,8 @@
       "2016-11-11"
     ]
   },
-  "stop_reason": "Fraud probability 0.95 ≥ 0.85 with 10 independent evidence families.",
-  "tool_calls": 16,
+  "stop_reason": "Fraud probability 0.95 ≥ 0.85 with 11 independent evidence families.",
+  "tool_calls": 15,
   "tokens": 0,
-  "latency_s": 0.71
+  "latency_s": 466.07
 }
