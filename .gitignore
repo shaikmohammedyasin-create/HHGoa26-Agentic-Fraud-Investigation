@@ -29,3 +29,10 @@ scratch/
 # Local artifacts (preserve benchmark data)
 artifacts/*.md
 !artifacts/benchmark/**
+
+# sentinel-ui (vendored Next.js console)
+sentinel-ui/node_modules/
+sentinel-ui/.next/
+sentinel-ui/out/
+
+sentinel-ui/tsconfig.tsbuildinfo
