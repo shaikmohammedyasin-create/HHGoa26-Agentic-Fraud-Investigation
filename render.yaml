@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: hhgoa-fraud-api
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # Pins Python 3.12 for the Render runtime (no blueprint-level field).
+      - key: PYTHON_VERSION
+        value: "3.12"
+      # The bundled prepared-graph SQLite store means GRAPH_BACKEND=local works
+      # with zero secret configuration — safe free-tier default.
+      - key: APP_ENV
+        value: development
+      - key: GRAPH_BACKEND
+        value: local
+      # To run against the live TigerGraph instance instead, GRAPH_BACKEND=tigergraph
+      # and fill in the three variables below in the Render dashboard.
+      - key: TG_HOST
+        sync: false
+      - key: TG_GRAPH
+        value: fraud_investigation
+      - key: TG_SECRET
+        sync: false
+      - key: LLM_PROVIDER
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: EVIDENCE_REQUEST_MODE
+        value: simulated

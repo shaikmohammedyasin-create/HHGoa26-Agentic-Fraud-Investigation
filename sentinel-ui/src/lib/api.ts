@@ -42,8 +42,16 @@ import type {
   ValidationBody,
 } from "@/lib/generated/contract";
 
+/**
+ * `""` (or unset to empty) keeps the API same-origin: `/api/*` is then answered
+ * by the deployment's own proxy (see next.config.ts and NOTICE.md), which is
+ * how the hosted build reaches a CORS-allowlisted upstream. Unset locally still
+ * defaults to the companion backend on 127.0.0.1:8000.
+ */
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/$/, "") ?? "http://127.0.0.1:8000";
+  process.env.NEXT_PUBLIC_API_BASE !== undefined
+    ? process.env.NEXT_PUBLIC_API_BASE.replace(/\/$/, "")
+    : "http://127.0.0.1:8000";
 
 /** Where the role lives between reloads. Per-viewer convenience, nothing more. */
 const ROLE_KEY = "sentinel.role";
@@ -118,7 +126,10 @@ export class ApiProblem extends Error {
 type Query = Record<string, string | number | boolean | null | undefined>;
 
 function url(path: string, query?: Query): string {
-  const target = new URL(`${API_BASE}${path}`);
+  // The second argument lets an empty API_BASE resolve host-relative. With an
+  // absolute API_BASE it is ignored — the string starts with a scheme, so the
+  // window origin is never consulted.
+  const target = new URL(`${API_BASE}${path}`, window.location.origin);
   for (const [key, value] of Object.entries(query ?? {})) {
     if (value !== null && value !== undefined && value !== "") {
       target.searchParams.set(key, String(value));

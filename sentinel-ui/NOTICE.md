@@ -10,7 +10,24 @@ Source: https://github.com/r-rishit27/hacker_house/tree/sentinel-v2
 all rights by default; this vendored copy is not redistribution-licensed. Attribution
 to Team CollabUp is provided here in good faith.
 
-Contains changes from upstream: this NOTICE file only.
+Contains changes from upstream: this NOTICE file, plus the deployment-surface
+changes below (component/state logic is untouched).
+
+## Deployment deviations from upstream `7bcea03`
+
+The upstream API CORS-allowlists `localhost` origins only, so a hosted console
+cannot call it from the browser. Two file-level additions make the hosted build
+reach the same upstream contract server-to-server:
+
+- `next.config.ts` — added a same-origin rewrite: `/api/:path*` →
+  `${API_PROXY_ORIGIN}/api/:path*` (default `https://apihacker.collabup.co.in`,
+  overridable via `API_PROXY_ORIGIN`). Engages only when the UI talks to its own
+  origin; local `npm run dev` still calls `127.0.0.1:8000` directly.
+- `src/lib/api.ts` — `API_BASE` now supports an empty value (same-origin mode:
+  relative `/api/...` resolved against `window.location.origin` in `url()`);
+  unset env still defaults to `http://127.0.0.1:8000` as upstream.
+- `.env.production` — sets `NEXT_PUBLIC_API_BASE=` (empty) so hosted builds use
+  the same-origin proxy encoded above.
 
 ## Known upstream issues (code review of the vendored copy)
 
