@@ -200,6 +200,12 @@ The autonomous investigation engine executes through an iterative, evidence-grou
 │   │   └── graph.js                # HTML5 canvas interactive knowledge graph
 │   └── index.html                  # Main command center interface
 │
+├── sentinel-ui/                     # Vendored Sentinel v2 analyst console (Next.js, separate app)
+│   ├── src/app/                     # Console, Monitor, Ring, approvals, benchmark views
+│   ├── src/components/              # Console shell, role switcher, UI primitives
+│   ├── src/lib/                     # API client, SSE hooks, generated backend contract
+│   └── NOTICE.md                    # Upstream attribution, license status, known issues
+│
 ├── tigergraph/                     # TigerGraph database assets
 │   ├── gsql/                       # GSQL query & algorithm definitions
 │   ├── loading/                    # Loading job scripts for tabular ingestion
@@ -327,6 +333,26 @@ http://localhost:8000
 ```
 
 The Analyst Command Center will load with system connectivity diagnostics.
+
+---
+
+### Optional: Vendored Sentinel Console (`sentinel-ui/`)
+
+The repository also ships a vendored copy of Team CollabUp's "Sentinel v2" analyst
+console (Next.js + React + Tailwind) as a standalone second UI. It does **not**
+replace the primary Analyst Command Center and does not talk to this repository's
+backend — it speaks its own contract against the upstream team's deployed API.
+
+```bash
+cd sentinel-ui
+npm install
+# PowerShell: point it at the upstream deployed API (CORS-allowlisted for localhost:3000)
+$env:NEXT_PUBLIC_API_BASE = "https://apihacker.collabup.co.in"
+npm run dev            # → http://localhost:3000
+```
+
+Upstream source, attribution, license status (upstream is unlicensed), and known
+issues are documented in `sentinel-ui/NOTICE.md`.
 
 ---
 
