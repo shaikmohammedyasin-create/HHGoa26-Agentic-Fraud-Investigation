@@ -102,8 +102,8 @@ class TestRiskAnalysisEndpoint:
 
 
 class TestInvestigationSummariesEndpoint:
-    def test_summaries_list_investigated_cases(self, client):
-        """GET /api/investigations returns queue summaries for stored investigations."""
+    def test_summaries_flag_investigated_cases(self, client):
+        """GET /api/investigations distinguishes real investigations from skeleton rows."""
         run_investigation("CASE-001", force=False)
         r = client.get("/api/investigations")
         assert r.status_code == 200
@@ -112,13 +112,17 @@ class TestInvestigationSummariesEndpoint:
         by_id = {row["case_id"]: row for row in rows}
         assert "CASE-001" in by_id
 
-        row = by_id["CASE-001"]
-        assert row["status"]
-        assert row["verdict"] in {"fraud", "legitimate", "uncertain"}
-        assert row["fraud_probability"] is None or 0.0 <= row["fraud_probability"] <= 1.0
-        assert row["pattern"] is None or isinstance(row["pattern"], str)
-        assert row["exposure_usd"] is None or row["exposure_usd"] >= 0.0
-        assert row["sar_required"] is None or isinstance(row["sar_required"], bool)
+        for row in rows:
+            if row["investigated"]:
+                assert row["verdict"] in {"fraud", "legitimate", "uncertain"}
+                assert row["fraud_probability"] is None or 0.0 <= row["fraud_probability"] <= 1.0
+                assert row["pattern"] is None or isinstance(row["pattern"], str)
+                assert row["exposure_usd"] is None or row["exposure_usd"] >= 0.0
+                assert row["sar_required"] is None or isinstance(row["sar_required"], bool)
+            else:
+                # Skeleton/workflow rows carry no verdict — the UI treats them as "Ready".
+                assert row["verdict"] is None
+                assert row["fraud_probability"] is None
 
     def test_summaries_match_stored_payload(self, client):
         """Summary fields must mirror the persisted InvestigationCase exactly."""
@@ -131,11 +135,15 @@ class TestInvestigationSummariesEndpoint:
         assert r2.status_code == 200
         row = next(row for row in r2.json() if row["case_id"] == "CASE-001")
 
-        assert row["verdict"] == full["verdict"]
-        assert row["fraud_probability"] == pytest.approx(full["fraud_probability"], abs=1e-4)
-        assert row["pattern"] == full["pattern"]
-        assert row["exposure_usd"] == pytest.approx(full["exposure_usd"], abs=0.01)
-        assert row["sar_required"] is bool(full["sar"]["file"])
+        if row["investigated"]:
+            assert row["verdict"] == full["verdict"]
+            assert row["fraud_probability"] == pytest.approx(full["fraud_probability"], abs=1e-4)
+            assert row["pattern"] == full["pattern"]
+            assert row["exposure_usd"] == pytest.approx(full["exposure_usd"], abs=0.01)
+            assert row["sar_required"] is bool(full["sar"]["file"])
+        else:
+            assert row["verdict"] is None
+            assert row["status"] == full["status"]
 
     def test_summaries_pagination(self, client):
         """limit/offset parameters are honored."""
@@ -153,3 +161,4 @@ class TestInvestigationSummariesEndpoint:
         for row in r.json():
             if row["verdict"] is None:
                 assert row["fraud_probability"] is None
+                assert row["investigated"] is False

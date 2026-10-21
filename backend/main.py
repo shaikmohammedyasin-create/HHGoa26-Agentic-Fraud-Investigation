@@ -404,16 +404,25 @@ class InvestigationSummaryOut(BaseModel):
 
     Fields come straight from the persisted InvestigationCase (or its workflow
     state row); no placeholder values are substituted for uninvestigated cases
-    beyond an explicit None.
+    beyond explicit None/False.
     """
     case_id: str
     status: str
+    investigated: bool = False
     verdict: str | None = None
     fraud_probability: float | None = None
     pattern: str | None = None
     exposure_usd: float | None = None
     sar_required: bool | None = None
     updated_at: str | None = None
+
+
+def _is_investigated(payload: dict[str, Any] | None) -> bool:
+    """True only when the stored case carries real engine output (evidence or
+    a stop reason). Workflow-test skeletons and failed-run stubs are excluded."""
+    if not payload:
+        return False
+    return bool(payload.get("evidence") or payload.get("stop_reason"))
 
 
 @app.get("/api/investigations", response_model=list[InvestigationSummaryOut], tags=["Investigations"])
@@ -427,16 +436,18 @@ def list_investigation_summaries(
         case_id = str(item.get("case_id", ""))
         payload = app_db.load_investigation(case_id)
         if payload:
+            investigated = _is_investigated(payload)
             try:
                 case = _reconstruct(payload)
                 summaries.append(InvestigationSummaryOut(
                     case_id=case_id,
                     status=case.status.value,
-                    verdict=case.verdict.value,
-                    fraud_probability=round(float(case.fraud_probability), 4),
-                    pattern=case.pattern.value,
-                    exposure_usd=float(case.exposure_usd),
-                    sar_required=bool(case.sar.file),
+                    investigated=investigated,
+                    verdict=case.verdict.value if investigated else None,
+                    fraud_probability=round(float(case.fraud_probability), 4) if investigated else None,
+                    pattern=case.pattern.value if investigated else None,
+                    exposure_usd=float(case.exposure_usd) if investigated else None,
+                    sar_required=bool(case.sar.file) if investigated else None,
                     updated_at=item.get("updated_at"),
                 ))
                 continue
@@ -446,6 +457,7 @@ def list_investigation_summaries(
         summaries.append(InvestigationSummaryOut(
             case_id=case_id,
             status=str(item.get("state", "unknown")),
+            investigated=False,
             updated_at=item.get("updated_at"),
         ))
     return summaries

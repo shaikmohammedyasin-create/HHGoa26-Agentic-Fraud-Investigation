@@ -1206,10 +1206,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Compute stats
     casePackList.forEach(c => {
       const inv = investigationsCache.get(c.case_id) || {};
-      const verdict = (inv.verdict || '').toLowerCase();
+      const investigated = inv.investigated !== false && !!inv.verdict;
+      const verdict = investigated ? inv.verdict.toLowerCase() : '';
       const exposure = Number(inv.exposure_usd || 0);
       if (verdict === 'fraud') totalExposure += exposure;
-      if (Number(inv.fraud_probability || 0) >= 0.85 || Number(c.risk_score || 0) >= 0.85) highRiskCount++;
+      if (investigated && (Number(inv.fraud_probability || 0) >= 0.85 || Number(c.risk_score || 0) >= 0.85)) highRiskCount++;
     });
 
     const queueExposureVal = document.getElementById('queueExposureVal');
@@ -1225,10 +1226,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     filtered.forEach(c => {
       const inv = investigationsCache.get(c.case_id) || {};
-      const verdict = (inv.verdict || '').toLowerCase();
-      const status = (inv.status || 'closed').toLowerCase();
+      const investigated = inv.investigated !== false && !!inv.verdict;
+      const verdict = investigated ? inv.verdict.toLowerCase() : '';
+      const status = investigated ? (inv.status || 'closed').toLowerCase() : 'open';
       const scoreNum = c.risk_score != null ? Number(c.risk_score) : null;
-      const exposureNum = Number(inv.exposure_usd || 0);
+      const exposureNum = investigated ? Number(inv.exposure_usd || 0) : 0;
 
       const tr = document.createElement('tr');
       if (verdict === 'fraud') tr.className = 'verdict-border-fraud';
@@ -1465,7 +1467,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // No benchmark report: show only real stored investigations (or an honest
       // empty state). Never synthesize verdicts or probabilities.
-      const runs = [...investigationsCache.values()].filter(inv => inv.verdict) || [];
+      const runs = [...investigationsCache.values()]
+        .filter(inv => inv.investigated !== false && !!inv.verdict);
 
       if (runs.length === 0) {
         container.innerHTML = `
