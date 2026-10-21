@@ -868,7 +868,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
           <span class="badge ${isPending ? 'badge-status-open' : 'badge-status-closed'}">${escapeHtml(er.status || 'pending')}</span>
         </div>
-        <p class="inquiry-desc" title="decision_relevance">${escapeHtml(er.decision_relevance || 'Decision relevance not documented for this inquiry.')}</p>
+        <p class="inquiry-desc" title="Why this inquiry matters for the decision">${escapeHtml(er.decision_relevance || 'Decision relevance not documented for this inquiry.')}</p>
 
         ${isPending ? `
           <div class="simulation-buttons-row">
