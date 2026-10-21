@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 from backend.config import settings
 from backend.logging import configure_logging, get_logger
 from backend import db as app_db
-from backend.agents.orchestrator import run_investigation
+from backend.agents.orchestrator import run_investigation, _current_risk
 from backend.evaluation.exporter import case_to_answer, write_answer_file
 from backend.graph import query_router as graph
 
@@ -604,6 +604,180 @@ def get_investigation_subgraph(case_id: str):
         "links": links,
         "counts": {"nodes": len(nodes), "links": len(links)},
     }
+
+
+# ─── Explainable risk analysis ────────────────────────────────────────────────
+
+class ScoreChannelOut(BaseModel):
+    """One Noisy-OR / likelihood-ratio channel from the real risk engine."""
+    channel: str
+    contribution: float
+    label: str
+    type: str  # fraud_signal | clearing_signal | total
+
+
+class RiskAssessmentOut(BaseModel):
+    fraud_probability: float
+    confidence: float
+    risk_level: str
+    key_signals: list[str] = Field(default_factory=list)
+    score_breakdown: list[ScoreChannelOut] = Field(default_factory=list)
+
+
+class RiskTrajectoryPointOut(BaseModel):
+    step: int
+    label: str
+    probability: float
+    origin: str  # bank_model | graph_evidence | evidence_response
+
+
+class EvidenceTypeCountsOut(BaseModel):
+    observed_fact: int = 0
+    derived_inference: int = 0
+    model_score: int = 0
+    total: int = 0
+
+
+class RiskAnalysisResponse(BaseModel):
+    """Explainable risk decomposition assembled ONLY from real engine output.
+
+    Every probability on the trajectory is either the bank's own trigger risk
+    score, an assessment the engine computed during the stored investigation
+    (replayed in the audit trail), or a deterministic recomputation from the
+    persisted signal snapshot — never a synthetic placeholder.
+    """
+    case_id: str
+    verdict: str
+    prior: dict[str, Any] | None = None
+    pre_evidence: RiskAssessmentOut | None = None
+    current: RiskAssessmentOut
+    trajectory: list[RiskTrajectoryPointOut]
+    evidence_type_counts: EvidenceTypeCountsOut
+    methodology: str
+
+
+def _assessment_out(risk) -> RiskAssessmentOut:
+    return RiskAssessmentOut(
+        fraud_probability=round(float(risk.fraud_probability), 4),
+        confidence=round(float(risk.confidence), 3),
+        risk_level=risk.risk_level.value,
+        key_signals=list(risk.key_signals),
+        score_breakdown=[
+            ScoreChannelOut(
+                channel=ch.get("channel", ""),
+                contribution=float(ch.get("contribution", 0.0)),
+                label=ch.get("label", ""),
+                type=ch.get("type", "fraud_signal"),
+            )
+            for ch in risk.score_breakdown
+        ],
+    )
+
+
+@app.get("/api/investigations/{case_id}/risk", response_model=RiskAnalysisResponse, tags=["Investigations"])
+def get_risk_analysis(case_id: str):
+    """
+    Explainable risk analysis for an investigated case:
+      - bank prior (trigger risk score),
+      - pre-evidence assessment (engine output stored before HITL responses),
+      - current assessment (deterministic recomputation from persisted signals,
+        identical to the engine used live),
+      - probability trajectory across investigation stages (trigger → evidence
+        rounds → each human-in-the-loop response reassessment → final),
+      - evidence counts differentiated by provenance claim type.
+    """
+    payload = app_db.load_investigation(case_id)
+    if not payload:
+        raise HTTPException(404, f"Investigation for case {case_id} not found")
+    case = _reconstruct(payload)
+
+    # Current risk: deterministic Noisy-OR recomputation from the persisted
+    # signal snapshot (same engine as live investigation).
+    risk = _current_risk(case)
+
+    trajectory: list[RiskTrajectoryPointOut] = []
+    prior = None
+
+    trigger_score = case.trigger.risk_score
+    if trigger_score is not None:
+        prior = {"bank_risk_score": round(float(trigger_score), 4), "source": "transaction_risk_model"}
+        trajectory.append(RiskTrajectoryPointOut(
+            step=0,
+            label="Bank risk score (trigger)",
+            probability=round(float(trigger_score), 4),
+            origin="bank_model",
+        ))
+
+    risk_before = case.risk_before
+    if risk_before is not None:
+        step = len(trajectory)
+        trajectory.append(RiskTrajectoryPointOut(
+            step=step,
+            label="Graph evidence round (pre-evidence assessment)",
+            probability=round(float(risk_before.fraud_probability), 4),
+            origin="graph_evidence",
+        ))
+
+    # Human-in-the-loop reassessments recorded in the immutable audit trail.
+    trail = app_db.get_audit_trail(case_id)
+    req_types = {er.request_id: er.type.value for er in case.evidence_requests}
+    seq = 0
+    for evt in trail:
+        if evt.get("event_type") != "reassessment_performed":
+            continue
+        meta = evt.get("metadata") or {}
+        prob = meta.get("probability_after")
+        if prob is None:
+            continue
+        prob = max(0.0, min(1.0, float(prob)))
+        req_id = meta.get("request_id", "")
+        er_type = req_types.get(req_id, "evidence")
+        seq += 1
+        trajectory.append(RiskTrajectoryPointOut(
+            step=len(trajectory),
+            label=f"Reassessment {seq}: response to {er_type.replace('_', ' ')}",
+            probability=round(prob, 4),
+            origin="evidence_response",
+        ))
+
+    # Final current assessment — append only when it adds information.
+    current_out = _assessment_out(risk)
+    last_prob = trajectory[-1].probability if trajectory else None
+    if last_prob is None or abs(last_prob - current_out.fraud_probability) > 1e-4:
+        trajectory.append(RiskTrajectoryPointOut(
+            step=len(trajectory),
+            label="Final posterior probability",
+            probability=current_out.fraud_probability,
+            origin="graph_evidence",
+        ))
+    if prior is None and case.risk_before is None:
+        prior = {"bank_risk_score": None, "source": "unavailable"}
+
+    counts: dict[str, int] = {"observed_fact": 0, "derived_inference": 0, "model_score": 0}
+    for ev in case.evidence:
+        ct = (ev.provenance or {}).get("claim_type", "observed_fact")
+        if ct in counts:
+            counts[ct] += 1
+
+    return RiskAnalysisResponse(
+        case_id=case.case_id,
+        verdict=case.verdict.value,
+        prior=prior,
+        pre_evidence=_assessment_out(risk_before) if risk_before is not None else None,
+        current=current_out,
+        trajectory=trajectory,
+        evidence_type_counts=EvidenceTypeCountsOut(
+            observed_fact=counts["observed_fact"],
+            derived_inference=counts["derived_inference"],
+            model_score=counts["model_score"],
+            total=len(case.evidence),
+        ),
+        methodology=(
+            "Noisy-OR channel aggregation with Bayesian likelihood-ratio odds "
+            "updating for clearing signals; documented methodology DECISIONS.md D7. "
+            "Probabilities are engine output, not model-synthesised confidence intervals."
+        ),
+    )
 
 
 # ─── Static Frontend Mount ───────────────────────────────────────────────────
