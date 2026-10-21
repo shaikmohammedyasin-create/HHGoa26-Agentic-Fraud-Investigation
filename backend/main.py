@@ -399,6 +399,58 @@ def get_case_pack_triggers():
     return triggers
 
 
+class InvestigationSummaryOut(BaseModel):
+    """Lightweight queue-row summary for one stored investigation.
+
+    Fields come straight from the persisted InvestigationCase (or its workflow
+    state row); no placeholder values are substituted for uninvestigated cases
+    beyond an explicit None.
+    """
+    case_id: str
+    status: str
+    verdict: str | None = None
+    fraud_probability: float | None = None
+    pattern: str | None = None
+    exposure_usd: float | None = None
+    sar_required: bool | None = None
+    updated_at: str | None = None
+
+
+@app.get("/api/investigations", response_model=list[InvestigationSummaryOut], tags=["Investigations"])
+def list_investigation_summaries(
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+):
+    """Queue summaries (case_id, status, verdict, posterior, pattern, exposure, SAR)."""
+    summaries: list[InvestigationSummaryOut] = []
+    for item in app_db.list_investigations(limit, offset):
+        case_id = str(item.get("case_id", ""))
+        payload = app_db.load_investigation(case_id)
+        if payload:
+            try:
+                case = _reconstruct(payload)
+                summaries.append(InvestigationSummaryOut(
+                    case_id=case_id,
+                    status=case.status.value,
+                    verdict=case.verdict.value,
+                    fraud_probability=round(float(case.fraud_probability), 4),
+                    pattern=case.pattern.value,
+                    exposure_usd=float(case.exposure_usd),
+                    sar_required=bool(case.sar.file),
+                    updated_at=item.get("updated_at"),
+                ))
+                continue
+            except Exception:
+                log.exception("api.investigation_summary.reconstruct_failed", case_id=case_id)
+        # Fall back to the workflow-state row only for cases lacking a stored model.
+        summaries.append(InvestigationSummaryOut(
+            case_id=case_id,
+            status=str(item.get("state", "unknown")),
+            updated_at=item.get("updated_at"),
+        ))
+    return summaries
+
+
 @app.get("/api/investigations/{case_id}/full", tags=["Investigations"])
 def get_full_investigation(case_id: str):
     """Retrieve complete rich investigation model including trigger, uncertainty, approvals."""

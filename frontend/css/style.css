@@ -1383,6 +1383,49 @@ a {
   color: var(--ink-100);
 }
 
+/* Belief trajectory (probability stepping through investigation stages) */
+.risk-traj-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--ink-750);
+}
+.risk-traj-step:last-child {
+  border-bottom: none;
+}
+.risk-traj-index {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--ink-800);
+  border: 1px solid var(--ink-700);
+  color: var(--ink-300);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.risk-traj-label {
+  flex: 1;
+  font-size: 12.5px;
+  color: var(--ink-200);
+  min-width: 0;
+}
+.risk-traj-prob {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--tg-300);
+  flex-shrink: 0;
+}
+.risk-prov-row .id-chip strong {
+  color: var(--tg-300);
+  font-family: var(--font-mono);
+}
+
 /* ── Uncertainty & Human-in-the-Loop Reassessment ─────────────────────────── */
 .uncertainty-banner {
   padding: 16px 20px;

@@ -46,6 +46,37 @@ const API = {
     return await res.json();
   },
 
+  async getInvestigations(limit = 50, offset = 0) {
+    // Queue summaries: status, verdict, posterior prob, pattern, exposure, SAR.
+    const res = await fetch(`${this.baseUrl}/api/investigations?limit=${limit}&offset=${offset}`);
+    if (!res.ok) {
+      if (res.status === 404) return [];
+      throw new Error(`Failed to load investigations: ${res.statusText}`);
+    }
+    return await res.json();
+  },
+
+  async getRiskAnalysis(caseId) {
+    // Explainable-risk endpoint: bank prior, stored pre-evidence assessment,
+    // recomputed posterior, audit-trail trajectory, evidence-type counts.
+    const res = await fetch(`${this.baseUrl}/api/investigations/${encodeURIComponent(caseId)}/risk`);
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new Error(`Failed to load risk analysis: ${res.statusText}`);
+    }
+    return await res.json();
+  },
+
+  async runBenchmark() {
+    // Full 20-case benchmark pipeline (may take a while — backend runs it synchronously).
+    const res = await fetch(`${this.baseUrl}/benchmark/run`, { method: 'POST' });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.detail || `Benchmark run failed: ${res.statusText}`);
+    }
+    return await res.json();
+  },
+
   async getApprovals(caseId) {
     const res = await fetch(`${this.baseUrl}/investigations/${encodeURIComponent(caseId)}/approvals`);
     if (!res.ok) return [];

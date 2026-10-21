@@ -722,60 +722,118 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.target.id === 'reproveModal') e.target.style.display = 'none';
   });
 
-  // ── Render Noisy-OR Risk Channels ─────────────────────────────────────────
-  function renderRiskChannels(data) {
+  // ── Render Noisy-OR Risk Channels (real engine output via /risk endpoint) ──
+  async function renderRiskChannels(data) {
     const tbody = document.getElementById('breakdownTableBody');
     const priorScoreEl = document.getElementById('riskPriorScore');
     const posteriorScoreEl = document.getElementById('riskPosteriorScore');
+    const cardAside = document.getElementById('riskAnalysisAside');
+    const trajList = document.getElementById('riskTrajectoryList');
+    const provList = document.getElementById('riskProvenanceSummary');
+    const methText = document.getElementById('riskMethodologyText');
 
+    const caseId = data.case_id;
+    // Race guard: never let a stale case fetch overwrite a later selection.
+    const isCurrent = () => activeCaseId === caseId;
+
+    // Header values come straight from the investigation record.
     const trigger = data.trigger || {};
-    const prior = trigger.risk_score != null ? Number(trigger.risk_score).toFixed(2) : '0.50';
+    const prior = trigger.risk_score != null ? Number(trigger.risk_score).toFixed(2) : '—';
     const posterior = Number(data.fraud_probability || 0).toFixed(3);
-
     if (priorScoreEl) priorScoreEl.textContent = prior;
     if (posteriorScoreEl) posteriorScoreEl.textContent = posterior;
+    if (cardAside) cardAside.textContent = 'Engine output • Noisy-OR (D7)';
 
-    if (!tbody) return;
-    tbody.innerHTML = '';
+    const emptyRow = (msg) => {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:18px; color:var(--ink-400);">${escapeHtml(msg)}</td></tr>`;
+    };
 
-    // Extract risk channels from payload or derive from graph evidence
-    const channels = data.risk_assessment?.noisy_or_channels || [
-      {
-        channel: 'Card 48h Fraud Burst',
-        type: 'Graph Traversal',
-        weight: '0.880',
-        reason: `Rapid multi-transaction burst detected within 48 hours on card ${data.card_id || '—'}.`
-      },
-      {
-        channel: 'Unusual Device Profile Co-Usage',
-        type: 'Device Topology',
-        weight: '0.760',
-        reason: `Hardware fingerprint linked to multiple cards across discrete account clusters.`
-      },
-      {
-        channel: 'Precedent Dispute Similarity',
-        type: 'Closed Case Memory',
-        weight: '0.820',
-        reason: `GraphRAG candidate match with prior confirmed fraud cases in billing region.`
-      },
-      {
-        channel: 'Card-Testing Sequence Velocity',
-        type: 'Behavioral Pattern',
-        weight: '0.910',
-        reason: `Sub-threshold probe transaction sequence detected preceding high-value charge.`
+    let riskData;
+    if (data.risk_assessment?.noisy_or_channels?.length) {
+      // Legacy in-payload channel breakdown (older stored cases).
+      riskData = {
+        current: {
+          fraud_probability: data.fraud_probability,
+          score_breakdown: data.risk_assessment.noisy_or_channels.map(ch => ({
+            channel: ch.channel, contribution: Number(ch.weight) || 0, label: ch.reason || '', type: 'fraud_signal'
+          }))
+        },
+        trajectory: null, evidence_type_counts: null, methodology: null
+      };
+    } else {
+      try {
+        riskData = await API.getRiskAnalysis(caseId);
+      } catch (err) {
+        console.warn('Risk analysis fetch failed:', err);
       }
-    ];
+      if (!isCurrent()) return;
+    }
 
-    channels.forEach(ch => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="font-weight:600; color:var(--ink-100);">${escapeHtml(ch.channel)}</td>
-        <td><span class="source-chip source-document">${escapeHtml(ch.type || 'Rule')}</span></td>
-        <td class="risk-weight-val" style="color:var(--tg-300);">${escapeHtml(String(ch.weight))}</td>
-        <td style="color:var(--ink-300); font-size:12px;">${escapeHtml(ch.reason)}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+    if (!riskData) {
+      if (!isCurrent()) return;
+      emptyRow('No explainable risk breakdown recorded for this case.');
+      if (trajList) trajList.innerHTML = '';
+      if (provList) provList.innerHTML = '';
+      if (methText) methText.textContent = '';
+      return;
+    }
+
+    if (!isCurrent()) return;
+
+    // Real Noisy-OR channel decomposition from the risk engine.
+    const channels = riskData.current?.score_breakdown || [];
+    if (channels.length === 0) {
+      emptyRow('No channel decomposition available for this case.');
+    } else {
+      tbody.innerHTML = '';
+      const typeLabel = { fraud_signal: 'Fraud Signal', clearing_signal: 'Clearing Signal', total: 'Combined' };
+      const typeClass = { fraud_signal: 'source-graph', clearing_signal: 'source-legitimate', total: 'source-external' };
+      channels.forEach(ch => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight:600; color:var(--ink-100);">${escapeHtml(ch.channel || '—')}</td>
+          <td><span class="source-chip ${typeClass[ch.type] || 'source-document'}">${escapeHtml(typeLabel[ch.type] || formatTitle(ch.type || 'Rule'))}</span></td>
+          <td class="risk-weight-val" style="color:${ch.type === 'clearing_signal' ? 'var(--legit)' : 'var(--tg-300)'}; font-family:var(--font-mono);">${escapeHtml(String(ch.contribution))}</td>
+          <td style="color:var(--ink-300); font-size:12px;">${escapeHtml(ch.label || '')}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Probability trajectory (bank prior → graph evidence rounds → HITL reassessments → final).
+    const originLabel = { bank_model: 'Bank Model', graph_evidence: 'Graph Evidence', evidence_response: 'HITL Response' };
+    const originClass = { bank_model: 'source-external', graph_evidence: 'source-graph', evidence_response: 'source-document' };
+    if (trajList) {
+      const traj = riskData.trajectory || [];
+      trajList.innerHTML = (traj.length === 0)
+        ? `<div style="color:var(--ink-400); text-align:center; padding:12px;">No probability trajectory recorded.</div>`
+        : traj.map(pt => `
+          <div class="risk-traj-step">
+            <span class="risk-traj-index">${pt.step}</span>
+            <span class="source-chip ${originClass[pt.origin] || 'source-document'}">${escapeHtml(originLabel[pt.origin] || pt.origin)}</span>
+            <span class="risk-traj-label">${escapeHtml(pt.label)}</span>
+            <span class="risk-traj-prob">${Number(pt.probability).toFixed(4)}</span>
+          </div>
+        `).join('');
+    }
+
+    // Evidence provenance summary (real claim-type counts).
+    if (provList) {
+      const counts = riskData.evidence_type_counts;
+      provList.innerHTML = counts
+        ? `
+          <span class="id-chip">Observed Facts: <strong>${counts.observed_fact}</strong></span>
+          <span class="id-chip">Derived Inferences: <strong>${counts.derived_inference}</strong></span>
+          <span class="id-chip">Model Scores: <strong>${counts.model_score}</strong></span>
+          <span class="id-chip">Total Evidence: <strong>${counts.total}</strong></span>
+        `
+        : '';
+    }
+
+    // Documented methodology note (from the endpoint, never invented in UI).
+    if (methText) {
+      methText.textContent = riskData.methodology || '';
+    }
   }
 
   // ── Render Decision Uncertainty & Evidence Inquiry (HITL) ─────────────────
@@ -959,12 +1017,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function decideCaseApproval(caseId, action, decision) {
     try {
       showToast(`Recording ${decision} for ${action}...`, 'info');
-      // Look up approval ID
+      // Look up the exact approval record for this action — never fall back to
+      // a different approval (that would attach the decision to the wrong action).
       const approvals = await API.getApprovals(caseId);
-      const target = approvals.find(a => a.action === action) || approvals[0];
-      const approvalId = target ? target.approval_id : `apr_${caseId}_${action}`;
+      const target = approvals.find(a => a.action === action && a.status === 'pending');
 
-      await API.decideApproval(caseId, approvalId, decision, 'FraudAnalyst-L1');
+      if (!target) {
+        const alreadyDecided = approvals.some(a => a.action === action);
+        showToast(
+          alreadyDecided
+            ? `${action} was already decided for ${caseId}. Refreshing case.`
+            : `No pending approval record found for ${action} — decision not recorded.`,
+          alreadyDecided ? 'info' : 'error'
+        );
+        await selectCase(caseId);
+        await updateApprovalsCount();
+        return;
+      }
+
+      await API.decideApproval(caseId, target.approval_id, decision, 'FraudAnalyst-L1');
       showToast(`Action ${action} ${decision} successfully.`, 'success');
       await selectCase(caseId);
       await updateApprovalsCount();
@@ -1361,36 +1432,75 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       const rep = await API.getBenchmarkReport().catch(() => null);
-      const runs = rep?.cases || casePackList.map(c => ({
-        case_id: c.case_id,
-        verdict: investigationsCache.get(c.case_id)?.verdict || 'FRAUD',
-        fraud_probability: investigationsCache.get(c.case_id)?.fraud_probability || 0.95,
-        pattern: investigationsCache.get(c.case_id)?.pattern || 'card_testing_sequence',
-        actions_count: investigationsCache.get(c.case_id)?.next_best_actions?.final?.length || 2,
-        status: 'passed'
-      }));
+
+      if (rep?.cases?.length) {
+        container.innerHTML = `
+          <table class="nba-table">
+            <thead>
+              <tr>
+                <th style="width:14%;">Case Dossier</th>
+                <th style="width:14%;">Verdict</th>
+                <th style="width:14%;">Posterior Prob</th>
+                <th style="width:26%;">Detected Typology</th>
+                <th style="width:16%;">NBA Count</th>
+                <th style="width:16%; text-align:right;">Contract Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rep.cases.map(r => `
+                <tr style="cursor:pointer;" onclick="window.selectCase('${escapeHtml(r.case_id)}'); window.switchView('case');">
+                  <td><strong style="color:var(--ink-100); font-family:var(--font-mono);">${escapeHtml(r.case_id)}</strong></td>
+                  <td><span class="verdict-badge verdict-${escapeHtml(String(r.verdict || '').toLowerCase())}">${escapeHtml(String(r.verdict || '').toUpperCase())}</span></td>
+                  <td style="font-family:var(--font-mono); color:var(--tg-300);">${Number(r.fraud_probability || 0).toFixed(3)}</td>
+                  <td style="color:var(--ink-200);">${escapeHtml(formatTitle(r.pattern || '—'))}</td>
+                  <td><span class="id-chip">${r.actions_count || 1} Actions</span></td>
+                  <td style="text-align:right;"><span style="color:var(--legit); font-weight:600;">&check; VERIFIED</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+        return;
+      }
+
+      // No benchmark report: show only real stored investigations (or an honest
+      // empty state). Never synthesize verdicts or probabilities.
+      const runs = [...investigationsCache.values()].filter(inv => inv.verdict) || [];
+
+      if (runs.length === 0) {
+        container.innerHTML = `
+          <div style="padding:28px; text-align:center; color:var(--ink-400);">
+            <p style="margin-bottom:8px;">No benchmark report found.</p>
+            <p style="font-size:12px;">Run <span style="font-family:var(--font-mono); color:var(--tg-300);">POST /benchmark/run</span> (or the button below) to generate the 20-case validation report. Investigations appear here with verified contract status once the benchmark has executed.</p>
+          </div>
+        `;
+        return;
+      }
 
       container.innerHTML = `
+        <div style="padding:8px 16px; border-bottom:1px solid var(--ink-750); font-size:12px; color:var(--ink-400);">
+          No benchmark report found — showing <strong style="color:var(--ink-200);">${runs.length}</strong> stored investigation${runs.length === 1 ? '' : 's'} (unverified by benchmark contract).
+        </div>
         <table class="nba-table">
           <thead>
             <tr>
-              <th style="width:14%;">Case Dossier</th>
-              <th style="width:14%;">Verdict</th>
-              <th style="width:14%;">Posterior Prob</th>
-              <th style="width:26%;">Detected Typology</th>
-              <th style="width:16%;">NBA Count</th>
-              <th style="width:16%; text-align:right;">Contract Status</th>
+              <th style="width:16%;">Case Dossier</th>
+              <th style="width:16%;">Verdict</th>
+              <th style="width:18%;">Posterior Prob</th>
+              <th style="width:28%;">Detected Typology</th>
+              <th style="width:10%;">NBA Count</th>
+              <th style="width:12%; text-align:right;">Contract Status</th>
             </tr>
           </thead>
           <tbody>
             ${runs.map(r => `
-              <tr style="cursor:pointer;" onclick="window.selectCase('${r.case_id}'); window.switchView('case');">
+              <tr style="cursor:pointer;" onclick="window.selectCase('${escapeHtml(r.case_id)}'); window.switchView('case');">
                 <td><strong style="color:var(--ink-100); font-family:var(--font-mono);">${escapeHtml(r.case_id)}</strong></td>
-                <td><span class="verdict-badge verdict-${(r.verdict || 'uncertain').toLowerCase()}">${escapeHtml(String(r.verdict || '').toUpperCase())}</span></td>
+                <td><span class="verdict-badge verdict-${escapeHtml(String(r.verdict || '').toLowerCase())}">${escapeHtml(String(r.verdict || '').toUpperCase())}</span></td>
                 <td style="font-family:var(--font-mono); color:var(--tg-300);">${Number(r.fraud_probability || 0).toFixed(3)}</td>
                 <td style="color:var(--ink-200);">${escapeHtml(formatTitle(r.pattern || '—'))}</td>
-                <td><span class="id-chip">${r.actions_count || 1} Actions</span></td>
-                <td style="text-align:right;"><span style="color:var(--legit); font-weight:600;">&check; VERIFIED</span></td>
+                <td><span class="id-chip">${(r.next_best_actions?.final?.length || 0)} Actions</span></td>
+                <td style="text-align:right;"><span style="color:var(--ink-400);">Unverified</span></td>
               </tr>
             `).join('')}
           </tbody>
@@ -1402,15 +1512,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('btnRunBenchmarkSuite')?.addEventListener('click', async () => {
-    showToast('Executing full 20-case benchmark pipeline...', 'info', 6000);
+    const btn = document.getElementById('btnRunBenchmarkSuite');
+    if (btn) btn.disabled = true;
+    showToast('Executing full 20-case benchmark pipeline (may take several minutes)...', 'info', 8000);
     try {
       const res = await API.runBenchmark();
-      showToast('20-case benchmark completed with 100% contract compliance!', 'success');
+      const passed = Number(res?.passed ?? res?.summary?.passed);
+      const total = Number(res?.total ?? res?.cases?.length ?? 0);
+      const msg = Number.isFinite(passed) && Number.isFinite(total)
+        ? `Benchmark completed: ${passed}/${total} cases met the contract.`
+        : 'Benchmark run completed.';
+      showToast(msg, 'success');
       await refreshAllInvestigations();
       await loadInsights();
     } catch (err) {
-      showToast(`Benchmark run completed: ${err.message}`, 'info');
-      await refreshAllInvestigations();
+      showToast(`Benchmark run failed: ${err.message}`, 'error');
+    } finally {
+      if (btn) btn.disabled = false;
     }
   });
 
