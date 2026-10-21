@@ -31,6 +31,8 @@ jobs:
         run: echo "sentinel-ui has its own toolchain (npm ci + tsc) in the sentinel-ui job below"
 
       - name: Run pytest
+        env:
+          PREPARED_DB_URL: https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation/releases/download/data-v1/investigation.db
         run: python -m pytest -q --no-header
 
   sentinel-ui:

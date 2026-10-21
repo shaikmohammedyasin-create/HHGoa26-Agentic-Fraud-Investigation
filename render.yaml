@@ -4,7 +4,9 @@ services:
     runtime: python
     plan: free
     region: oregon
-    buildCommand: "pip install -r requirements.txt"
+    # Fetches the prepared SQLite graph store (174 MB, published as a release
+    # asset because it exceeds GitHub's 100 MB blob limit) into the runtime FS.
+    buildCommand: "pip install -r requirements.txt && mkdir -p data/prepared && curl -sL https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation/releases/download/data-v1/investigation.db -o data/prepared/investigation.db"
     startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /health
     autoDeploy: true
