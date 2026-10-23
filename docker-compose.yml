@@ -1,0 +1,34 @@
+# HHGOA demo deployment.
+#
+#   docker compose up --build
+#   open http://localhost:8008
+#
+# Demo mode (default): DEMO_MODE=1 keeps Token Factory usage at zero -
+# Nemotron answers replay from the local answer cache and the daily call
+# cap protects against any direct web calls. Live mode: uncomment
+# NEBIUS_API_KEY and set DEMO_MODE=0 to enable real Token Factory calls
+# (still rate-limited per IP and by the global daily cap).
+services:
+  app:
+    build: .
+    container_name: hhgoa-demo
+    ports:
+      - "8008:8000"
+    environment:
+      DEMO_MODE: "1"
+      GRAPH_BACKEND: "local"
+      # Optional live Nemotron runs (leave unset for the free demo):
+      # NEBIUS_API_KEY: "your-nebius-api-key"
+      # DEMO_MODE: "0"
+    volumes:
+      # Persist the LLM answer cache and call log across restarts so the
+      # demo-mode replays keep working after the container is rebuilt.
+      - ./data/logs:/app/data/logs
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request;urllib.request.urlopen('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped

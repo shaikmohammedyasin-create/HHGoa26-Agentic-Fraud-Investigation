@@ -1,0 +1,27 @@
+# Never bake local datasets, secrets, or development junk into the image.
+.git
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.*
+!.env.example
+docs/
+tests/
+logs/
+artifacts/
+data/prepared/
+data/prepared/*
+data/full_load_staging/
+data/logs/
+data/app/
+data/raw/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.md
+!README.md
+!data/README.md
