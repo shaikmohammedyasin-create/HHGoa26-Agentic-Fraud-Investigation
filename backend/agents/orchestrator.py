@@ -37,6 +37,7 @@ from backend.agents import planner
 from backend.graph import query_router as graph
 from backend.graphrag.context import build_context, to_llm_prompt
 from backend.llm import client as llm
+from backend.llm import roles
 from backend.logging import get_logger
 from backend.mcp import client as mcp_client
 from backend.models import (
@@ -891,22 +892,53 @@ def _run_adaptive_investigation(case: InvestigationCase, t0: float) -> None:
     )
 
     summary_prompt = to_llm_prompt(rag_ctx, task="summarize")
-    summary_text, tok_summary, llm_used = llm.generate_summary(summary_prompt)
-    case.llm_used = llm_used
-    if not llm_used:
-        summary_text = _grounded_summary(case, flagged_txn, sig)
-    else:
+
+    # ── Nemotron role 3: analyst narrative + SAR draft (Ultra) ───────────────
+    # Advisory-generation only: when Token Factory is reachable the Ultra
+    # model writes the narrative and SAR draft from the evidence trail.
+    # On failure the legacy providers and grounded templates run as before,
+    # so the pipeline never blocks on the LLM.
+    model_nar = None
+    if _nebius_ready():
+        try:
+            model_nar = roles.narrative_and_sar(
+                _case_facts(case), _evidence_cards(case.evidence))
+        except Exception as exc:
+            log.warning("investigation.narrative_model_failed", error=str(exc))
+
+    if model_nar:
+        summary_text = model_nar["summary"]
+        tok_summary = int(model_nar["usage"]["completion_tokens"] or 0)
+        llm_used = True
+        case.model_usage["case_narrative_and_sar_draft"] = model_nar["usage"]
         if case.case_id not in summary_text or case.card_id not in summary_text:
             summary_text = f"Case {case.case_id} (Card {case.card_id}): {summary_text}"
-    case.summary = summary_text
-    case.tokens_used += tok_summary
+        case.llm_used = llm_used
+        case.summary = summary_text
+        case.tokens_used += tok_summary
+    else:
+        summary_text, tok_summary, llm_used = llm.generate_summary(summary_prompt)
+        case.llm_used = llm_used
+        if not llm_used:
+            summary_text = _grounded_summary(case, flagged_txn, sig)
+        else:
+            if case.case_id not in summary_text or case.card_id not in summary_text:
+                summary_text = f"Case {case.case_id} (Card {case.card_id}): {summary_text}"
+        case.summary = summary_text
+        case.tokens_used += tok_summary
 
     if sar_file:
-        nar_prompt = to_llm_prompt(rag_ctx, task="sar_narrative")
-        nar_text, tok_nar, nar_llm_used = llm.generate_sar_narrative(nar_prompt)
-        if not nar_llm_used:
-            nar_text = _grounded_sar_narrative(case, flagged_txn, all_affected_txns, device_label)
-        case.tokens_used += tok_nar
+        model_sar_text = (model_nar or {}).get("sar_narrative", "")
+        if model_nar and model_sar_text:
+            nar_text = model_sar_text
+        else:
+            nar_prompt = to_llm_prompt(rag_ctx, task="sar_narrative")
+            nar_text, tok_nar, nar_llm_used = llm.generate_sar_narrative(nar_prompt)
+            if not nar_llm_used:
+                nar_text = _grounded_sar_narrative(case, flagged_txn, all_affected_txns, device_label)
+            else:
+                tok_nar = tok_nar or 0
+            case.tokens_used += tok_nar
 
         activity_dates: list[str] = []
         if all_affected_txns:
@@ -927,6 +959,12 @@ def _run_adaptive_investigation(case: InvestigationCase, t0: float) -> None:
         )
     else:
         case.sar = SARRecord(file=False, reason=sar_reason)
+
+    # ── STEP: Nemotron advisory proposals (roles 1 + 2) ──────────────────────
+    # "Nemotron proposes, the policy engine decides": the pattern proposal is
+    # recorded for the analyst and for evaluation, but the deterministic
+    # engine's pattern/action output above remains the final decision.
+    _attach_model_proposals(case, final_actions, flagged_txn)
 
     # ── STEP: Stop reason ─────────────────────────────────────────────────────
     if not case.stop_reason or "stopping criteria" not in case.stop_reason:
@@ -1366,6 +1404,108 @@ def _match_anomaly(identity) -> bool:
         return False
     match_status = str(getattr(identity, "match_status", "") or "")
     return "0" in match_status or "mismatch" in match_status.lower()
+
+
+# ─── Nemotron advisory helpers ("Nemotron proposes, policy decides") ──────────
+
+def _nebius_ready() -> bool:
+    """Token Factory client configured? Cheap guard before role calls."""
+    from backend.llm import nebius_client
+    return nebius_client.available()
+
+
+def _evidence_cards(evidence) -> list[dict]:
+    """Tagged evidence cards for the model roles (ids referenced back only)."""
+    return [
+        {
+            "evidence_id": ev.evidence_id,
+            "claim": str(ev.claim)[:400],
+            "source": ev.source.value if hasattr(ev.source, "value") else str(ev.source),
+            "ref": str(getattr(ev, "ref", "") or ""),
+        }
+        for ev in evidence
+    ]
+
+
+def _case_facts(case: InvestigationCase) -> dict:
+    """Compact, non-evidence case facts passed to the narrative role."""
+    return {
+        "case_id": case.case_id,
+        "status": case.status.value,
+        "verdict": case.verdict.value,
+        "pattern": case.pattern.value,
+        "fraud_probability": case.fraud_probability,
+        "exposure_usd": case.exposure_usd,
+        "affected_txn_ids": case.affected_txn_ids[:12],
+        "connected_card_ids": case.connected_card_ids[:10],
+        "similar_prior_cases": case.similar_prior_cases[:5],
+    }
+
+
+def _attach_model_proposals(case: InvestigationCase,
+                            final_actions: list[ActionRecommendation],
+                            flagged_txn) -> None:
+    """Record roles 1 (pattern proposal) and 2 (verification draft).
+
+    Proposal-only: nothing here mutates case.pattern or the policy
+    recommendation list. Records model vs engine agreement plus the reason
+    whenever the engine's deterministic conclusion was kept over the model.
+    """
+    try:
+        from backend.llm import roles
+
+        # Role 1: pattern proposal from the finite evidence set.
+        proposal = roles.classify_pattern(_evidence_cards(case.evidence))
+        case.policy_decision = {
+            "verdict": case.verdict.value,
+            "pattern": case.pattern.value,
+            "fraud_probability": case.fraud_probability,
+            "actions": [a.action.value for a in final_actions],
+            "decided_by": "deterministic policy engine (rules R1-R10)",
+        }
+        if proposal is None:
+            case.model_agreed = False
+            case.model_override_reason = (
+                "No valid model proposal (model unavailable or output invalid); "
+                "policy engine decision stands.")
+            return
+        case.model_proposal = {
+            "pattern": proposal["pattern"],
+            "confidence": proposal["confidence"],
+            "evidence_ids": proposal["evidence_ids"],
+            "rationale": proposal["rationale"],
+        }
+        if proposal.get("usage"):
+            case.model_usage["pattern_classifier"] = proposal["usage"]
+        if proposal["pattern"] == case.pattern.value:
+            case.model_agreed = True
+            case.model_override_reason = ""
+        else:
+            case.model_agreed = False
+            case.model_override_reason = (
+                f"Policy engine retained '{case.pattern.value}' (evidence-backed, "
+                f"deterministic rules); model proposed '{proposal['pattern']}' "
+                f"at confidence {proposal['confidence']:.2f}. Engine decision stands.")
+
+        # Role 2: verification draft when the engine action calls for it.
+        if any(a.action == Action.VERIFY_WITH_CUSTOMER for a in final_actions):
+            confirm_fact = next(
+                (ev.claim for ev in case.evidence
+                 if str(getattr(ev, "source", "")) != "external"),
+                case.trigger.trigger_text or "")
+            draft = roles.draft_verification(
+                trigger_text=case.trigger.trigger_text,
+                txn_id=case.flagged_txn_id,
+                amount=f"{flagged_txn.amount:.2f} USD" if flagged_txn else "unknown",
+                confirm_fact=confirm_fact[:200],
+            )
+            if draft:
+                case.verification_draft = draft
+    except Exception as exc:
+        # Any LLM-path failure must not degrade the deterministic result.
+        log.warning("investigation.model_proposals_skipped", error=str(exc))
+        case.model_agreed = False
+        case.model_override_reason = f"model proposals skipped: {str(exc)[:140]}"
 
 
 # ─── Action routing and execution ──────────────────────────────────────────────

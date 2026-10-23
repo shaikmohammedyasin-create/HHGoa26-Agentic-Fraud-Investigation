@@ -430,6 +430,18 @@ class InvestigationCase(BaseModel):
     mcp_status: str = "not_configured"   # ok | unavailable | not_configured
     llm_used: bool = False
 
+    # Nemotron proposal record ("Nemotron proposes, the policy engine decides").
+    # model_proposal is the raw advisory output; policy_decision mirrors the
+    # deterministic engine result it was compared against. agreed is True
+    # when the proposal matched the engine; override_reason explains any
+    # disagreement (the engine's conclusion always stands).
+    model_proposal: dict[str, Any] | None = None
+    policy_decision: dict[str, Any] | None = None
+    model_agreed: bool = True
+    model_override_reason: str = ""
+    verification_draft: str | None = None
+    model_usage: dict[str, Any] = Field(default_factory=dict)
+
     # Metadata
     summary: str = ""
     stop_reason: str = ""

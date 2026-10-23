@@ -472,6 +472,77 @@ def get_full_investigation(case_id: str):
     return payload
 
 
+class AnalystQuestion(BaseModel):
+    question: str = Field(..., min_length=3, max_length=512)
+
+
+class AnalystAnswer(BaseModel):
+    case_id: str
+    question: str
+    answer: str | None
+    served_by: str | None = None
+    llm_used: bool = False
+
+
+def _case_payload_for_qa(case_id: str) -> dict[str, Any] | None:
+    """Case evidence payload for role 4: the stored investigation if present,
+    otherwise the precomputed case file (demo mode)."""
+    payload = app_db.load_investigation(case_id)
+    if payload and (payload.get("evidence") or payload.get("stop_reason")):
+        return payload
+    case_file = settings.cases_dir / f"{case_id}.json"
+    if case_id.isascii() and case_file.exists():
+        try:
+            return json.loads(case_file.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            log.warning("api.ask.case_file_unreadable", case_id=case_id, error=str(exc))
+    return None
+
+
+@app.post("/api/cases/{case_id}/ask", response_model=AnalystAnswer, tags=["Analyst Q&A"])
+def ask_case_question(case_id: str, req: AnalystQuestion):
+    """Nemotron role 4: answer an analyst question from one case's evidence
+    JSON only. Refuses politely when the answer is not in the evidence and
+    falls back to a grounded refusal when the model is unavailable."""
+    payload = _case_payload_for_qa(case_id)
+    if not payload:
+        raise HTTPException(404, f"No evidence found for case {case_id}")
+    try:
+        case = _reconstruct(payload) if "trigger" in payload else None
+    except Exception:
+        case = None
+    evidence_list = case.evidence if case is not None else payload.get("evidence", [])
+    from backend.llm import roles as llm_roles
+    cards = llm_roles._evidence_cards(evidence_list) if evidence_list else []
+    facts = llm_roles._case_facts(case) if case is not None else {
+        "case_id": case_id,
+        "verdict": str(payload.get("verdict", "")),
+        "pattern": str(payload.get("pattern", "")),
+    }
+    answer = llm_roles.analyst_qa(facts, cards, req.question)
+    if answer is not None:
+        return AnalystAnswer(case_id=case_id, question=req.question,
+                             answer=answer, served_by=settings.nebius_model_ultra,
+                             llm_used=True)
+    # Deterministic fallback: ground the refusal in the evidence refs.
+    refs = [str(c.get("ref", "")) for c in cards if c.get("ref")][:8]
+    fallback = ("Not in evidence. This case's deterministic evidence trail covers: "
+                + ", ".join(refs[:5])
+                + ("" if len(refs) <= 5 else " (and more); query it directly or re-run "
+                   "with the Nemotron key configured."))
+    return AnalystAnswer(case_id=case_id, question=req.question,
+                         answer=fallback, served_by="deterministic-fallback",
+                         llm_used=False)
+
+
+@app.get("/api/llm/status", tags=["System"])
+def llm_status():
+    """Nemotron/Token Factory service summary from the JSONL call log."""
+    from backend.llm import nebius_client
+    return nebius_client.log_summary()
+
+
+
 @app.get("/api/investigations/{case_id}/graph", tags=["Graph Visualization"])
 def get_investigation_subgraph(case_id: str):
     """Build a case-scoped local knowledge subgraph for visual rendering."""
