@@ -487,7 +487,7 @@ The backend exposes a structured, typed OpenAPI REST interface:
 ### Nemotron Advisory & LLM Ops
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/investigations/{case_id}/ask` | Ask-a-question advisory endpoint (Nemotron Ultra with `ANSWER:` contract); fails soft to deterministic context |
+| `POST` | `/api/cases/{case_id}/ask` | Ask-a-question advisory endpoint (Nemotron Ultra with `ANSWER:` contract); fails soft to deterministic context |
 | `GET` | `/api/llm/status` | Token Factory ops snapshot: calls, successes/failures, token totals, p50/p95 latency, per-role counts |
 
 ### Policy & Approvals
