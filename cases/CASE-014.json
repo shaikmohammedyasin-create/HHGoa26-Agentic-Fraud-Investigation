@@ -3,145 +3,133 @@
   "case": {
     "status": "closed_fraud",
     "verdict": "fraud",
-    "fraud_probability": 0.528,
+    "fraud_probability": 0.824,
     "pattern": "undocumented",
-    "pattern_description": "Activity does not match any of the five known fraud patterns, but the evidence shows coordinated abuse across accounts: 19 other card(s) share the device profile used here. It is reported as undocumented rather than forced into a known category, per policy R9.",
+    "pattern_description": "Activity does not match any of the five known fraud patterns, but the evidence shows coordinated abuse across accounts: 17 other card(s) share the device profile used here. It is reported as undocumented rather than forced into a known category, per policy R9.",
     "affected_txn_ids": [
-      "3478561"
+      "4012230",
+      "4012229",
+      "4012211",
+      "4012231"
     ],
-    "first_suspicious_txn_id": "3478561",
+    "first_suspicious_txn_id": "4012231",
     "connected_card_ids": [
-      "C12574-K1",
-      "C12645-K1",
-      "C07485-K1",
-      "C09174-K1",
-      "C12900-K2",
-      "C10350-K1",
-      "C06031-K2",
-      "C09049-K1",
-      "C09733-K1",
-      "C02975-K1"
+      "SC-09000-K1",
+      "SC-09001-K1",
+      "SC-09002-K1",
+      "SC-09003-K1",
+      "SC-09004-K2",
+      "SC-09005-K2",
+      "SC-09006-K2",
+      "SC-09007-K2",
+      "SC-09008-K2",
+      "SC-09009-K2"
     ],
     "connected_device_profiles": [
-      "SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080"
+      "IOS Device (Apple) unit-case-014-ring | synth-os-case-014-ring | synth-browser-case-014 | synth-screen-case-014"
     ],
-    "exposure_usd": 74.96,
+    "exposure_usd": 1162.14,
     "evidence": [
       {
-        "claim": "Trigger (analyst_request): Analyst request: several cards this month show purchases from the same unusual device profile. Review transaction 3478561 on card C13487-K1 and look for related activity.",
+        "claim": "Trigger (risk_score): Trigger (risk_score): Real-time model scored transaction 4012211 ($1152.70) at 0.83. Review and decide.",
         "source": "external",
-        "ref": "trigger:analyst_request",
+        "ref": "trigger:risk_score",
         "entity_ids": [
-          "C13487",
-          "C13487-K1",
-          "3478561"
+          "SC-03014",
+          "SC-03014-K956",
+          "4012211"
         ]
       },
       {
-        "claim": "50 previous transactions retrieved for card C13487-K1. Average amount: $57.43.",
+        "claim": "4 previous transactions retrieved for card SC-03014-K956. Average amount: $290.54.",
         "source": "graph",
-        "ref": "query:card_transaction_history(card_id=C13487-K1)",
+        "ref": "query:card_transaction_history(card_id=SC-03014-K956)",
         "entity_ids": [
-          "C13487-K1"
+          "SC-03014-K956"
         ]
       },
       {
-        "claim": "Device marked 'New' for this account: SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080.",
+        "claim": "4 online transactions on this card within 48h of the flagged transaction.",
         "source": "graph",
-        "ref": "query:transaction_identity(txn_id=3478561)",
+        "ref": "query:card_window(card_id=SC-03014-K956, hours=48)",
         "entity_ids": [
-          "3478561"
+          "4012231",
+          "4012230",
+          "4012229",
+          "4012211"
         ]
       },
       {
-        "claim": "Proxy or anonymous connection used: IP_PROXY:ANONYMOUS.",
+        "claim": "Device profile shared across 17 other card(s): SC-09000-K1, SC-09001-K1, SC-09002-K1, SC-09003-K1, SC-09004-K2.",
         "source": "graph",
-        "ref": "query:transaction_identity(txn_id=3478561)",
+        "ref": "query:accounts_sharing_device(device=IOS Device (Apple) unit-case-014-ring | synth-os-case-014-ring | synth-browser-case-014 | synth-screen-case-014)",
         "entity_ids": [
-          "3478561"
+          "SC-09000-K1",
+          "SC-09001-K1",
+          "SC-09002-K1",
+          "SC-09003-K1",
+          "SC-09004-K2",
+          "SC-09005-K2",
+          "SC-09006-K2",
+          "SC-09007-K2",
+          "SC-09008-K2",
+          "SC-09009-K2"
         ]
       },
       {
-        "claim": "Device profile shared across 19 other card(s): C12574-K1, C12645-K1, C07485-K1, C09174-K1, C12900-K2.",
+        "claim": "Fraud-ring analysis: device component contains 4 confirmed-fraud card(s) (ring size 18).",
         "source": "graph",
-        "ref": "query:accounts_sharing_device(device=SM-G935F Build/NRD90M | Android 7.0 | chrome 62.0 for android | 1920x1080)",
+        "ref": "query:device_fraud_ring(device=IOS Device (Apple) unit-case-014-ring | synth-os-case-014-ring | synth-browser-case-014 | synth-screen-case-014)",
         "entity_ids": [
-          "C12574-K1",
-          "C12645-K1",
-          "C07485-K1",
-          "C09174-K1",
-          "C12900-K2",
-          "C10350-K1",
-          "C06031-K2",
-          "C09049-K1",
-          "C09733-K1",
-          "C02975-K1"
+          "SC-09000-K1",
+          "SC-09001-K1",
+          "SC-09002-K1",
+          "SC-09003-K1"
         ]
       },
       {
-        "claim": "9 prior closed case(s) retrieved by pattern (undocumented) and keyword match over analyst notes.",
-        "source": "document",
-        "ref": "retrieval:pattern+keyword(pattern=undocumented)",
+        "claim": "1 prior case(s) for this customer were cleared as legitimate (e.g., confirmed travel, confirmed purchase).",
+        "source": "graph",
+        "ref": "query:closed_cases_for_customer(customer_id=SC-03014)",
         "entity_ids": [
-          "CC-4086",
-          "CC-4124",
-          "CC-3907",
-          "CC-3748",
-          "CC-3841",
-          "CC-3035",
-          "CC-2985",
-          "CC-2971",
-          "CC-2649"
+          "CC-4327"
         ]
       },
       {
-        "claim": "Customer response (simulated): No response received within the 24-hour window.",
+        "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-b2056bcf",
+        "ref": "evidence_request:ER-60f3ee02",
         "entity_ids": [
-          "C13487"
+          "SC-03014"
         ]
       }
     ],
     "similar_prior_cases": [
-      "CC-4086",
-      "CC-4124",
-      "CC-3907",
-      "CC-3748",
-      "CC-3841",
-      "CC-3035",
-      "CC-2985",
-      "CC-2971",
-      "CC-2649"
+      "CC-4327"
     ],
-    "summary": "Case CASE-014 (Card C13487-K1): Transaction 3478561 on card C13487‑K1 was an online purchase of $74.96 (product C) made from a new Android mobile device (SM‑G935F Build/NRD90M) using an anonymous proxy (evidence [HIGH] Device marked ‘New’ for this account; evidence [MEDIUM] Proxy or anonymous connection used). The same device profile is linked to 19 other cards (evidence [HIGH] Device profile shared across 19 other card(s)) and the activity matches an undocumented coordinated pattern with a fraud probability of 0.53 and medium risk, similar to prior confirmed cases (CC‑4086, CC‑4124, CC‑3907, CC‑3748, CC‑3841). Because no customer response was received within 24 hours, the deterministic final policy actions were applied: MONITOR_CARD (auto) per R4 and DECLINE_TRANSACTION (L1) per R4 (added: DECLINE_TRANSACTION, MONITOR_CARD; removed: ESCALATE_TO_ANALYST, FILE_REPORT, CREATE_CASE).",
+    "summary": "Case CASE-014 investigated undocumented activity on card SC-03014-K956 (customer SC-03014) around transaction 4012211 ($1152.70, online). Assessed fraud probability 0.82 (CRITICAL risk) from 7 evidence items across 7 independent evidence families. Key signals: 4 online transactions in 48h window; device component contains 4 confirmed-fraud cards. Additional evidence requested (customer_validation, information value 1.00); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-CASE-014"
+    "graph_case_id": "CASE-2026-CASE-014"
   },
   "evidence_requests": [
     {
       "type": "customer_validation",
       "asked_after_step": 4,
-      "assumed_response": "No response received within the 24-hour window.",
+      "assumed_response": "Customer states they did not make these purchases and still has the card in their possession.",
       "status": "received",
       "info_value": 1.0,
       "origin": "simulated",
-      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.79); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.15)",
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.82); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.15)",
       "alternatives_considered": [
-        {
-          "type": "step_up_auth",
-          "info_value": -0.05,
-          "decision_relevance": "Outcome A (Authentication fails — device unknown to cardholder) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.74); Outcome B (Authentication succeeds — device is the cardholder's) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.27)"
-        },
         {
           "type": "analyst_info",
           "info_value": -0.1,
-          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.65); Outcome B (Analyst reports no related activity) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.41)"
+          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.71); Outcome B (Analyst reports no related activity) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.40)"
         },
         {
           "type": "external_watchlist",
           "info_value": -0.15,
-          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.62); Outcome B (No watchlist hits) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.47)"
+          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.70); Outcome B (No watchlist hits) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.50)"
         }
       ]
     }
@@ -166,28 +154,50 @@
     ],
     "final": [
       {
-        "action": "MONITOR_CARD",
-        "route": "auto",
-        "reason": "R4: no reply within 24 hours"
+        "action": "BLOCK_CARD",
+        "route": "L1",
+        "reason": "R2: customer denied the transaction"
       },
       {
-        "action": "DECLINE_TRANSACTION",
-        "route": "L1",
-        "reason": "R4: decline pending authorization"
+        "action": "CREATE_CASE",
+        "route": "auto",
+        "reason": "R2"
+      },
+      {
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R2: exposure > $1,000 or shared device/region"
+      },
+      {
+        "action": "MONITOR_CONNECTED_CARDS",
+        "route": "auto",
+        "reason": "R6: shared origin detected"
       }
     ],
-    "what_changed": "Added: DECLINE_TRANSACTION, MONITOR_CARD; Removed: ESCALATE_TO_ANALYST, FILE_REPORT, CREATE_CASE"
+    "what_changed": "Added: BLOCK_CARD, MONITOR_CONNECTED_CARDS; Removed: ESCALATE_TO_ANALYST"
   },
   "sar": {
-    "file": false,
-    "reason": "FILE_REPORT not recommended; SAR not required",
-    "narrative": "",
-    "subjects": [],
-    "total_amount_usd": 0.0,
-    "activity_dates": []
+    "file": true,
+    "reason": "R2: confirmed fraud with exposure > $1,000",
+    "narrative": "Between 2026-09-15 and 2026-09-15, customer SC-03014 and card SC-03014-K956, connected cards SC-09000-K1, SC-09001-K1, SC-09002-K1, device profile 'IOS Device (Apple) unit-case-014-ring | synth-os-case-014-ring | synth-browser-case-014 | synth-screen-case-014' were involved in 4 transaction(s) assessed as fraud (undocumented pattern) with total exposure $1162.14. The flagged transaction 4012211 of $1152.70 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the undocumented pattern with assessed fraud probability 0.82. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "subjects": [
+      "SC-09000-K1",
+      "SC-09002-K1",
+      "SC-03014-K956",
+      "SC-09003-K1",
+      "SC-09001-K1",
+      "SC-03014",
+      "SC-09004-K2",
+      "IOS Device (Apple) unit-case-014-ring | synth-os-case-014-ring | synth-browser-c"
+    ],
+    "total_amount_usd": 1162.14,
+    "activity_dates": [
+      "2026-09-15",
+      "2026-09-15"
+    ]
   },
-  "stop_reason": "Borderline probability 0.53; investigation halted per stopping criteria. Escalated for analyst review.",
+  "stop_reason": "stopping criteria met; no further evidence request is decision-relevant",
   "tool_calls": 16,
-  "tokens": 2541,
-  "latency_s": 24.7
+  "tokens": 0,
+  "latency_s": 0.12
 }

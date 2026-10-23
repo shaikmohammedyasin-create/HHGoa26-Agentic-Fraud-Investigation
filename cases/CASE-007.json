@@ -3,100 +3,86 @@
   "case": {
     "status": "closed_legitimate",
     "verdict": "legitimate",
-    "fraud_probability": 0.15,
+    "fraud_probability": 0.05,
     "pattern": "none",
     "pattern_description": "Case closed as legitimate; no active fraud pattern.",
     "affected_txn_ids": [],
     "first_suspicious_txn_id": "",
-    "connected_card_ids": [],
-    "connected_device_profiles": [],
+    "connected_card_ids": [
+      "SC-00012-K1",
+      "SC-00019-K1",
+      "SC-00036-K1",
+      "SC-00068-K1",
+      "SC-00087-K2",
+      "SC-00094-K1",
+      "SC-00106-K1",
+      "SC-00112-K2",
+      "SC-00116-K1",
+      "SC-00118-K3"
+    ],
+    "connected_device_profiles": [
+      "IOS Device (Apple) unit-04116 | Windows 10 | firefox 122.0 | 1920x1080"
+    ],
     "exposure_usd": 0.0,
     "evidence": [
       {
-        "claim": "Trigger (risk_score): Real-time model scored transaction 3514948 ($111.92, in billing region 264.0) at 0.87. Review and decide.",
+        "claim": "Trigger (risk_score): Trigger (risk_score): Real-time model scored transaction 4012150 ($321.20, in billing region 310) at 0.56. Review and decide.",
         "source": "external",
         "ref": "trigger:risk_score",
         "entity_ids": [
-          "C09933",
-          "C09933-K2",
-          "3514948"
+          "SC-03007",
+          "SC-03007-K941",
+          "4012150"
         ]
       },
       {
-        "claim": "50 previous transactions retrieved for card C09933-K2. Average amount: $123.86.",
+        "claim": "1 previous transactions retrieved for card SC-03007-K941. Average amount: $321.20.",
         "source": "graph",
-        "ref": "query:card_transaction_history(card_id=C09933-K2)",
+        "ref": "query:card_transaction_history(card_id=SC-03007-K941)",
         "entity_ids": [
-          "C09933-K2"
+          "SC-03007-K941"
         ]
       },
       {
-        "claim": "2 online transactions on this card within 48h of the flagged transaction.",
+        "claim": "Device profile shared across 20 other card(s): SC-00012-K1, SC-00019-K1, SC-00036-K1, SC-00068-K1, SC-00087-K2.",
         "source": "graph",
-        "ref": "query:card_window(card_id=C09933-K2, hours=48)",
+        "ref": "query:accounts_sharing_device(device=IOS Device (Apple) unit-04116 | Windows 10 | firefox 122.0 | 1920x1080)",
         "entity_ids": [
-          "3515777",
-          "3516867"
+          "SC-00012-K1",
+          "SC-00019-K1",
+          "SC-00036-K1",
+          "SC-00068-K1",
+          "SC-00087-K2",
+          "SC-00094-K1",
+          "SC-00106-K1",
+          "SC-00112-K2",
+          "SC-00116-K1",
+          "SC-00118-K3"
         ]
       },
       {
-        "claim": "18 prior confirmed fraud case(s) found for customer C09933 or card C09933-K2: CC-5521, CC-5092, CC-4787, CC-4597, CC-4455.",
+        "claim": "1 prior case(s) for this customer were cleared as legitimate (e.g., confirmed travel, confirmed purchase).",
         "source": "graph",
-        "ref": "query:closed_cases_for_customer(customer_id=C09933)",
+        "ref": "query:closed_cases_for_customer(customer_id=SC-03007)",
         "entity_ids": [
-          "CC-5521",
-          "CC-5092",
-          "CC-4787",
-          "CC-4597",
-          "CC-4455"
-        ]
-      },
-      {
-        "claim": "20 prior closed case(s) retrieved by pattern (card_not_present_fraud) and keyword match over analyst notes.",
-        "source": "document",
-        "ref": "retrieval:pattern+keyword(pattern=card_not_present_fraud)",
-        "entity_ids": [
-          "CC-5558",
-          "CC-5551",
-          "CC-5550",
-          "CC-5542",
-          "CC-5513",
-          "CC-5548",
-          "CC-5540",
-          "CC-5553",
-          "CC-5493",
-          "CC-5512"
+          "CC-4312"
         ]
       },
       {
         "claim": "Customer response (simulated): Customer confirms they authorized this purchase from their personal account.",
         "source": "customer",
-        "ref": "evidence_request:ER-239ffe3b",
+        "ref": "evidence_request:ER-e5cbeefc",
         "entity_ids": [
-          "C09933"
+          "SC-03007"
         ]
       }
     ],
     "similar_prior_cases": [
-      "CC-5521",
-      "CC-5092",
-      "CC-4787",
-      "CC-4597",
-      "CC-4455",
-      "CC-4277",
-      "CC-4196",
-      "CC-3821",
-      "CC-3439",
-      "CC-3136",
-      "CC-5558",
-      "CC-5551",
-      "CC-5550",
-      "CC-5542",
-      "CC-5513"
+      "CC-4312"
     ],
-    "summary": "Case CASE-007 investigated none activity on card C09933-K2 (customer C09933) around transaction 3514948 ($111.92, in_person). Assessed fraud probability 0.15 (LOW risk) from 6 evidence items across 6 independent evidence families. Key signals: 2 online transactions in 48h window; 18 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 0.95); response: Customer confirms they authorized this purchase from their personal account. Final actions: CLOSE_NO_FRAUD.",
+    "summary": "Case CASE-007 investigated none activity on card SC-03007-K941 (customer SC-03007) around transaction 4012150 ($321.20, in_person). Assessed fraud probability 0.05 (LOW risk) from 5 evidence items across 5 independent evidence families. Additional evidence requested (customer_validation, information value 1.00); response: Customer confirms they authorized this purchase from their personal account. Final actions: CLOSE_NO_FRAUD.",
     "written_to_graph": true,
-    "graph_case_id": "CASE-2016-CASE-007"
+    "graph_case_id": "CASE-2026-CASE-007"
   },
   "evidence_requests": [
     {
@@ -104,10 +90,21 @@
       "asked_after_step": 4,
       "assumed_response": "Customer confirms they authorized this purchase from their personal account.",
       "status": "received",
-      "info_value": 0.95,
+      "info_value": 1.0,
       "origin": "simulated",
-      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE (p=0.80); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.15)",
-      "alternatives_considered": []
+      "decision_relevance": "Outcome A (Customer denies making the transaction) -> BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS (p=0.63); Outcome B (Customer confirms making the transaction / legitimate context) -> CLOSE_NO_FRAUD (p=0.05)",
+      "alternatives_considered": [
+        {
+          "type": "analyst_info",
+          "info_value": 0.15,
+          "decision_relevance": "Outcome A (Analyst reports related fraud on the shared profile) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.42); Outcome B (Analyst reports no related activity) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.12)"
+        },
+        {
+          "type": "external_watchlist",
+          "info_value": -0.15,
+          "decision_relevance": "Outcome A (Watchlist hit on linked identifiers) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.39); Outcome B (No watchlist hits) -> CREATE_CASE, FILE_REPORT, ESCALATE_TO_ANALYST (p=0.17)"
+        }
+      ]
     }
   ],
   "next_best_actions": {
@@ -115,12 +112,17 @@
       {
         "action": "CREATE_CASE",
         "route": "auto",
-        "reason": "Policy §3a: probability ≥ 0.30 triggers case creation"
+        "reason": "R9: undocumented coordinated pattern"
       },
       {
-        "action": "VERIFY_WITH_CUSTOMER",
+        "action": "FILE_REPORT",
+        "route": "L2",
+        "reason": "R9"
+      },
+      {
+        "action": "ESCALATE_TO_ANALYST",
         "route": "auto",
-        "reason": "R1: insufficient evidence for blocking"
+        "reason": "R9"
       }
     ],
     "final": [
@@ -130,7 +132,7 @@
         "reason": "R3: customer confirmed the transaction"
       }
     ],
-    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: VERIFY_WITH_CUSTOMER, CREATE_CASE"
+    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: FILE_REPORT, CREATE_CASE, ESCALATE_TO_ANALYST"
   },
   "sar": {
     "file": false,
@@ -140,8 +142,8 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
-  "stop_reason": "Fraud probability 0.15 ≤ 0.15; activity consistent with legitimate use.",
-  "tool_calls": 13,
+  "stop_reason": "Fraud probability 0.05 ≤ 0.15; activity consistent with legitimate use.",
+  "tool_calls": 15,
   "tokens": 0,
-  "latency_s": 0.12
+  "latency_s": 0.08
 }
