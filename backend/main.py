@@ -513,12 +513,29 @@ def ask_case_question(case_id: str, req: AnalystQuestion):
         case = None
     evidence_list = case.evidence if case is not None else payload.get("evidence", [])
     from backend.llm import roles as llm_roles
-    cards = llm_roles._evidence_cards(evidence_list) if evidence_list else []
-    facts = llm_roles._case_facts(case) if case is not None else {
-        "case_id": case_id,
-        "verdict": str(payload.get("verdict", "")),
-        "pattern": str(payload.get("pattern", "")),
-    }
+    if case is not None:
+        # Reconstruct path: reuse the orchestrator's card and fact builders.
+        from backend.agents.orchestrator import _case_facts, _evidence_cards
+        cards = _evidence_cards(evidence_list)
+        facts = _case_facts(case)
+    else:
+        # Precomputed case-file path: stable EV-xx ids over the raw dicts.
+        cards = [
+            {
+                "evidence_id": f"EV-{idx + 1:02d}",
+                "claim": str(item.get("claim", ""))[:400],
+                "source": str(item.get("source", "")),
+                "ref": str(item.get("ref", "") or ""),
+            }
+            for idx, item in enumerate(evidence_list)
+        ]
+        facts = {
+            "case_id": case_id,
+            "verdict": str(payload.get("verdict", "")),
+            "pattern": str(payload.get("pattern", "")),
+            "fraud_probability": payload.get("fraud_probability"),
+            "exposure_usd": payload.get("exposure_usd"),
+        }
     answer = llm_roles.analyst_qa(facts, cards, req.question)
     if answer is not None:
         return AnalystAnswer(case_id=case_id, question=req.question,

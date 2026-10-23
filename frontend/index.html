@@ -477,6 +477,10 @@
                 <span>Governed NBAs</span>
                 <span class="subnav-count-pill" id="aprCount">0</span>
               </button>
+              <button class="case-subnav-btn" data-casetab="casetabNemotron" id="btnSubtabNemotron" role="tab" aria-selected="false">
+                <span>Nemotron Advisory</span>
+                <span class="subnav-count-pill" id="nemCount">0</span>
+              </button>
               <button class="case-subnav-btn" data-casetab="casetabSar" role="tab" aria-selected="false">
                 <span>FinCEN SAR Document</span>
               </button>
@@ -621,7 +625,62 @@
               </div>
             </div>
 
-            <!-- Subtab 7: Formal FinCEN SAR Document (#tabPersistence) -->
+            <!-- Subtab 7: Nemotron Advisory ("propose, engine decides") -->
+            <div class="case-tab-pane" id="casetabNemotron">
+              <div class="panel-card" id="tabNemotron" role="tabpanel" aria-labelledby="btnSubtabNemotron">
+                <div class="panel-card-header">
+                  <span class="panel-card-title">Nemotron Proposal & Policy Decision</span>
+                  <span class="panel-card-aside">NVIDIA Nemotron via Nebius Token Factory</span>
+                </div>
+                <div class="panel-card-body">
+                  <div id="nemotronAdvisoryContent">
+                    <!-- Nemotron proposal panel rendered by app.js -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel-card">
+                <div class="panel-card-header">
+                  <span class="panel-card-title">Customer Verification Message Draft</span>
+                  <span class="panel-card-aside">Nemotron Nano &bull; human-send only</span>
+                </div>
+                <div class="panel-card-body">
+                  <div id="verificationDraftContent">
+                    <!-- Role 2 draft rendered by app.js -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel-card">
+                <div class="panel-card-header">
+                  <span class="panel-card-title">Ask About This Case</span>
+                  <span class="panel-card-aside">Answered only from recorded evidence</span>
+                </div>
+                <div class="panel-card-body">
+                  <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="caseAskInput" maxlength="512" placeholder="e.g. Why was this flagged? Which device was shared?" style="flex:1;" />
+                    <button class="btn-primary" id="btnAskCase">Ask</button>
+                  </div>
+                  <div id="caseAskAnswer" style="margin-top:12px;">
+                    <!-- Answer rendered by app.js -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel-card">
+                <div class="panel-card-header">
+                  <span class="panel-card-title">Model Service Ledger</span>
+                  <span class="panel-card-aside">Which model served each step &bull; per-call tokens</span>
+                </div>
+                <div class="panel-card-body">
+                  <div id="modelServedFooter">
+                    <!-- Model usage table rendered by app.js -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subtab 8: Formal FinCEN SAR Document (#tabPersistence) -->
             <div class="case-tab-pane" id="casetabSar">
               <div class="panel-card" id="tabPersistence" role="tabpanel">
                 <div class="panel-card-header">

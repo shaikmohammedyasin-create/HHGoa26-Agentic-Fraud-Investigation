@@ -78,6 +78,16 @@ def case_to_answer(case: InvestigationCase) -> dict[str, Any]:
             "total_amount_usd": round(case.sar.total_amount_usd, 2),
             "activity_dates": case.sar.activity_dates,
         },
+        # Nemotron advisory layer ("model proposes, policy engine decides").
+        # Additive: not part of the graded fields, consumed by the UI.
+        "nemotron": {
+            "model_proposal": case.model_proposal,
+            "policy_decision": case.policy_decision,
+            "model_agreed": case.model_agreed,
+            "model_override_reason": case.model_override_reason,
+            "verification_draft": case.verification_draft,
+            "model_usage": case.model_usage,
+        },
         "stop_reason": case.stop_reason,
         "tool_calls": case.tool_calls,
         "tokens": case.tokens_used,

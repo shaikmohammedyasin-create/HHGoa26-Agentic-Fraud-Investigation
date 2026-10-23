@@ -151,6 +151,27 @@ const API = {
     const res = await fetch(`${this.baseUrl}/benchmark/checkpoints`);
     if (!res.ok) throw new Error(`Checkpoint report unavailable: ${res.statusText}`);
     return await res.json();
+  },
+
+  async askCase(caseId, question) {
+    // Nemotron Ultra analyst Q&A role; deterministic fallback served server-side.
+    const res = await fetch(`${this.baseUrl}/api/cases/${encodeURIComponent(caseId)}/ask`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
+    });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.detail || `Question failed: ${res.statusText}`);
+    }
+    return await res.json();
+  },
+
+  async getLlmStatus() {
+    // Aggregate Nemotron/Token Factory usage summary (calls, tokens, latency).
+    const res = await fetch(`${this.baseUrl}/api/llm/status`);
+    if (!res.ok) return null;
+    return await res.json();
   }
 };
 

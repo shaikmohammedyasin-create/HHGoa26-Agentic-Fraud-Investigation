@@ -503,6 +503,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 11. Render Governed NBAs
     renderNbaGovernance(c);
 
+    // 11.5 Render Nemotron advisory panel (proposal / policy decision / Q&A)
+    renderNemotronAdvisory(c);
+
     // 12. Render SAR Document
     renderSarDocument(c);
 
@@ -1044,6 +1047,216 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  // ── Render Nemotron Advisory (proposal / policy decision / Q&A) ───────────
+  // Public surface of the "Nemotron proposes, policy engine decides" loop.
+  // Data comes from the additive `nemotron` block in the dossier payload.
+  function renderNemotronAdvisory(data) {
+    const prv = document.getElementById('nemotronAdvisoryContent');
+    const draftBox = document.getElementById('verificationDraftContent');
+    const footer = document.getElementById('modelServedFooter');
+    if (!prv) return;
+
+    const nem = data.nemotron || {};
+    const proposal = nem.model_proposal || null;
+    const policy = nem.policy_decision || null;
+    const usage = nem.model_usage || {};
+
+    // Count pill: how many Nemotron roles actually served this case.
+    const nemCountEl = document.getElementById('nemCount');
+    if (nemCountEl) nemCountEl.textContent = Object.keys(usage).length;
+
+    // Small pill styles for the agreement state.
+    const agreePill = () => `
+      <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 10px; border-radius:999px;
+        font-size:11px; font-weight:700; background:rgba(46,204,113,.15); color:var(--legit);">
+        &check; Model and policy engine AGREE
+      </span>`;
+    const overrulePill = reasonText => `
+      <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 10px; border-radius:999px;
+        font-size:11px; font-weight:700; background:rgba(243,156,18,.15); color:#F39C12;">
+        Overruled by policy engine
+      </span>
+      <div style="font-size:12px; color:var(--ink-300); margin-top:6px;">${escapeHtml(reasonText || '')}</div>`;
+    const fallbackPill = () => `
+      <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 10px; border-radius:999px;
+        font-size:11px; font-weight:600; background:rgba(148,159,179,.15); color:var(--ink-300);">
+        Deterministic result only (model unavailable)
+      </span>`;
+
+    if (proposal && policy) {
+      // Cited evidence ids rendered with their claims for traceability.
+      const claimsById = {};
+      (data.evidence || []).forEach((ev, idx) => {
+        claimsById[ev.evidence_id || `EV-${String(idx + 1).padStart(2, '0')}`] = ev.claim;
+      });
+      const citedRows = (proposal.evidence_ids || []).map(id => `
+        <div style="font-size:12px; margin-top:4px;">
+          <span style="font-family:var(--font-mono); color:var(--tg-500); font-weight:600;">${escapeHtml(id)}</span>
+          <span style="color:var(--ink-300);"> — ${escapeHtml(claimsById[id] || 'referenced evidence')}</span>
+        </div>`).join('');
+
+      const statement = nem.model_agreed
+        ? agreePill()
+        : overrulePill(nem.model_override_reason);
+
+      prv.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+          ${statement}
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div style="padding:14px; border:1px solid var(--ink-750); border-radius:10px;">
+            <div style="font-size:11px; letter-spacing:.08em; color:var(--ink-400); font-weight:700; margin-bottom:8px;">
+              NEMOTRON PROPOSAL (ADVISORY)
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-100);">
+              <span>Pattern</span><strong style="font-family:var(--font-mono);">${escapeHtml(proposal.pattern)}</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-100); margin-top:4px;">
+              <span>Confidence</span><strong>${Number(proposal.confidence ?? 0).toFixed(2)}</strong>
+            </div>
+            <div style="font-size:12px; color:var(--ink-200); margin-top:8px; line-height:1.5;">
+              ${escapeHtml(proposal.rationale || '')}
+            </div>
+            <div style="margin-top:8px;">
+              <div style="font-size:11px; color:var(--ink-400); font-weight:700;">CITED EVIDENCE</div>
+              ${citedRows || '<div style="font-size:12px; color:var(--ink-400);">No evidence ids cited.</div>'}
+            </div>
+          </div>
+          <div style="padding:14px; border:1px solid var(--ink-750); border-radius:10px;">
+            <div style="font-size:11px; letter-spacing:.08em; color:var(--ink-400); font-weight:700; margin-bottom:8px;">
+              POLICY ENGINE DECISION (BINDING)
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-100);">
+              <span>Verdict</span><strong style="font-family:var(--font-mono);">${escapeHtml(policy.verdict || '')}</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-100); margin-top:4px;">
+              <span>Pattern</span><strong style="font-family:var(--font-mono);">${escapeHtml(policy.pattern || '')}</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-100); margin-top:4px;">
+              <span>Fraud probability</span><strong>${Number(policy.fraud_probability ?? 0).toFixed(3)}</strong>
+            </div>
+            <div style="font-size:12px; color:var(--ink-200); margin-top:8px;">
+              Actions: ${(policy.actions || []).map(a => `<span class="route-pill route-auto" style="font-size:10.5px; margin:2px 2px 0 0;">${escapeHtml(a)}</span>`).join(' ') || '<span style="color:var(--ink-400);">none</span>'}
+            </div>
+            <div style="font-size:11.5px; color:var(--ink-400); margin-top:8px;">Decided by: ${escapeHtml(policy.decided_by || '')}</div>
+          </div>
+        </div>`;
+    } else if (policy) {
+      prv.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">${fallbackPill()}</div>
+        <div style="font-size:12px; color:var(--ink-300); margin-top:8px;">
+          ${escapeHtml(nem.model_override_reason || 'All four roles ran deterministically; the pipeline never blocks on the LLM.')}
+        </div>`;
+    } else {
+      prv.innerHTML = `
+        <div style="padding:18px; text-align:center; color:var(--ink-400);">
+          No Nemotron advisory recorded for this case.
+        </div>`;
+    }
+
+    // Role 2 draft (loaded only when a customer verification was required).
+    if (draftBox) {
+      if (nem.verification_draft) {
+        draftBox.innerHTML = `
+          <p style="font-size:13px; color:var(--ink-100); line-height:1.6; padding:12px 14px;
+            border:1px dashed var(--tg-700); border-radius:8px; margin:0;">
+            ${escapeHtml(nem.verification_draft)}
+          </p>
+          <div style="font-size:11px; color:var(--ink-400); margin-top:6px;">
+            Draft only — an analyst must review before any message is sent.
+          </div>`;
+      } else {
+        draftBox.innerHTML =
+          '<div style="padding:14px; text-align:center; color:var(--ink-400); font-size:12px;">' +
+          'No customer verification was required by the policy engine for this case.' +
+          '</div>';
+      }
+    }
+
+    // Service ledger: per-role token counts from this case + service status.
+    renderModelServedFooter(footer, usage);
+    wireAskBox(data);
+  }
+
+  function renderModelServedFooter(footer, usage) {
+    if (!footer) return;
+    if (footer.dataset.wired !== '1') {
+      footer.dataset.wired = '1';
+      // Fresh case render invalidates the cached status line.
+      footer.dataset.status = '';
+    }
+    const roleLabels = {
+      pattern_classifier: 'Pattern proposal — Nemotron Nano',
+      verification_request_drafter: 'Verification draft — Nemotron Nano',
+      case_narrative_and_sar_draft: 'Narrative + SAR draft — Nemotron Ultra',
+      analyst_qa: 'Analyst Q&A — Nemotron Ultra'
+    };
+    const rows = Object.entries(usage).map(([role, u]) => `
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; padding:6px 0;
+        border-bottom:1px solid var(--ink-750);">
+        <span style="color:var(--ink-200);">${escapeHtml(roleLabels[role] || role)}</span>
+        <span style="font-family:var(--font-mono); color:var(--ink-400); font-size:11.5px;">
+          ${Number(u.prompt_tokens || 0)} in / ${Number(u.completion_tokens || 0)} out tokens
+        </span>
+      </div>`).join('');
+    const emptyRows = `<div style="padding:8px 0; font-size:12.5px; color:var(--ink-400);">
+        No live Nemotron calls were needed for this case.
+      </div>`;
+    footer.innerHTML = `
+      ${rows || emptyRows}
+      <div id="modelStatusLine" style="margin-top:10px; font-size:11.5px; color:var(--ink-400);"></div>
+    `;
+
+    const statusLine = document.getElementById('modelStatusLine');
+    if (statusLine) {
+      API.getLlmStatus().then(s => {
+        if (!s || !statusLine.isConnected) return;
+        statusLine.textContent = s.available
+          ? `Nebius Token Factory: ${s.successes}/${s.calls_logged} logged calls ok · p50 ${Math.round(s.latency_ms_p50 || 0)} ms · p95 ${Math.round(s.latency_ms_p95 || 0)} ms`
+          : 'Nebius Token Factory: no API key configured — deterministic fallback in use.';
+      }).catch(() => {});
+    }
+  }
+
+  function wireAskBox(data) {
+    const input = document.getElementById('caseAskInput');
+    const btn = document.getElementById('btnAskCase');
+    const answerBox = document.getElementById('caseAskAnswer');
+    if (!input || !btn || !answerBox) return;
+
+    btn.onclick = async () => {
+      const q = (input.value || '').trim();
+      if (!q) {
+        showToast('Type a question about this case first.', 'info');
+        return;
+      }
+      const caseId = data.case_id;
+      btn.disabled = true;
+      answerBox.innerHTML = `<div style="font-size:12.5px; color:var(--ink-400); padding:8px 0;">Asking…</div>`;
+      try {
+        const ans = await API.askCase(caseId, q);
+        answerBox.innerHTML = `
+          <p style="font-size:13px; color:var(--ink-100); line-height:1.6; padding:12px 14px;
+            border:1px solid var(--ink-750); border-radius:8px; margin:0;">
+            ${escapeHtml(ans.answer)}
+          </p>
+          <div style="font-size:11px; color:var(--ink-400); margin-top:6px;">
+            Served by: ${escapeHtml(ans.served_by || 'deterministic fallback')}
+            ${ans.llm_used ? '&bull; Nemotron answered from recorded evidence only' : '&bull; no LLM available — evidence citations only'}
+          </div>`;
+        input.value = '';
+      } catch (err) {
+        answerBox.innerHTML = `<div style="font-size:12.5px; color:#E74C3C; padding:8px 0;">${escapeHtml(err.message)}</div>`;
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    input.onkeydown = evt => {
+      if ((evt.key === 'Enter' || (evt.keyCode || 0) === 13)) btn.click();
+    };
+  }
+
   // ── Render FinCEN SAR Document ────────────────────────────────────────────
   function renderSarDocument(data) {
     const container = document.getElementById('persistenceContent');
@@ -1090,7 +1303,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         </section>
 
         <section class="sar-section">
-          <div class="sar-section-title">Part II. Suspicious Activity Narrative</div>
+          <div class="sar-section-title">Part II. Suspicious Activity Narrative
+            ${(data.nemotron?.model_usage?.case_narrative_and_sar_draft)
+              ? '<span style="font-weight:400; color:var(--ink-400); font-size:11px; margin-left:8px;">Draft served by Nemotron Ultra (Nebius Token Factory) &mdash; analyst sign-off required</span>'
+              : ''}
+          </div>
           <p class="sar-narrative-text" id="sarNarrativeText">
             ${escapeHtml(sar.narrative || data.summary || 'Suspicious financial activity identified across knowledge graph topology.')}
           </p>
