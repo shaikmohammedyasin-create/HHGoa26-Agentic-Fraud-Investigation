@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Header, Query
+from fastapi import FastAPI, HTTPException, Header, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -77,6 +77,8 @@ class HealthResponse(BaseModel):
     app_db: str
     llm_provider: str
     app_env: str
+    demo_mode: bool
+    graph_hint: str | None = None
 
 
 # ─── Health ───────────────────────────────────────────────────────────────────
@@ -90,14 +92,21 @@ def health():
     except Exception as exc:
         db_status = f"unavailable: {exc}"
 
+    graph_unavailable = (
+        isinstance(graph_h, dict) and (
+            any(v == "unavailable" for v in graph_h.values())
+            or graph_h.get("status") == "unavailable"))
     overall = "healthy"
-    if isinstance(graph_h, dict):
-        if any(v == "unavailable" for v in graph_h.values()):
-            overall = "degraded"
-    elif graph_h.get("status") == "unavailable":
+    if graph_unavailable:
         overall = "degraded"
     if db_status != "healthy":
         overall = "degraded"
+
+    # Friendly hint: Tigerscale cloud graphs take ~60 s to wake after idle.
+    graph_hint = None
+    if graph_unavailable and settings.graph_backend == "tigergraph":
+        graph_hint = ("Graph instance may still be waking up - retry in 60 s "
+                      "or run scripts/wake_graph.py")
 
     return HealthResponse(
         status=overall,
@@ -105,6 +114,8 @@ def health():
         app_db=db_status,
         llm_provider=settings.llm_provider,
         app_env=settings.app_env,
+        demo_mode=settings.demo_mode,
+        graph_hint=graph_hint,
     )
 
 
@@ -153,7 +164,7 @@ def get_investigation(case_id: str):
 
 
 @app.post("/investigations/{case_id}/run", tags=["Investigations"])
-def run_investigation_endpoint(case_id: str, force: bool = False):
+def run_investigation_endpoint(case_id: str, force: bool = False, request: Request = None):
     """
     Run or resume an investigation.
 
@@ -161,6 +172,9 @@ def run_investigation_endpoint(case_id: str, force: bool = False):
     this so an analyst always gets a fresh execution); the default respects the
     idempotent cache and any paused human-in-the-loop state.
     """
+    if force and request is not None:
+        # Fresh runs can spend Nemotron calls; only re-run button traffic is gated.
+        _guard_llm_budget(request)
     try:
         case = run_investigation(case_id, force=force)
     except ValueError as exc:
@@ -484,6 +498,25 @@ class AnalystAnswer(BaseModel):
     llm_used: bool = False
 
 
+def _guard_llm_budget(request: Request) -> None:
+    """Shared budget gate for endpoints that may trigger Token Factory calls.
+
+    429 hourly per-IP limit first, then the 503 global daily credit cap.
+    Messages are judge-facing on purpose - no stack-trace smell.
+    """
+    from backend.api_limits import DailyCapReached, RateLimitExceeded, check_llm_budget
+
+    try:
+        check_llm_budget(request)
+    except RateLimitExceeded as exc:
+        raise HTTPException(429, str(exc))
+    except DailyCapReached:
+        raise HTTPException(
+            503,
+            "Daily Nemotron credit budget consumed - case answers remain "
+            "available from the deterministic engine and demo cache.")
+
+
 def _case_payload_for_qa(case_id: str) -> dict[str, Any] | None:
     """Case evidence payload for role 4: the stored investigation if present,
     otherwise the precomputed case file (demo mode)."""
@@ -500,10 +533,11 @@ def _case_payload_for_qa(case_id: str) -> dict[str, Any] | None:
 
 
 @app.post("/api/cases/{case_id}/ask", response_model=AnalystAnswer, tags=["Analyst Q&A"])
-def ask_case_question(case_id: str, req: AnalystQuestion):
+def ask_case_question(case_id: str, req: AnalystQuestion, request: Request):
     """Nemotron role 4: answer an analyst question from one case's evidence
     JSON only. Refuses politely when the answer is not in the evidence and
     falls back to a grounded refusal when the model is unavailable."""
+    _guard_llm_budget(request)
     payload = _case_payload_for_qa(case_id)
     if not payload:
         raise HTTPException(404, f"No evidence found for case {case_id}")

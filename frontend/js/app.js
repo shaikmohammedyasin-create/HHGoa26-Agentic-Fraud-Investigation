@@ -222,12 +222,33 @@ document.addEventListener('DOMContentLoaded', async () => {
           text.textContent = 'TigerGraph Local Mirror';
         }
       }
+      renderDemoBanner(h);
     } catch (e) {
       const dot = document.getElementById('tgStatusDot');
       const text = document.getElementById('tgStatusText');
       if (dot) dot.className = 'status-dot degraded';
       if (text) text.textContent = 'TigerGraph Mirror';
     }
+  }
+
+  // Demo-mode notice strip: precomputed graph results, live Nemotron
+  // under rate limits, no TigerGraph instance needed.
+  function renderDemoBanner(h) {
+    if (!h || !h.demo_mode) return;
+    let banner = document.getElementById('demoModeBanner');
+    if (banner) return;
+    banner = document.createElement('div');
+    banner.id = 'demoModeBanner';
+    banner.style.cssText = [
+      'position:sticky', 'top:52px', 'z-index:900', 'width:100%',
+      'padding:8px 20px', 'font-size:12.5px', 'font-weight:600',
+      'background:linear-gradient(90deg, rgba(118,68,255,.18), rgba(46,204,113,.12))',
+      'color:var(--ink-100)', 'border-bottom:1px solid var(--ink-750)',
+      'letter-spacing:.01em', 'text-align:center'
+    ].join(';');
+    banner.textContent = 'Demo mode: precomputed graph results, live NVIDIA Nemotron '
+      + 'calls (rate-limited & capped), served without a TigerGraph instance.';
+    document.body.insertBefore(banner, document.body.firstChild);
   }
 
   function openHealthModal() {

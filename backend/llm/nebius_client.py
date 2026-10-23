@@ -123,6 +123,26 @@ def chat(role: str, system: str, user: str, model: str | None = None,
     chosen_model = model or model_nano()
     started = time.perf_counter()
 
+    # Demo-mode protections: replay stored answers before spending credits.
+    from backend.llm import cache as llm_cache
+    cached = llm_cache.get_cached(role, user)
+    if cached:
+        log.info("nebius.cache_hit", role=role)
+        latency = round((time.perf_counter() - started) * 1000, 1)
+        usage_out = {"prompt_tokens": cached["usage"].get("prompt_tokens", 0),
+                     "completion_tokens": cached["usage"].get("completion_tokens", 0)}
+        _append_log({"role": role, "model": "cache-replay", "latency_ms": latency,
+                     "prompt_tokens": 0, "completion_tokens": 0,
+                     "success": True, "attempt": 0, "cached": True,
+                     "ts": datetime.now(timezone.utc).isoformat()})
+        return cached["text"], usage_out
+    # Global daily credit cap: fail soft to deterministic output, never crash.
+    daily_used = llm_cache.calls_used_today()
+    if settings.llm_daily_call_cap and daily_used >= settings.llm_daily_call_cap:
+        log.warning("nebius.daily_cap_reached", role=role, used=daily_used,
+                    cap=settings.llm_daily_call_cap)
+        return None
+
     from openai import OpenAI
     client = OpenAI(
         api_key=settings.nebius_api_key,
@@ -161,6 +181,8 @@ def chat(role: str, system: str, user: str, model: str | None = None,
             log.info("nebius.call_ok", role=role, model=chosen_model,
                      latency_ms=latency_ms, prompt_tokens=usage_out["prompt_tokens"],
                      completion_tokens=usage_out["completion_tokens"])
+            # Demo mode stores the answer for cost-free replay later.
+            llm_cache.put_cached(role, user, text, usage_out)
             return text, usage_out
         except Exception as exc:
             last_error = str(exc)
