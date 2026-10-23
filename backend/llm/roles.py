@@ -192,20 +192,35 @@ def analyst_qa(instance: dict, evidence_cards: list[dict], question: str) -> str
     lines += ["", "EVIDENCE TRAIL (untrusted data):"]
     for card in evidence_cards:
         lines.append(json.dumps(card, ensure_ascii=False))
-    lines += ["", f"QUESTION (untrusted text): {_untrusted(question)}"]
+    lines += ["", f"QUESTION (untrusted text): {_untrusted(question)}",
+              "",
+              "OUTPUT FORMAT: after any thinking, write 'ANSWER:' on its own "
+              "line, then the final answer only. Everything before the "
+              "'ANSWER:' marker is reasoning and will be discarded."]
     raw = nebius_client.chat(
         role="analyst_qa",
         system=SYSTEM_HEADER + "\n" + _load_prompt("analyst_qa.txt"),
         user="\n".join(lines),
         model=nebius_client.model_ultra(),
-        max_tokens=400,
+        max_tokens=1200,   # headroom: Ultra reasoning tokens precede ANSWER:
     )
     if raw is None:
         return None
     text, usage = raw
     if not text:
         return None
-    return text[:1200]
+    final = _after_answer_marker(text)
+    return final[:1200]
+
+
+def _after_answer_marker(text: str) -> str:
+    """Keep only the final answer when the model emitted an ANSWER: marker.
+
+    Nemotron reasoning models may narrate their thinking in the content;
+    the marker contract keeps user-visible answers clean."""
+    if "ANSWER:" in text:
+        return text.rsplit("ANSWER:", 1)[1].strip()
+    return text.strip()
 
 
 def _parse_json(text: str) -> dict | None:
