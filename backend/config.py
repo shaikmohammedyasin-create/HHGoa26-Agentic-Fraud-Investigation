@@ -52,6 +52,18 @@ class Settings(BaseSettings):
     llm_timeout_seconds: int = 30
     llm_temperature: float = 0.1
 
+    # ── Nebius Token Factory (NVIDIA Nemotron) ───────────────────────────────
+    # Runtime LLM calls for the four analysis roles. Every role has a
+    # deterministic fallback, so an empty key degrades gracefully.
+    nebius_api_key: str = ""
+    nebius_base_url: str = "https://api.tokenfactory.nebius.com/v1"
+    nebius_model_nano: str = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"
+    nebius_model_super: str = "nvidia/nemotron-3-super-120b-a12b"
+    nebius_model_ultra: str = "nvidia/Nemotron-3-Ultra-550b-a55b"
+    nebius_max_retries: int = 2
+    # JSONL call log (role, model, latency, tokens, success) + summary endpoint
+    llm_call_log_path: Path = ROOT / "data" / "logs" / "llm_calls.jsonl"
+
     # ── Data paths ───────────────────────────────────────────────────────────
     data_dir: Path = ROOT / "data"
     prepared_db: Path = ROOT / "data" / "prepared" / "investigation.db"
@@ -84,6 +96,16 @@ class Settings(BaseSettings):
     min_evidence_info_value: float = 0.25
     # Hard bound on reassessment rounds per investigation (stopping criteria).
     max_investigation_rounds: int = 3
+
+    # ── Demo mode (judges path) ────────────────────────────────────────────
+    # 1 = serve precomputed case results without TigerGraph. Nemotron calls
+    # stay live but pass through an on-disk cache and spend caps.
+    demo_mode: bool = False
+    # Demo-mode LLM spend protection: on-disk prompt cache + per-IP hourly
+    # rate limit + global daily cap. When the daily cap is reached the app
+    # serves cached or deterministic output instead of calling Token Factory.
+    llm_calls_per_ip_per_hour: int = 20
+    llm_daily_call_cap: int = 200
 
 
 settings = Settings()
