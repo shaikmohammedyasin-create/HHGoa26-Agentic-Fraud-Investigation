@@ -1,41 +1,62 @@
 # Agentic Fraud Investigation Platform
 
-> An autonomous, evidence-grounded, policy-controlled fraud investigation platform powered by TigerGraph GraphRAG, calibrated Bayesian risk scoring, and human-in-the-loop governance.
+> An autonomous, evidence-grounded, policy-controlled fraud investigation platform powered by TigerGraph GraphRAG, calibrated Bayesian risk scoring, **NVIDIA Nemotron LLMs on Nebius Token Factory**, and human-in-the-loop governance.
 
 <p align="center">
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python"></a>
   <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-REST%20API-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
   <a href="https://www.tigergraph.com/"><img src="https://img.shields.io/badge/TigerGraph-Savanna%20Cloud-F36C21" alt="TigerGraph"></a>
-  <a href="./docs/TECHNICAL_VALIDATION.md"><img src="https://img.shields.io/badge/Tests-257%20Total%20%7C%20248%20Passed-2E7D32" alt="Tests"></a>
-  <a href="./cases/ground_truth.json"><img src="https://img.shields.io/badge/Benchmark-20%2F20%20Verdict%20%2B%20Pattern-2E7D32" alt="Benchmark"></a>
+  <a href="https://build.nvidia.com/nvidia"><img src="https://img.shields.io/badge/NVIDIA-Nemotron_3_%7C_Token_Factory-76B900" alt="NVIDIA Nemotron"></a>
+  <a href="./docs/TECHNICAL_VALIDATION.md"><img src="https://img.shields.io/badge/Tests-278%20Passed%20%7C%209%20Skipped-2E7D32" alt="Tests"></a>
+  <a href="./docs/BENCHMARK.md"><img src="https://img.shields.io/badge/Benchmark-20%2F20%20Verdict%20%2B%20Pattern%20%7C%20Ablations-2E7D32" alt="Benchmark"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
-  <a href="./docs/DEMO.md"><img src="https://img.shields.io/badge/Workflow-Enterprise%20Reference-0B5A3C" alt="Status"></a>
 </p>
+
+---
+
+## 0. Quickstart (5 minutes, zero credentials)
+
+```bash
+git clone <your-repo-url>
+cd <repo>
+docker compose up --build
+# open http://localhost:8008
+```
+
+The container rebuilds its own SQLite graph store from the published synthetic
+data (~3 s), runs locally (`GRAPH_BACKEND=local`), and starts in **demo mode**
+(`DEMO_MODE=1`): Nemotron advisory answers replay from a local answer cache
+and **no API credits are spent**. Judges need nothing but Docker.
+
+For live Nemotron calls, set `NEBIUS_API_KEY` in `docker-compose.yml`
+(details in [docs/DEPLOY.md](./docs/DEPLOY.md)).
 
 ---
 
 ## Table of Contents
 
+0. [Quickstart](#0-quickstart-5-minutes-zero-credentials)
 1. [Problem Statement](#1-problem-statement)
 2. [Solution Overview](#2-solution-overview)
-3. [Key Capabilities](#3-key-capabilities)
-4. [Architecture](#4-architecture)
-5. [Agentic Workflow](#5-agentic-workflow)
-6. [Technology Stack](#6-technology-stack)
-7. [Repository Structure](#7-repository-structure)
-8. [Requirements](#8-requirements)
-9. [Installation](#9-installation)
-10. [Environment Configuration](#10-environment-configuration)
-11. [Running Locally](#11-running-locally)
-12. [TigerGraph Setup & Configuration](#12-tigergraph-setup--configuration)
-13. [API Overview](#13-api-overview)
-14. [Investigation Workflow](#14-investigation-workflow)
-15. [Testing & Validation](#15-testing--validation)
-16. [Security Considerations](#16-security-considerations)
-17. [Configuration Options](#17-configuration-options)
-18. [Limitations](#18-limitations)
-19. [Future Improvements](#19-future-improvements)
-20. [License](#20-license)
+3. [NVIDIA Nemotron & Nebius Token Factory](#how-we-use-nvidia-nemotron--nebius-token-factory)
+4. [Key Capabilities](#3-key-capabilities)
+5. [Architecture](#4-architecture)
+6. [Agentic Workflow](#5-agentic-workflow)
+7. [Technology Stack](#6-technology-stack)
+8. [Repository Structure](#7-repository-structure)
+9. [Requirements](#8-requirements)
+10. [Installation](#9-installation)
+11. [Environment Configuration](#10-environment-configuration)
+12. [Running Locally](#11-running-locally)
+13. [TigerGraph Setup & Configuration](#12-tigergraph-setup--configuration)
+14. [API Overview](#13-api-overview)
+15. [Investigation Workflow](#14-investigation-workflow)
+16. [Testing & Validation](#15-testing--validation)
+17. [Security Considerations](#16-security-considerations)
+18. [Configuration Options](#17-configuration-options)
+19. [Limitations](#18-limitations)
+20. [Future Improvements](#19-future-improvements)
+21. [License](#20-license)
 
 ---
 
@@ -65,6 +86,45 @@ The platform integrates:
 
 ---
 
+## How We Use NVIDIA Nemotron & Nebius Token Factory
+
+NVIDIA **Nemotron 3** reasoning models, served through **Nebius Token
+Factory** (`https://api.tokenfactory.nebius.com/v1`, OpenAI-compatible), add
+language intelligence on top of the deterministic investigation engine —
+they are treated as *advisors*, never as the decision-maker:
+
+| # | Role | Verb | Tier / Model | Why this model |
+|---|---|---|---|---|
+| 1 | **Pattern classifier** | Proposes a fraud pattern (card-not-present, ATO, card-testing, …) with confidence, evidence ids, and a rationale grounded ONLY in the finite evidence set | Nano — `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` | 20+ fast high-volume calls per run; cheapest tier |
+| 2 | **Verification request drafter** | Drafts the human-readable "verify with customer" message an analyst sends | Nano | Many short drafts |
+| 3 | **Narrative + SAR drafter** | Produces the SAR narrative and case story from the evidence record | Ultra — `nvidia/Nemotron-3-Ultra-550b-a55b` | Long-context reasoning + writing quality |
+| 4 | **Analyst Q&A** | Answers arbitrary analyst questions about a case (advisory tab) | Ultra | Free-form reasoning over case facts |
+
+Design principles:
+
+- **Propose, never decide.** The model's pattern proposal (role 1) is stored
+  next to the policy engine's decision (`model_proposal` vs
+  `policy_decision`) with an explicit `model_agreed` flag and
+  `model_override_reason`. The deterministic rules (R1–R10) remain the
+  single source of truth — measurable ablation in
+  [docs/BENCHMARK.md](./docs/BENCHMARK.md) section D.
+- **Prompt-injection hardening.** Case text (customer statements, trigger
+  text, notes) is treated as untrusted data; role prompts instruct the
+  model to reject instructions embedded in evidence, and this is enforced
+  by tests (`tests/integration/test_nemotron_roles.py`).
+- **Fail-soft.** Every call has a 30 s timeout, 2 retries, and an explicit
+  `None` fallback contract: any Token Factory outage degrades to the
+  deterministic path, never a 5xx.
+- **Token-Factory-specific hardening.** Reasoning-style models spend hidden
+  reasoning tokens before visible output. Generous `max_tokens`
+  (1,200–2,048) and an explicit `ANSWER:` output contract for Q&A prevent
+  truncated or leaking responses (verified live against the endpoint).
+- **Cost governance.** Demo-mode answer cache (zero-credit replays),
+  per-IP hourly limiter, global daily cap, and a JSONL per-call log with
+  p50/p95 latency surfaced live on `/api/llm/status`.
+
+---
+
 ## 3. Key Capabilities
 
 ### Live Graph Traversal & Topology Analysis
@@ -77,6 +137,19 @@ Every evidence item is cataloged with an immutable evidence identifier, claim cl
 - `OBSERVED FACT`: Directly queried graph properties (e.g., historical transaction count, device profile matches).
 - `DERIVED INFERENCE`: Algorithmic conclusions (e.g., velocity anomalies, fraud ring membership).
 - `MODEL SCORE`: Upstream detection model inputs.
+
+### Nemotron Advisory (propose / decide separation)
+- The **Nemotron Advisory tab** surfaces the model's pattern proposal with
+  confidence, evidence citations, rationale, and an explicit
+  agreed / overruled badge next to the policy engine's decision.
+- Analysts can **ask arbitrary questions** about any case in the "Ask"
+  box; answers come from Token Factory (Ultra tier) with an `ANSWER:`
+  contract and are stamped "model-served" in the footer.
+- Role 2 drafts the customer-verification message shown in the Uncertainty
+  tab; role 3 drafts the SAR narrative first-person story (tagged "Part II:
+  Nemotron draft").
+- Everything is advisory: no model output mutates the deterministic policy
+  decisions without a recorded engine justification.
 
 ### Active Uncertainty & Evidence-Gap Reduction
 - Evaluates expected information value ($0.0 - 1.0$) for potential follow-up inquiries.
@@ -212,7 +285,7 @@ The autonomous investigation engine executes through an iterative, evidence-grou
 │   └── schema/                     # DDL schema definitions & schema-change jobs
 │
 ├── cases/                          # 20-case benchmark + ground_truth.json labels
-├── tests/                          # Automated test suite (257 tests)
+├── tests/                          # Automated test suite (278 passed / 9 skipped)
 │   ├── integration/                # API, graph, policy, and agentic upgrade tests
 │   └── unit/                       # Risk, policy, and evidence provenance tests
 │
@@ -221,7 +294,9 @@ The autonomous investigation engine executes through an iterative, evidence-grou
 │   ├── images/                     # System architecture & flow diagrams
 │   ├── ARCHITECTURE.md             # In-depth system architecture
 │   ├── DEMO.md                     # Interactive demonstration walkthrough
-│   └── TECHNICAL_VALIDATION.md     # Empirical validation and benchmark results
+│   ├── TECHNICAL_VALIDATION.md     # Empirical validation and benchmark results
+│   ├── BENCHMARK.md                # Held-out eval: fidelity + ablations + cost/latency
+│   └── DEPLOY.md                   # Docker deployment and cost governance
 │
 ├── scripts/                        # Administrative utilities
 ├── .env.example                    # Environment variable template
@@ -235,12 +310,15 @@ The autonomous investigation engine executes through an iterative, evidence-grou
 ## 8. Requirements
 
 - **Operating System**: Linux, macOS, or Windows 10/11
+- **Docker** (recommended path, includes everything): `docker compose up --build`
 - **Python**: Version `3.11` or higher
 - **Browser**: Modern web browser (Chrome, Edge, Firefox, Brave)
-- **TigerGraph** (Optional for local development; required for live graph mode):
+- **TigerGraph** (Optional; the demo runs on `GRAPH_BACKEND=local` by default):
   - TigerGraph Savanna Cloud or on-premises instance (version 4.x)
-- **LLM API Key** (Optional):
-  - Anthropic, OpenAI, or Groq API key for LLM summaries (the system defaults to deterministic template generation when not configured)
+- **LLM API Key** (Optional — demo mode needs none):
+  - **Nebius Token Factory** API key (`NEBIUS_API_KEY`) for live NVIDIA
+    Nemotron advisory calls. Without it the system runs in demo mode
+    (cached answers) and always falls back to deterministic output.
 
 ---
 
@@ -252,8 +330,6 @@ The autonomous investigation engine executes through an iterative, evidence-grou
 git clone https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation.git agentic-fraud-investigation
 cd agentic-fraud-investigation
 ```
-
-> ℹ️ **Repository Name Note:** The active GitHub repository URL is currently `https://github.com/shaikmohammedyasin-create/HHGoa26-Agentic-Fraud-Investigation.git`. To complete the project URL transition to `https://github.com/shaikmohammedyasin-create/agentic-fraud-investigation.git`, update the repository name in **GitHub Settings → General → Repository Name**.
 
 ### 2. Set up a virtual environment
 
@@ -279,24 +355,18 @@ pip install -r requirements.txt
 
 ## 10. Environment Configuration
 
-Copy the example environment configuration:
-
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` to configure your execution mode:
+Key variables (full list in `.env.example` and [`docs/DEPLOY.md`](./docs/DEPLOY.md)):
 
 ```env
-# Application Environment (development | benchmark | production)
-APP_ENV=development
-LOG_LEVEL=INFO
-
 # Graph Backend (local | tigergraph)
 GRAPH_BACKEND=local
 STRICT_GRAPH_BACKEND=false
 
-# TigerGraph Settings (required if GRAPH_BACKEND=tigergraph)
+# TigerGraph Settings (only if GRAPH_BACKEND=tigergraph)
 TG_HOST=https://your-instance.i.tgcloud.io
 TG_GRAPH=fraud_investigation
 TG_SECRET=your_tigergraph_secret
@@ -306,32 +376,38 @@ TG_PROTOCOL=https
 # Agentic Evidence Loop (simulated | human_in_loop)
 EVIDENCE_REQUEST_MODE=simulated
 
-# LLM Provider (anthropic | openai | groq | none)
-LLM_PROVIDER=none
+# NVIDIA Nemotron via Nebius Token Factory (optional - demo mode without it)
+NEBIUS_API_KEY=            # leave empty for demo mode
+NEBIUS_BASE_URL=https://api.tokenfactory.nebius.com/v1
+NEBIUS_MODEL_NANO=nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
+NEBIUS_MODEL_SUPER=nvidia/nemotron-3-super-120b-a12b
+NEBIUS_MODEL_ULTRA=nvidia/Nemotron-3-Ultra-550b-a55b
+
+# Demo & cost governance
+DEMO_MODE=1                       # 1 = serve cached Nemotron answers, zero credits
+LLM_CALLS_PER_IP_PER_HOUR=20      # per-IP hourly limiter
+LLM_DAILY_CALL_CAP=200            # global daily cap; deterministic fallback beyond
 ```
 
 ---
 
 ## 11. Running Locally
 
-Start the FastAPI application with Uvicorn:
-
 ```bash
-uvicorn backend.main:app --port 8000
-```
-
-For hot-reload during development:
-
-```bash
-uvicorn backend.main:app --reload --port 8000
+python3 -m venv .venv && source .venv/bin/activate      # Windows: .\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m backend.scripts.prepare_data                  # build data/prepared/investigation.db (~3 s on synthetic data)
+uvicorn backend.main:app --port 8008
 ```
 
 Open your browser and navigate to:
 ```
-http://localhost:8000
+http://localhost:8008
 ```
 
-The Analyst Command Center will load with system connectivity diagnostics.
+The Analyst Command Center will load with system connectivity diagnostics and a
+demo-mode banner (when `DEMO_MODE=1`). All 20 cases run without any LLM key;
+live Nemotron review happens in the Nemotron Advisory tab when a key is set.
 
 ---
 
@@ -408,6 +484,12 @@ The backend exposes a structured, typed OpenAPI REST interface:
 | `GET` | `/investigations/{case_id}/evidence` | Lists evidence items assembled for the case |
 | `POST` | `/investigations/{case_id}/evidence` | Submits human evidence to resolve a pending information request |
 
+### Nemotron Advisory & LLM Ops
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/investigations/{case_id}/ask` | Ask-a-question advisory endpoint (Nemotron Ultra with `ANSWER:` contract); fails soft to deterministic context |
+| `GET` | `/api/llm/status` | Token Factory ops snapshot: calls, successes/failures, token totals, p50/p95 latency, per-role counts |
+
 ### Policy & Approvals
 | Method | Endpoint | Description |
 |---|---|---|
@@ -448,16 +530,26 @@ A typical investigation through the Command Center proceeds as follows:
 
 ### Automated Test Suite
 
-Run the full pytest suite (257 tests):
+Run the full pytest suite (278 passed, 9 skipped):
 
 ```bash
 pytest
 ```
 
 The test suite covers:
-- **Unit Tests**: Bayesian Noisy-OR mathematics, pattern detectors, evidence provenance invariants, policy rule evaluations (§3 R1–R11), and Pydantic validation contracts.
-- **Integration Tests**: FastAPI endpoint integration, SQLite idempotency, audit event logging, and human-in-the-loop approval state transitions.
+- **Unit Tests**: Bayesian Noisy-OR mathematics, pattern detectors, evidence provenance invariants, policy rule evaluations (§3 R1–R11), Pydantic validation contracts, and demo-mode protections (answer cache, per-IP hourly limiter, daily cap).
+- **Integration Tests**: FastAPI endpoint integration, SQLite idempotency, audit event logging, human-in-the-loop approval state transitions, and all 4 Nemotron roles against mocked Token Factory responses (valid/invalid JSON, unknown evidence ids, timeout fallback, prompt-injection rejection, propose/decide override).
 - **Graph Backends**: Query router consistency across both SQLite and TigerGraph adapters.
+
+CI note: `tests/conftest.py` clears `NEBIUS_API_KEY` so the suite always
+runs offline against mocked responses — no API calls in CI ever.
+
+### Live Token Factory check (maintainer-invoked)
+
+```bash
+python scripts/smoke_nemotron.py          # one real call per role, needs NEBIUS_API_KEY
+python scripts/eval_heldout.py            # full held-out eval incl. plain-LLM ablation
+```
 
 ### Structural Checkpoint Verification
 
@@ -498,15 +590,43 @@ This validates 30 discrete checkpoints per case (600 total checkpoints) covering
 | `MAX_EVIDENCE_REQUESTS` | `3` | Maximum number of evidence inquiries per case |
 | `FRAUD_PROB_STOP_HIGH` | `0.85` | High-confidence fraud threshold for early stopping |
 | `FRAUD_PROB_STOP_LOW` | `0.15` | High-confidence legitimate threshold for early stopping |
-| `LLM_PROVIDER` | `none` | LLM service for narrative formatting: `anthropic`, `openai`, `groq`, `none` |
+| `LLM_PROVIDER` | `none` | Legacy narrative formatter (`anthropic`/`openai`/`groq`/`none`); the Nemotron advisory path uses the `NEBIUS_*` variables below instead |
+| `NEBIUS_API_KEY` | `""` | Nebius Token Factory key; empty = demo mode with cached answers |
+| `NEBIUS_BASE_URL` | `https://api.tokenfactory.nebius.com/v1` | OpenAI-compatible endpoint |
+| `NEBIUS_MODEL_NANO` | `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` | Roles 1–2 tier |
+| `NEBIUS_MODEL_SUPER` | `nvidia/nemotron-3-super-120b-a12b` | Mid tier (reserved for heavier classification) |
+| `NEBIUS_MODEL_ULTRA` | `nvidia/Nemotron-3-Ultra-550b-a55b` | Roles 3–4 tier |
+| `DEMO_MODE` | `false` locally / `1` in the container | Serve Nemotron answers from the local cache; zero credits |
+| `LLM_CALLS_PER_IP_PER_HOUR` | `20` | Per-IP hourly limiter for `/ask` and re-run endpoints (429 beyond) |
+| `LLM_DAILY_CALL_CAP` | `200` | Global daily cap; beyond it, requests fall back deterministically (503 notice) |
+| `LLM_TIMEOUT_SECONDS` | `30` | Per-call timeout (2 retries with backoff) |
 
 ---
 
 ## 18. Limitations
 
+- **Synthetic evaluation labels**: the 20-case benchmark and the closed-case
+  history labels are synthetic and generated by the same pipeline that
+  generates the evidence ([docs/BENCHMARK.md](./docs/BENCHMARK.md) §
+  "Known limitations"); the numbers measure pipeline self-consistency on
+  the published pack, not real-world performance.
+- **Plain-LLM ablation scope**: the no-graph baseline in the benchmark uses
+  one minimal prompt; it is intentionally the "what the graph adds"
+  counterfactual, not a tuned LLM alternative.
+- **Human-in-the-loop pauses in benchmark**: 11 of the 20 cases pause at
+  `MORE_EVIDENCE_REQUIRED` in a single benchmark pass; their Nemotron
+  proposals attach when the pending evidence request is submitted (counted
+  separately in the benchmark report).
+- **Per-IP limiter trusts the client IP**: it keys on the FastAPI `Request`
+  client host; behind a shared proxy all judges share one bucket (safe —
+  the daily cap is the backstop).
 - **Single-Node Application State**: The SQLite application state store (`data/app/app.db`) is optimized for single-instance or edge deployment. Distributed horizontal scaling requires migrating state to PostgreSQL.
 - **Browser-Based Canvas Rendering**: The HTML5 canvas graph visualizer is optimized for subgraphs up to ~1,500 nodes. Very large fraud ring visualizations (>5,000 nodes) should utilize WebGL rendering.
-- **Historical Dataset Grounding**: The bundled historical transaction and dispute data is based on the IEEE-CIS Fraud Detection dataset benchmarks.
+- **Data provenance**: all shipped evaluation data is generated by
+  `scripts/make_synthetic_data.py` (MIT-licensed, in-repo); no third-party
+  dataset rows, model artifacts, or credentials are published. Earlier,
+  round-provided CSVs were used only during development and were removed
+  from the history (see `data/README.md`).
 
 ---
 
