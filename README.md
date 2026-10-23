@@ -7,7 +7,7 @@
   <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-REST%20API-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
   <a href="https://www.tigergraph.com/"><img src="https://img.shields.io/badge/TigerGraph-Savanna%20Cloud-F36C21" alt="TigerGraph"></a>
   <a href="./docs/TECHNICAL_VALIDATION.md"><img src="https://img.shields.io/badge/Tests-257%20Total%20%7C%20248%20Passed-2E7D32" alt="Tests"></a>
-  <a href="./artifacts/benchmark/benchmark_report.md"><img src="https://img.shields.io/badge/Checkpoints-600%2F600%20Verified-2E7D32" alt="Checkpoints"></a>
+  <a href="./cases/ground_truth.json"><img src="https://img.shields.io/badge/Benchmark-20%2F20%20Verdict%20%2B%20Pattern-2E7D32" alt="Benchmark"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
   <a href="./docs/DEMO.md"><img src="https://img.shields.io/badge/Workflow-Enterprise%20Reference-0B5A3C" alt="Status"></a>
 </p>
@@ -211,7 +211,7 @@ The autonomous investigation engine executes through an iterative, evidence-grou
 │   ├── loading/                    # Loading job scripts for tabular ingestion
 │   └── schema/                     # DDL schema definitions & schema-change jobs
 │
-├── cases/                          # 20-case investigation benchmark definitions
+├── cases/                          # 20-case benchmark + ground_truth.json labels
 ├── tests/                          # Automated test suite (257 tests)
 │   ├── integration/                # API, graph, policy, and agentic upgrade tests
 │   └── unit/                       # Risk, policy, and evidence provenance tests
@@ -223,7 +223,6 @@ The autonomous investigation engine executes through an iterative, evidence-grou
 │   ├── DEMO.md                     # Interactive demonstration walkthrough
 │   └── TECHNICAL_VALIDATION.md     # Empirical validation and benchmark results
 │
-├── artifacts/                      # Benchmark reports and validation artifacts
 ├── scripts/                        # Administrative utilities
 ├── .env.example                    # Environment variable template
 ├── pyproject.toml                  # Python package configuration
