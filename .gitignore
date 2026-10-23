@@ -16,13 +16,15 @@ __pycache__/
 *.pytest_cache/
 .pytest_cache/
 
-# Large dataset files (round-provided / derived data - not redistributable)
-transactions.csv
-identity.csv
-closed_cases_history.csv
-case_pack.csv
-data/
-data/raw/
+# Round-provided dataset files - root copies are local-only, never published.
+# The synthetic replacements (data/synthetic/) ARE published and must stay
+# un-ignored, hence the root anchors and the negation below.
+/transactions.csv
+/identity.csv
+/closed_cases_history.csv
+/case_pack.csv
+data/*
+!data/synthetic/
 
 # Environment, secrets and keys
 .env
