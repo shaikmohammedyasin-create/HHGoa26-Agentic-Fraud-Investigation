@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -27,14 +27,16 @@ class Settings(BaseSettings):
     strict_graph_backend: bool = False
 
     # ── TigerGraph ───────────────────────────────────────────────────────────
-    tg_host: str = ""
-    tg_graph: str = "fraud_investigation"
-    tg_username: str = ""
-    tg_password: str = ""
-    tg_secret: str = ""
-    tg_token: str = ""
-    tg_port: int = 443
-    tg_protocol: str = "https"
+    # Both the short TG_* names and the canonical TIGERGRAPH_* names are
+    # accepted; .env.example documents the canonical form.
+    tg_host: str = Field("", validation_alias=AliasChoices("TG_HOST", "TIGERGRAPH_HOST"))
+    tg_graph: str = Field("fraud_investigation", validation_alias=AliasChoices("TG_GRAPH", "TIGERGRAPH_GRAPH"))
+    tg_username: str = Field("", validation_alias=AliasChoices("TG_USERNAME", "TIGERGRAPH_USERNAME"))
+    tg_password: str = Field("", validation_alias=AliasChoices("TG_PASSWORD", "TIGERGRAPH_PASSWORD"))
+    tg_secret: str = Field("", validation_alias=AliasChoices("TG_SECRET", "TIGERGRAPH_SECRET"))
+    tg_token: str = Field("", validation_alias=AliasChoices("TG_TOKEN", "TIGERGRAPH_TOKEN"))
+    tg_port: int = Field(443, validation_alias=AliasChoices("TG_PORT", "TIGERGRAPH_PORT"))
+    tg_protocol: str = Field("https", validation_alias=AliasChoices("TG_PROTOCOL", "TIGERGRAPH_PROTOCOL"))
 
     # ── MCP ──────────────────────────────────────────────────────────────────
     mcp_url: str = ""
