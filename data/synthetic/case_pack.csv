@@ -1,0 +1,21 @@
+case_id,opened_at,trigger_type,trigger_text,flagged_txn_id,card_id,customer_id,risk_score
+CASE-001,2026-09-12T10:03:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012147 ($211.25, in billing region 310) at 0.56. Review and decide.",4012147,SC-03001-K938,SC-03001,0.58
+CASE-002,2026-09-11T10:03:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012148 ($147.84, in billing region 527) at 0.61. Review and decide.",4012148,SC-03002-K939,SC-03002,0.67
+CASE-003,2026-09-22T10:03:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012149 ($36.95, in billing region 310) at 0.57. Review and decide.",4012149,SC-03003-K940,SC-03003,0.59
+CASE-007,2026-09-15T10:03:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012150 ($321.20, in billing region 310) at 0.56. Review and decide.",4012150,SC-03007-K941,SC-03007,0.58
+CASE-012,2026-09-17T10:03:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012151 ($54.72, in billing region 246) at 0.59. Review and decide.",4012151,SC-03012-K942,SC-03012,0.61
+CASE-004,2026-09-16T09:28:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012152 ($234.07, in billing region 'domestic') at 0.88. Review and decide.",4012152,SC-03004-K943,SC-03004,0.86
+CASE-006,2026-09-18T06:21:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012155 ($180.60, in billing region 'domestic') at 0.83. Review and decide.",4012155,SC-03006-K944,SC-03006,0.86
+CASE-008,2026-09-16T04:14:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012157 ($224.16, in billing region 'domestic') at 0.9. Review and decide.",4012157,SC-03008-K945,SC-03008,0.85
+CASE-011,2026-09-13T08:16:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012160 ($725.62, in billing region 'domestic') at 0.81. Review and decide.",4012160,SC-03011-K946,SC-03011,0.89
+CASE-017,2026-09-22T02:16:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012164 ($359.09, in billing region 'domestic') at 0.81. Review and decide.",4012164,SC-03017-K947,SC-03017,0.9
+CASE-018,2026-09-13T10:16:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012167 ($517.26, in billing region 'domestic') at 0.88. Review and decide.",4012167,SC-03018-K948,SC-03018,0.85
+CASE-005,2026-09-14T09:35:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012171 ($467.56, in billing region 'domestic') at 0.83. Review and decide.",4012171,SC-03005-K949,SC-03005,0.85
+CASE-010,2026-09-14T02:05:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012174 ($400.32, in billing region 'domestic') at 0.8. Review and decide.",4012174,SC-03010-K950,SC-03010,0.87
+CASE-013,2026-09-14T05:19:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012178 ($1215.69, in billing region 'domestic') at 0.85. Review and decide.",4012178,SC-03013-K951,SC-03013,0.84
+CASE-015,2026-09-13T08:06:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012180 ($120.97, in billing region 'domestic') at 0.83. Review and decide.",4012180,SC-03015-K952,SC-03015,0.86
+CASE-016,2026-09-21T03:35:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012183 ($582.85, in billing region 'domestic') at 0.89. Review and decide.",4012183,SC-03016-K953,SC-03016,0.84
+CASE-020,2026-09-14T09:36:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012186 ($234.14, in billing region 'domestic') at 0.81. Review and decide.",4012186,SC-03020-K954,SC-03020,0.86
+CASE-009,2026-09-13T11:08:00+00:00,risk_score,Trigger (risk_score): Real-time model scored transaction 4012190 ($874.54) at 0.84. Review and decide.,4012190,SC-03009-K955,SC-03009,0.86
+CASE-014,2026-09-15T11:08:00+00:00,risk_score,Trigger (risk_score): Real-time model scored transaction 4012211 ($1152.70) at 0.83. Review and decide.,4012211,SC-03014-K956,SC-03014,0.87
+CASE-019,2026-09-22T09:06:00+00:00,risk_score,"Trigger (risk_score): Real-time model scored transaction 4012232 ($521.47, billing mismatch) at 0.92. Review and decide.",4012232,SC-03019-K957,SC-03019,0.91
