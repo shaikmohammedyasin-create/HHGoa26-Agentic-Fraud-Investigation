@@ -7,10 +7,10 @@
     "pattern": "card_not_present_new_device",
     "pattern_description": "Device marked New for this account; proxy/anonymous connection",
     "affected_txn_ids": [
-      "4012174",
       "4012175",
       "4012176",
-      "4012177"
+      "4012177",
+      "4012174"
     ],
     "first_suspicious_txn_id": "4012174",
     "connected_card_ids": [],
@@ -96,7 +96,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-e073fe99",
+        "ref": "evidence_request:ER-5c2a2c26",
         "entity_ids": [
           "SC-03010"
         ]
@@ -110,7 +110,7 @@
       "CC-4320",
       "CC-4322"
     ],
-    "summary": "Case CASE-010 investigated card_not_present_new_device activity on card SC-03010-K950 (customer SC-03010) around transaction 4012174 ($400.32, online). Assessed fraud probability 0.87 (CRITICAL risk) from 9 evidence items across 8 independent evidence families. Key signals: new device for this account; proxy/anonymous connection used; 4 online transactions in 48h window; 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 1.00); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "The investigation for CASE-010 was triggered by a real-time risk score of 0.8 on transaction 4012174 ($400.32, domestic) [EV-46d16544]. The card SC-03010-K950 showed four prior transactions averaging $295.99 [EV-29b6b71c] and four online transactions within 48 hours of the flagged transaction [EV-a84f349b]. The transaction originated from a new device profile (Mac OS X 10_15_5 Firefox 89.0) [EV-99e0872f] and used an anonymous proxy connection from Argentina [EV-f17de674]. The customer reported they did not make the purchases and still possessed the card [EV-36fd7b3d]. Prior fraud history includes one confirmed case for this customer/card (CC-4321) [EV-a155f1d6] and the same device profile appearing in another confirmed fraud case [EV-2dc38abc]. Six similar prior cases matching the card_not_present_new_device pattern were also identified [EV-9adc6261]. The case was closed with a fraud verdict and exposure of $1,183.95 across four transactions.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-010"
   },
@@ -187,10 +187,10 @@
   "sar": {
     "file": true,
     "reason": "R2: confirmed fraud with exposure > $1,000",
-    "narrative": "Between 2026-09-14 and 2026-09-14, customer SC-03010 and card SC-03010-K950, device profile 'Mac OS X 10_15_5 Firefox 89.0 unit-caseCASE-010 | synth-os-case-010 | synth-browser-case-010 | synth-screen-case-010' were involved in 4 transaction(s) assessed as fraud (card_not_present_new_device pattern) with total exposure $1183.95. The flagged transaction 4012174 of $400.32 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 9 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_new_device pattern with assessed fraud probability 0.87. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "This Suspicious Activity Report covers CASE-010, a confirmed card-not-present fraud involving card SC-03010-K950 with total exposure of $1,183.95 across four transactions (4012174, 4012175, 4012176, 4012177). The fraud was detected via real-time risk scoring (0.8) on transaction 4012174 [EV-46d16544]. Analysis revealed the transactions originated from a previously unseen device profile (Mac OS X 10_15_5 Firefox 89.0) [EV-99e0872f] and an anonymous proxy IP located in Argentina [EV-f17de674], both indicative of account takeover. The customer confirmed they did not authorize the purchases and retained physical possession of the card [EV-36fd7b3d]. The card's recent history showed four online transactions within 48 hours [EV-a84f349b], deviating from the average transaction amount of $295.99 [EV-29b6b71c]. The device profile has been linked to a prior confirmed fraud case [EV-2dc38abc], and the customer has a previous fraud case (CC-4321) [EV-a155f1d6]. Six additional prior cases sharing the card_not_present_new_device pattern were identified [EV-9adc6261], suggesting a recurring modus operandi. The bank's policy engine returned a fraud verdict with probability 0.868. Funds recovery and card reissuance procedures have been initiated per standard protocol.",
     "subjects": [
-      "SC-03010",
       "SC-03010-K950",
+      "SC-03010",
       "Mac OS X 10_15_5 Firefox 89.0 unit-caseCASE-010 | synth-os-case-010 | synth-brow"
     ],
     "total_amount_usd": 1183.95,
@@ -199,8 +199,46 @@
       "2026-09-14"
     ]
   },
+  "nemotron": {
+    "model_proposal": {
+      "pattern": "card_not_present_new_device",
+      "confidence": 0.9,
+      "evidence_ids": [
+        "EV-99e0872f",
+        "EV-f17de674",
+        "EV-2dc38abc",
+        "EV-9adc6261"
+      ],
+      "rationale": "Recent online transactions, new device fingerprint, anonymous proxy use, prior fraud linked to same device profile, and analyst notes indicate card_not_present_new_device pattern."
+    },
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_new_device",
+      "fraud_probability": 0.868,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": true,
+    "model_override_reason": "",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1411,
+        "completion_tokens": 2033
+      },
+      "pattern_classifier": {
+        "prompt_tokens": 1284,
+        "completion_tokens": 978
+      }
+    }
+  },
   "stop_reason": "Fraud probability 0.87 ≥ 0.85 with 8 independent evidence families.",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.12
+  "tokens": 2033,
+  "latency_s": 21.64
 }

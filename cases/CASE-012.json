@@ -71,7 +71,7 @@
       {
         "claim": "Customer response (simulated): Customer confirms they authorized this purchase from their personal account.",
         "source": "customer",
-        "ref": "evidence_request:ER-c25f972f",
+        "ref": "evidence_request:ER-1ba9016f",
         "entity_ids": [
           "SC-03012"
         ]
@@ -80,7 +80,7 @@
     "similar_prior_cases": [
       "CC-4313"
     ],
-    "summary": "Case CASE-012 investigated none activity on card SC-03012-K942 (customer SC-03012) around transaction 4012151 ($54.72, in_person). Assessed fraud probability 0.07 (LOW risk) from 5 evidence items across 5 independent evidence families. Additional evidence requested (customer_validation, information value 1.00); response: Customer confirms they authorized this purchase from their personal account. Final actions: CLOSE_NO_FRAUD.",
+    "summary": "The investigation for CASE-012 was triggered by a real-time risk score of 0.59 on transaction 4012151 ($54.72, billing region 246) [EV-94cde3cf]. The card SC-03012-K942 had one prior transaction with an identical average amount of $54.72 [EV-d864a883]. The device fingerprint (Mac OS X 10_15_5 Firefox 89.0 unit-04117 | iOS 16.2 | edge 123.0 | 390x844) was shared across 20 other cards, including SC-00001-K2, SC-00008-K1, SC-00039-K1, SC-00044-K1, and SC-00047-K1 [EV-508b2946]. The customer had one prior case cleared as legitimate, involving confirmed travel or purchase [EV-6bde2938]. The customer confirmed they authorized the purchase from their personal account [EV-b2255675]. Based on the evidence, the case was closed as legitimate with no fraud exposure.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-012"
   },
@@ -132,7 +132,7 @@
         "reason": "R3: customer confirmed the transaction"
       }
     ],
-    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: FILE_REPORT, CREATE_CASE, ESCALATE_TO_ANALYST"
+    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: FILE_REPORT, ESCALATE_TO_ANALYST, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -142,8 +142,42 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
+  "nemotron": {
+    "model_proposal": {
+      "pattern": "card_testing",
+      "confidence": 0.65,
+      "evidence_ids": [
+        "EV-94cde3cf",
+        "EV-d864a883",
+        "EV-508b2946"
+      ],
+      "rationale": "Small $54.72 transaction triggered a risk score, matches recent average amount, and the same device profile is used by many cards, indicating possible testing of stolen card data."
+    },
+    "policy_decision": {
+      "verdict": "legitimate",
+      "pattern": "none",
+      "fraud_probability": 0.071,
+      "actions": [
+        "CLOSE_NO_FRAUD"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": false,
+    "model_override_reason": "Policy engine retained 'none' (evidence-backed, deterministic rules); model proposed 'card_testing' at confidence 0.65. Engine decision stands.",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1107,
+        "completion_tokens": 1277
+      },
+      "pattern_classifier": {
+        "prompt_tokens": 947,
+        "completion_tokens": 804
+      }
+    }
+  },
   "stop_reason": "Fraud probability 0.07 ≤ 0.15; activity consistent with legitimate use.",
   "tool_calls": 15,
-  "tokens": 0,
-  "latency_s": 0.07
+  "tokens": 1277,
+  "latency_s": 15.67
 }

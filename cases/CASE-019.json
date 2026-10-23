@@ -7,8 +7,8 @@
     "pattern": "account_takeover",
     "pattern_description": "Mixed-channel activity inconsistent with cardholder; match flag anomalies; new device on multi-channel pattern with match anomaly",
     "affected_txn_ids": [
-      "4012234",
       "4012235",
+      "4012234",
       "4012232"
     ],
     "first_suspicious_txn_id": "4012235",
@@ -89,7 +89,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-0a500459",
+        "ref": "evidence_request:ER-62a58078",
         "entity_ids": [
           "SC-03019"
         ]
@@ -98,7 +98,7 @@
     "similar_prior_cases": [
       "CC-4328"
     ],
-    "summary": "Case CASE-019 investigated account_takeover activity on card SC-03019-K957 (customer SC-03019) around transaction 4012232 ($521.47, online). Assessed fraud probability 0.90 (CRITICAL risk) from 9 evidence items across 8 independent evidence families. Key signals: new device for this account; proxy/anonymous connection used; 3 online transactions in 48h window; 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 1.00); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-019 (Card SC-03019-K957): The case involves an account takeover pattern with three affected transactions (4012235, 4012234, 4012232) totaling $789.65 exposure. Real-time risk scoring flagged transaction 4012232 ($521.47) at 0.92 due to billing mismatch [EV-1b30b883]. The card SC-03019-K957 showed elevated velocity with three online transactions in 48 hours [EV-1e9ce4ea] against a historical average of $233.07 [EV-61aa0add]. A new iOS device profile appeared for the first time on this account [EV-a2a1cb1d] and was linked to a prior confirmed fraud case CC-4328 [EV-79bb3f08]. The transaction originated from an anonymous proxy in Argentina [EV-c55e26c3], and the customer denied authorizing the purchases while retaining physical card possession [EV-de09d647]. Prior fraud history includes case CC-4328 for the same customer/card [EV-162f06b2] and a pattern-matched account takeover case [EV-2a0747a3].",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-019"
   },
@@ -175,10 +175,10 @@
   "sar": {
     "file": true,
     "reason": "R6: confirmed fraud connected to shared device profile or card",
-    "narrative": "Between 2026-09-21 and 2026-09-22, customer SC-03019 and card SC-03019-K957, device profile 'IOS Device (Apple) unit-caseCASE-019 | synth-os-case-019 | synth-browser-case-019 | synth-screen-case-019' were involved in 3 transaction(s) assessed as fraud (account_takeover pattern) with total exposure $789.65. The flagged transaction 4012232 of $521.47 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 9 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the account_takeover pattern with assessed fraud probability 0.90. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "Suspicious Activity Report for CASE-019 documents an account takeover affecting card SC-03019-K957 with three unauthorized transactions totaling $789.65. The investigation was initiated when real-time scoring assigned a 0.92 risk score to transaction 4012232 ($521.47) citing billing address mismatch [EV-1b30b883]. Analysis revealed anomalous velocity: three online transactions occurred within 48 hours [EV-1e9ce4ea], significantly exceeding the card's historical average transaction value of $233.07 [EV-61aa0add]. The transactions were conducted from a previously unseen iOS device profile [EV-a2a1cb1d] that has been associated with a prior confirmed fraud case CC-4328 [EV-79bb3f08]. Network forensics identified an anonymous proxy connection routing through Argentina [EV-c55e26c3], consistent with identity obfuscation tactics. The legitimate cardholder reported no authorization of the disputed transactions and confirmed physical card retention [EV-de09d647]. Historical review shows the same customer/card combination was subject to prior fraud case CC-4328 [EV-162f06b2], and pattern analysis retrieved an additional account takeover precedent [EV-2a0747a3]. The confluence of device anomaly, proxy usage, velocity spike, and cardholder denial supports the fraud determination.",
     "subjects": [
-      "SC-03019-K957",
       "SC-03019",
+      "SC-03019-K957",
       "IOS Device (Apple) unit-caseCASE-019 | synth-os-case-019 | synth-browser-case-01"
     ],
     "total_amount_usd": 789.65,
@@ -187,8 +187,32 @@
       "2026-09-22"
     ]
   },
+  "nemotron": {
+    "model_proposal": null,
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "account_takeover",
+      "fraud_probability": 0.901,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": false,
+    "model_override_reason": "No valid model proposal (model unavailable or output invalid); policy engine decision stands.",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1325,
+        "completion_tokens": 1802
+      }
+    }
+  },
   "stop_reason": "Fraud probability 0.90 ≥ 0.85 with 8 independent evidence families.",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.12
+  "tokens": 1802,
+  "latency_s": 19.07
 }

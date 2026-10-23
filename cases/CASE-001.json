@@ -71,7 +71,7 @@
       {
         "claim": "Customer response (simulated): Customer confirms they authorized this purchase from their personal account.",
         "source": "customer",
-        "ref": "evidence_request:ER-ce439df0",
+        "ref": "evidence_request:ER-b4d36f34",
         "entity_ids": [
           "SC-03001"
         ]
@@ -80,7 +80,7 @@
     "similar_prior_cases": [
       "CC-4309"
     ],
-    "summary": "Case CASE-001 investigated none activity on card SC-03001-K938 (customer SC-03001) around transaction 4012147 ($211.25, in_person). Assessed fraud probability 0.07 (LOW risk) from 5 evidence items across 5 independent evidence families. Additional evidence requested (customer_validation, information value 1.00); response: Customer confirms they authorized this purchase from their personal account. Final actions: CLOSE_NO_FRAUD.",
+    "summary": "The investigation for CASE-001 was triggered by a real-time risk score of 0.56 on transaction 4012147 ($211.25, billing region 310) [EV-361637f6]. The card SC-03001-K938 had one prior transaction with an average amount of $211.25 [EV-e16d9837]. The device profile used in the transaction was shared across 20 other cards, including SC-00021-K1 and SC-00029-K2 [EV-f95bf024]. The customer had one prior case cleared as legitimate, confirming travel or purchase [EV-02aba857]. The customer confirmed they authorized the purchase from their personal account [EV-190ea795]. Based on the evidence, the case was closed as legitimate with a fraud probability of 0.07 and zero exposure.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-001"
   },
@@ -132,7 +132,7 @@
         "reason": "R3: customer confirmed the transaction"
       }
     ],
-    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: FILE_REPORT, CREATE_CASE, ESCALATE_TO_ANALYST"
+    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: FILE_REPORT, ESCALATE_TO_ANALYST, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -142,8 +142,40 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
+  "nemotron": {
+    "model_proposal": {
+      "pattern": "card_testing",
+      "confidence": 0.6,
+      "evidence_ids": [
+        "EV-f95bf024"
+      ],
+      "rationale": "Shared device profile across 20 cards indicates coordinated testing of multiple cards, matching card_testing pattern."
+    },
+    "policy_decision": {
+      "verdict": "legitimate",
+      "pattern": "none",
+      "fraud_probability": 0.07,
+      "actions": [
+        "CLOSE_NO_FRAUD"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": false,
+    "model_override_reason": "Policy engine retained 'none' (evidence-backed, deterministic rules); model proposed 'card_testing' at confidence 0.60. Engine decision stands.",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1104,
+        "completion_tokens": 1316
+      },
+      "pattern_classifier": {
+        "prompt_tokens": 945,
+        "completion_tokens": 817
+      }
+    }
+  },
   "stop_reason": "Fraud probability 0.07 ≤ 0.15; activity consistent with legitimate use.",
   "tool_calls": 15,
-  "tokens": 0,
-  "latency_s": 0.09
+  "tokens": 1316,
+  "latency_s": 24.73
 }

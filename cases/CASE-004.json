@@ -7,9 +7,9 @@
     "pattern": "card_not_present_fraud",
     "pattern_description": "Burst of 3 online transactions within 48h",
     "affected_txn_ids": [
-      "4012153",
       "4012152",
-      "4012154"
+      "4012154",
+      "4012153"
     ],
     "first_suspicious_txn_id": "4012152",
     "connected_card_ids": [],
@@ -86,7 +86,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-a8c92db9",
+        "ref": "evidence_request:ER-75e81758",
         "entity_ids": [
           "SC-03004"
         ]
@@ -100,7 +100,7 @@
       "CC-4318",
       "CC-4315"
     ],
-    "summary": "Case CASE-004 investigated card_not_present_fraud activity on card SC-03004-K943 (customer SC-03004) around transaction 4012152 ($234.07, online). Assessed fraud probability 0.85 (CRITICAL risk) from 8 evidence items across 8 independent evidence families. Key signals: proxy/anonymous connection used; 3 online transactions in 48h window; 1 prior confirmed fraud case(s) on card/customer; device also used in 1 confirmed fraud case(s). Additional evidence requested (customer_validation, information value 1.00); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-004 (Card SC-03004-K943): The real‑time model scored transaction 4012152 ($234.07, online, billing region 362) at 0.88, yielding a fraud probability of 0.85 and a CRITICAL risk level, with high‑severity signals including an anonymous Argentine proxy (Evidence [HIGH] Proxy), three online transactions on the same card within 48 hours (Evidence [HIGH] Card‑window), a prior confirmed fraud case CC‑4314 linked to the same customer/card (Evidence [HIGH] Prior fraud), and a device profile that appears in a confirmed fraud case (Evidence [CRITICAL] Device). The customer responded that they did not make the purchase and still possess the card (Evidence [HIGH] Customer response), triggering R2. Accordingly, the deterministic final policy actions are applied: BLOCK_CARD (L1): R2; CREATE_CASE (auto): R2; FILE_REPORT (L2): R2 (exposure >$1,000); MONITOR_CONNECTED_CARDS (auto): R6 (shared origin detected).",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-004"
   },
@@ -172,10 +172,10 @@
   "sar": {
     "file": true,
     "reason": "R6: confirmed fraud connected to shared device profile or card",
-    "narrative": "Between 2026-09-16 and 2026-09-16, customer SC-03004 and card SC-03004-K943, device profile 'Mac OS X 10_15_5 Firefox 89.0 unit-caseCASE-004 | synth-os-case-004 | synth-browser-case-004 | synth-screen-case-004' were involved in 3 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $594.87. The flagged transaction 4012152 of $234.07 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.85. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "**Suspicious Activity Report – Case 004**\n\n1. On 16 September 2026 at 09:24 UTC, the card SC‑03004‑K943 belonging to customer SC‑03004 was used for an online purchase of $234.07 (product code W) in billing region 362 (domestic).  \n2. The transaction was initiated from a mobile device running Mac OS X 10_15_5 with Firefox 89.0 (device identifier “unit‑caseCASE‑004”), accessed through an anonymous Argentine proxy (IP_PROXY:ANONYMOUS Argentina).  \n3. Within the preceding 48 hours the same card generated three additional online transactions, all of which were in the same billing region and had an average amount of $198.29.  \n4. The real‑time fraud model assigned a risk score of 0.88, yielding a fraud probability of 0.85 and a critical risk level.  \n5. The device profile used in this transaction matches the exact profile that was linked to a previously confirmed card‑not‑present fraud case (CC‑4314) involving the same customer, indicating reuse of a compromised device.  \n6. The customer, when contacted, denied authorizing the $234.07 purchase and confirmed that the card remains in their possession.  \n7. The combination of a high‑risk score, multiple online purchases in a short window, use of an anonymous proxy, and a device previously associated with confirmed fraud constitutes a strong indication of card‑not‑present fraud.  \n8. Accordingly, the case has been escalated for a formal SAR filing, the card has been blocked, and related cards will be monitored for further suspicious activity.",
     "subjects": [
-      "SC-03004-K943",
       "SC-03004",
+      "SC-03004-K943",
       "Mac OS X 10_15_5 Firefox 89.0 unit-caseCASE-004 | synth-os-case-004 | synth-brow"
     ],
     "total_amount_usd": 594.87,
@@ -184,8 +184,43 @@
       "2026-09-16"
     ]
   },
+  "nemotron": {
+    "model_proposal": {
+      "pattern": "card_not_present_fraud",
+      "confidence": 0.93,
+      "evidence_ids": [
+        "EV-6efddfcb",
+        "EV-dba007d3",
+        "EV-c42292ab",
+        "EV-9d0f8224",
+        "EV-1808f8e6"
+      ],
+      "rationale": "Multiple online transactions, high risk score, proxy/anonymous IP, prior fraud case and device profile linked to fraud, and analyst notes flagged card_not_present_fraud pattern."
+    },
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_fraud",
+      "fraud_probability": 0.854,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": true,
+    "model_override_reason": "",
+    "verification_draft": null,
+    "model_usage": {
+      "pattern_classifier": {
+        "prompt_tokens": 1181,
+        "completion_tokens": 927
+      }
+    }
+  },
   "stop_reason": "Fraud probability 0.85 ≥ 0.85 with 8 independent evidence families.",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.12
+  "tokens": 5095,
+  "latency_s": 24.87
 }

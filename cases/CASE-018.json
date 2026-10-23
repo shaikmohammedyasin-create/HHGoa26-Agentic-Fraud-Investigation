@@ -7,9 +7,9 @@
     "pattern": "card_not_present_fraud",
     "pattern_description": "Burst of 4 online transactions within 48h",
     "affected_txn_ids": [
-      "4012167",
       "4012169",
       "4012170",
+      "4012167",
       "4012168"
     ],
     "first_suspicious_txn_id": "4012167",
@@ -80,7 +80,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-37481cbd",
+        "ref": "evidence_request:ER-6a79ae5b",
         "entity_ids": [
           "SC-03018"
         ]
@@ -94,7 +94,7 @@
       "CC-4318",
       "CC-4315"
     ],
-    "summary": "Case CASE-018 investigated card_not_present_fraud activity on card SC-03018-K948 (customer SC-03018) around transaction 4012167 ($517.26, online). Assessed fraud probability 0.83 (CRITICAL risk) from 7 evidence items across 7 independent evidence families. Key signals: 4 online transactions in 48h window; 1 prior confirmed fraud case(s) on card/customer; device also used in 1 confirmed fraud case(s). Additional evidence requested (customer_validation, information value 0.75); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-018 (Card SC-03018-K948): The case involves card-not-present fraud on card SC-03018-K948 with four affected transactions totaling $1,686.36 exposure [EV-bac21570, EV-5c0fde60]. Real-time scoring flagged transaction 4012167 at 0.88 risk score [EV-bac21570]. Four online transactions occurred within 48 hours of the flagged transaction, deviating from the card's historical average of $421.59 per transaction [EV-08562653, EV-5c0fde60]. The customer confirmed they did not authorize the purchases and retained physical possession of the card [EV-71797074]. A prior fraud case (CC-4319) exists for this customer/card, and the device profile used matches a device seen in another confirmed fraud case [EV-77d5cdcc, EV-5f23e756]. Six similar card-not-present fraud cases were identified through pattern and keyword retrieval [EV-4526fa4d].",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-018"
   },
@@ -166,7 +166,7 @@
   "sar": {
     "file": true,
     "reason": "R2: confirmed fraud with exposure > $1,000",
-    "narrative": "Between 2026-09-13 and 2026-09-13, customer SC-03018 and card SC-03018-K948, device profile 'Samsung SM-G973F map400 Playlist for Android unit-caseCASE-018 | synth-os-case-018 | synth-browser-case-018 | synth-screen-case-018' were involved in 4 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $1686.36. The flagged transaction 4012167 of $517.26 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.83. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "Suspicious Activity Report for CASE-018 involving card-not-present fraud on card SC-03018-K948 belonging to customer SC-03018. The investigation identified four unauthorized card-not-present transactions (4012167, 4012168, 4012169, 4012170) totaling $1,686.36 in exposure [EV-bac21570, EV-5c0fde60]. Transaction 4012167 for $517.26 triggered a real-time risk score of 0.88, prompting review [EV-bac21570]. Analysis revealed four online transactions within a 48-hour window, significantly exceeding the card's historical transaction frequency and average amount of $421.59 [EV-08562653, EV-5c0fde60]. The customer reported no authorization of these transactions and confirmed physical possession of the card throughout the period [EV-71797074]. The device fingerprint used in the transactions matches a device profile associated with a prior confirmed fraud case [EV-5f23e756]. Customer SC-03018 has a prior confirmed fraud case (CC-4319) on record, indicating potential recurring targeting [EV-77d5cdcc]. Pattern analysis retrieved six additional card-not-present fraud cases with similar characteristics, suggesting a broader campaign [EV-4526fa4d]. The verdict of fraud is supported by the convergence of anomalous transaction velocity, device reuse across fraud cases, customer dispute, and historical pattern alignment. Recommended actions include card replacement, enhanced monitoring for related device fingerprints, and referral to law enforcement given the organized nature indicated by prior cases.",
     "subjects": [
       "SC-03018-K948",
       "SC-03018",
@@ -178,8 +178,48 @@
       "2026-09-13"
     ]
   },
+  "nemotron": {
+    "model_proposal": {
+      "pattern": "card_not_present_fraud",
+      "confidence": 0.92,
+      "evidence_ids": [
+        "EV-5c0fde60",
+        "EV-08562653",
+        "EV-77d5cdcc",
+        "EV-5f23e756",
+        "EV-4526fa4d",
+        "EV-71797074"
+      ],
+      "rationale": "Multiple high‑value online transactions, prior fraud linkage, same device in fraud case, and customer denial indicate card‑not‑present fraud."
+    },
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_fraud",
+      "fraud_probability": 0.834,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": true,
+    "model_override_reason": "",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1244,
+        "completion_tokens": 1845
+      },
+      "pattern_classifier": {
+        "prompt_tokens": 1116,
+        "completion_tokens": 898
+      }
+    }
+  },
   "stop_reason": "stopping criteria met; no further evidence request is decision-relevant",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.12
+  "tokens": 1845,
+  "latency_s": 35.28
 }

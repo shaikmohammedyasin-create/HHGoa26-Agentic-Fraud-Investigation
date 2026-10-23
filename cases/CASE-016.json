@@ -7,8 +7,8 @@
     "pattern": "card_not_present_new_device",
     "pattern_description": "Device marked New for this account; proxy/anonymous connection",
     "affected_txn_ids": [
-      "4012183",
       "4012184",
+      "4012183",
       "4012185"
     ],
     "first_suspicious_txn_id": "4012183",
@@ -94,7 +94,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-ec4cfe2a",
+        "ref": "evidence_request:ER-e855ee66",
         "entity_ids": [
           "SC-03016"
         ]
@@ -108,7 +108,7 @@
       "CC-4320",
       "CC-4322"
     ],
-    "summary": "Case CASE-016 investigated card_not_present_new_device activity on card SC-03016-K953 (customer SC-03016) around transaction 4012183 ($582.85, online). Assessed fraud probability 0.88 (CRITICAL risk) from 9 evidence items across 8 independent evidence families. Key signals: new device for this account; proxy/anonymous connection used; 3 online transactions in 48h window; 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 1.00); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-016 (Card SC-03016-K953): The real-time risk model scored transaction 4012183 at 0.89, triggering review [EV-048bb542]. The flagged transaction originated from a new device (Samsung SM-G973F) and an anonymous proxy connection in Argentina [EV-9356b9a0, EV-bc741f9a]. Three online transactions occurred on card SC-03016-K953 within 48 hours of the flagged transaction, with amounts exceeding the card's historical average of $476.11 [EV-e0dea8e9, EV-702cf05f]. The device profile has been linked to one prior confirmed fraud case, and the customer has one prior fraud case (CC-4324) [EV-79bae323, EV-1fddc06f]. The customer confirmed they did not authorize the purchases and retained physical possession of the card [EV-53a52240]. Six prior cases sharing the card_not_present_new_device pattern were identified for reference [EV-4ff33b55].",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-016"
   },
@@ -185,7 +185,7 @@
   "sar": {
     "file": true,
     "reason": "R2: confirmed fraud with exposure > $1,000",
-    "narrative": "Between 2026-09-21 and 2026-09-21, customer SC-03016 and card SC-03016-K953, device profile 'Samsung SM-G973F map400 Playlist for Android unit-caseCASE-016 | synth-os-case-016 | synth-browser-case-016 | synth-screen-case-016' were involved in 3 transaction(s) assessed as fraud (card_not_present_new_device pattern) with total exposure $1428.34. The flagged transaction 4012183 of $582.85 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 9 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_new_device pattern with assessed fraud probability 0.88. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "Suspicious Activity Report for CASE-016 involving card SC-03016-K953 and customer SC-03016. The investigation was initiated after the real-time risk model assigned a score of 0.89 to transaction 4012183 ($582.85, domestic) [EV-048bb542]. Analysis revealed the transaction was conducted via a previously unseen device (Samsung SM-G973F) and routed through an anonymous proxy IP located in Argentina [EV-9356b9a0, EV-bc741f9a]. Within a 48-hour window, three card-not-present transactions totaling $1,428.34 were identified, significantly above the card's historical average transaction value of $476.11 [EV-e0dea8e9, EV-702cf05f]. The device fingerprint has been associated with one prior confirmed fraud case, and the customer has a history of one prior fraud case (CC-4324) [EV-79bae323, EV-1fddc06f]. The customer reported no authorization of the disputed transactions and confirmed the physical card remained in their possession [EV-53a52240]. The pattern aligns with six prior closed cases categorized as card_not_present_new_device [EV-4ff33b55]. Based on the convergence of device anomaly, proxy usage, velocity, and customer disavowal, the case was closed with a fraud verdict and an exposure of $1,428.34. The activity exhibits hallmarks of account takeover with synthetic device generation and IP obfuscation. Recommend enhanced device fingerprinting and proxy detection controls for card-not-present channels.",
     "subjects": [
       "SC-03016",
       "SC-03016-K953",
@@ -197,8 +197,51 @@
       "2026-09-21"
     ]
   },
+  "nemotron": {
+    "model_proposal": {
+      "pattern": "card_not_present_new_device",
+      "confidence": 0.92,
+      "evidence_ids": [
+        "EV-048bb542",
+        "EV-702cf05f",
+        "EV-e0dea8e9",
+        "EV-9356b9a0",
+        "EV-bc741f9a",
+        "EV-1fddc06f",
+        "EV-79bae323",
+        "EV-4ff33b55",
+        "EV-53a52240"
+      ],
+      "rationale": "High risk score, new device, proxy, multiple recent online transactions, prior fraud case and closed cases by same device pattern indicate card‑not‑present fraud with a new device."
+    },
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_new_device",
+      "fraud_probability": 0.883,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": true,
+    "model_override_reason": "",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1399,
+        "completion_tokens": 1917
+      },
+      "pattern_classifier": {
+        "prompt_tokens": 1281,
+        "completion_tokens": 880
+      }
+    }
+  },
   "stop_reason": "Fraud probability 0.88 ≥ 0.85 with 8 independent evidence families.",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.12
+  "tokens": 1917,
+  "latency_s": 16.24
 }

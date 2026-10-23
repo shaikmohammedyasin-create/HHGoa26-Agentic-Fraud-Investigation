@@ -7,9 +7,9 @@
     "pattern": "card_not_present_fraud",
     "pattern_description": "Burst of 3 online transactions within 48h",
     "affected_txn_ids": [
-      "4012165",
       "4012164",
-      "4012166"
+      "4012166",
+      "4012165"
     ],
     "first_suspicious_txn_id": "4012164",
     "connected_card_ids": [],
@@ -86,7 +86,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-943f80df",
+        "ref": "evidence_request:ER-9a0b8543",
         "entity_ids": [
           "SC-03017"
         ]
@@ -100,7 +100,7 @@
       "CC-4314",
       "CC-4315"
     ],
-    "summary": "Case CASE-017 investigated card_not_present_fraud activity on card SC-03017-K947 (customer SC-03017) around transaction 4012164 ($359.09, online). Assessed fraud probability 0.84 (CRITICAL risk) from 8 evidence items across 8 independent evidence families. Key signals: proxy/anonymous connection used; 3 online transactions in 48h window; 1 prior confirmed fraud case(s) on card/customer; device also used in 1 confirmed fraud case(s). Additional evidence requested (customer_validation, information value 0.75); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-017 (Card SC-03017-K947): The case involves card-not-present fraud on card SC-03017-K947 with three affected transactions totaling $800.28 exposure. Real-time risk scoring flagged transaction 4012164 at 0.81 [EV-c2328ca1]. The flagged transaction used a proxy connection from Brazil [EV-1e87fb30] and occurred alongside two other online transactions within 48 hours [EV-fdd60ef0]. The card's transaction history shows an average spend of $266.76 [EV-6ba8917f]. The device profile used matches a prior confirmed fraud case [EV-e3022fe5], and the customer has one prior fraud case CC-4318 [EV-0c1500c9]. The customer denies making the purchases and reports the card in their possession [EV-8c610a04].",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-017"
   },
@@ -172,7 +172,7 @@
   "sar": {
     "file": true,
     "reason": "R6: confirmed fraud connected to shared device profile or card",
-    "narrative": "Between 2026-09-22 and 2026-09-22, customer SC-03017 and card SC-03017-K947, device profile 'Mac OS X 10_15_5 Firefox 89.0 unit-caseCASE-017 | synth-os-case-017 | synth-browser-case-017 | synth-screen-case-017' were involved in 3 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $800.28. The flagged transaction 4012164 of $359.09 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.84. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "Suspicious Activity Report for CASE-017 documents a card-not-present fraud pattern involving three transactions on card SC-03017-K947 totaling $800.28. The initial transaction 4012164 for $359.09 triggered a real-time risk score of 0.81 [EV-c2328ca1] and originated from a proxy connection in Brazil [EV-1e87fb30], indicating anonymized access. Two additional online transactions occurred within 48 hours [EV-fdd60ef0], deviating from the card's historical average of $266.76 per transaction [EV-6ba8917f]. The device fingerprint matches a device used in a prior confirmed fraud case [EV-e3022fe5], and the customer has a previous fraud case CC-4318 on record [EV-0c1500c9]. Pattern retrieval identified six similar card-not-present fraud cases [EV-0643f36b]. The customer disputes all three transactions and confirms physical possession of the card [EV-8c610a04]. The investigation concluded with a fraud verdict and the case is closed.",
     "subjects": [
       "SC-03017-K947",
       "SC-03017",
@@ -184,8 +184,32 @@
       "2026-09-22"
     ]
   },
+  "nemotron": {
+    "model_proposal": null,
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_fraud",
+      "fraud_probability": 0.836,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": false,
+    "model_override_reason": "No valid model proposal (model unavailable or output invalid); policy engine decision stands.",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1292,
+        "completion_tokens": 1449
+      }
+    }
+  },
   "stop_reason": "stopping criteria met; no further evidence request is decision-relevant",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.12
+  "tokens": 1449,
+  "latency_s": 33.26
 }

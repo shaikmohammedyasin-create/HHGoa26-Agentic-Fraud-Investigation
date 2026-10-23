@@ -1,0 +1,507 @@
+{
+  "seed": 20261030,
+  "closed_history_rows": 28,
+  "stratified_sample_n": 28,
+  "note": "The 28-case synthetic closed-case history is stratified at fixed seed 20261030; per CC-* case full-pipeline runs run through the same 20-case case-pack benchmark.",
+  "engine_fidelity": {
+    "n_cases": 20,
+    "verdict_accuracy": 1.0,
+    "pattern_accuracy": 1.0,
+    "per_case": [
+      {
+        "case_id": "CASE-001",
+        "label": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "engine": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-002",
+        "label": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "engine": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-003",
+        "label": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "engine": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-004",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-005",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-006",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-007",
+        "label": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "engine": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-008",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-009",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "undocumented"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "undocumented"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-010",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-011",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-012",
+        "label": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "engine": {
+          "verdict": "legitimate",
+          "pattern": "none"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-013",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-014",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "undocumented"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "undocumented"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-015",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-016",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-017",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-018",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_fraud"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-019",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "account_takeover"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "account_takeover"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      },
+      {
+        "case_id": "CASE-020",
+        "label": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "engine": {
+          "verdict": "fraud",
+          "pattern": "card_not_present_new_device"
+        },
+        "verdict_ok": true,
+        "pattern_ok": true
+      }
+    ]
+  },
+  "risk_threshold_baseline": {
+    "n": 20,
+    "sweep": [
+      {
+        "threshold": 0.3,
+        "tp": 15,
+        "fp": 5,
+        "fn": 0,
+        "f1": 0.8571
+      },
+      {
+        "threshold": 0.35,
+        "tp": 15,
+        "fp": 5,
+        "fn": 0,
+        "f1": 0.8571
+      },
+      {
+        "threshold": 0.4,
+        "tp": 15,
+        "fp": 5,
+        "fn": 0,
+        "f1": 0.8571
+      },
+      {
+        "threshold": 0.45,
+        "tp": 15,
+        "fp": 5,
+        "fn": 0,
+        "f1": 0.8571
+      },
+      {
+        "threshold": 0.5,
+        "tp": 15,
+        "fp": 5,
+        "fn": 0,
+        "f1": 0.8571
+      },
+      {
+        "threshold": 0.55,
+        "tp": 15,
+        "fp": 5,
+        "fn": 0,
+        "f1": 0.8571
+      },
+      {
+        "threshold": 0.6,
+        "tp": 15,
+        "fp": 2,
+        "fn": 0,
+        "f1": 0.9375
+      },
+      {
+        "threshold": 0.65,
+        "tp": 15,
+        "fp": 1,
+        "fn": 0,
+        "f1": 0.9677
+      },
+      {
+        "threshold": 0.7,
+        "tp": 15,
+        "fp": 0,
+        "fn": 0,
+        "f1": 1.0
+      },
+      {
+        "threshold": 0.75,
+        "tp": 15,
+        "fp": 0,
+        "fn": 0,
+        "f1": 1.0
+      }
+    ],
+    "best": {
+      "threshold": 0.7,
+      "tp": 15,
+      "fp": 0,
+      "fn": 0,
+      "f1": 1.0
+    }
+  },
+  "ablation_propose_decide": {
+    "n_evaluated": 20,
+    "model_agreed": 6,
+    "engine_overruled_model": 3,
+    "no_model_proposal": 11,
+    "agreement_rate": 0.6667,
+    "override_rate": 0.3333
+  },
+  "cost_latency": {
+    "available": true,
+    "calls_logged": 63,
+    "successes": 62,
+    "failures": 1,
+    "prompt_tokens_total": 61538,
+    "completion_tokens_total": 62045,
+    "latency_ms_p50": 6207.9,
+    "latency_ms_p95": 27810.1,
+    "by_role": {
+      "pattern_classifier": 24,
+      "verification_request_drafter": 4,
+      "case_narrative_and_sar_draft": 25,
+      "analyst_qa": 8,
+      "dbg1": 1,
+      "dbg2": 1
+    }
+  },
+  "plain_llm_baseline": {
+    "n": 20,
+    "accuracy": 0.25,
+    "per_case": [
+      {
+        "case_id": "CASE-001",
+        "label": "legitimate",
+        "baseline": "legitimate",
+        "ok": true
+      },
+      {
+        "case_id": "CASE-002",
+        "label": "legitimate",
+        "baseline": "legitimate",
+        "ok": true
+      },
+      {
+        "case_id": "CASE-003",
+        "label": "legitimate",
+        "baseline": "legitimate",
+        "ok": true
+      },
+      {
+        "case_id": "CASE-007",
+        "label": "legitimate",
+        "baseline": "legitimate",
+        "ok": true
+      },
+      {
+        "case_id": "CASE-012",
+        "label": "legitimate",
+        "baseline": "legitimate",
+        "ok": true
+      },
+      {
+        "case_id": "CASE-004",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-006",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-008",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-011",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-017",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-018",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-005",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-010",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-013",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-015",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-016",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-020",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-009",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-014",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      },
+      {
+        "case_id": "CASE-019",
+        "label": "fraud",
+        "baseline": "legitimate",
+        "ok": false
+      }
+    ]
+  }
+}

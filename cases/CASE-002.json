@@ -71,7 +71,7 @@
       {
         "claim": "Customer response (simulated): Customer confirms they authorized this purchase from their personal account.",
         "source": "customer",
-        "ref": "evidence_request:ER-add3e907",
+        "ref": "evidence_request:ER-c3fe3c11",
         "entity_ids": [
           "SC-03002"
         ]
@@ -80,7 +80,7 @@
     "similar_prior_cases": [
       "CC-4310"
     ],
-    "summary": "Case CASE-002 investigated none activity on card SC-03002-K939 (customer SC-03002) around transaction 4012148 ($147.84, in_person). Assessed fraud probability 0.05 (LOW risk) from 5 evidence items across 5 independent evidence families. Additional evidence requested (customer_validation, information value 1.00); response: Customer confirms they authorized this purchase from their personal account. Final actions: CLOSE_NO_FRAUD.",
+    "summary": "Case CASE-002 (Card SC-03002-K939): The investigation was triggered by a real-time risk score of 0.61 for transaction 4012148 ($147.84) [EV-578099b6]. The card SC-03002-K939 had one prior transaction with the same average amount [EV-ac05cb8b]. The device profile (IOS Device (Apple) unit-04114 | Windows 11 | firefox 122.0 | 1440x900) was shared across 20 other cards, including several connected to this case [EV-1b2f788a]. A prior case for this customer was cleared as legitimate [EV-4801f796]. The customer confirmed authorizing the purchase [EV-03177d91]. The case was closed as legitimate with no exposure.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-002"
   },
@@ -132,7 +132,7 @@
         "reason": "R3: customer confirmed the transaction"
       }
     ],
-    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: FILE_REPORT, CREATE_CASE, ESCALATE_TO_ANALYST"
+    "what_changed": "Added: CLOSE_NO_FRAUD; Removed: FILE_REPORT, ESCALATE_TO_ANALYST, CREATE_CASE"
   },
   "sar": {
     "file": false,
@@ -142,8 +142,29 @@
     "total_amount_usd": 0.0,
     "activity_dates": []
   },
+  "nemotron": {
+    "model_proposal": null,
+    "policy_decision": {
+      "verdict": "legitimate",
+      "pattern": "none",
+      "fraud_probability": 0.053,
+      "actions": [
+        "CLOSE_NO_FRAUD"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": false,
+    "model_override_reason": "No valid model proposal (model unavailable or output invalid); policy engine decision stands.",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1098,
+        "completion_tokens": 995
+      }
+    }
+  },
   "stop_reason": "Fraud probability 0.05 ≤ 0.15; activity consistent with legitimate use.",
   "tool_calls": 15,
-  "tokens": 0,
-  "latency_s": 0.1
+  "tokens": 995,
+  "latency_s": 14.98
 }

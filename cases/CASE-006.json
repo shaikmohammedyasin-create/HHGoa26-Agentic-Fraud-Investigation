@@ -7,8 +7,8 @@
     "pattern": "card_not_present_fraud",
     "pattern_description": "Burst of 2 online transactions within 48h",
     "affected_txn_ids": [
-      "4012156",
-      "4012155"
+      "4012155",
+      "4012156"
     ],
     "first_suspicious_txn_id": "4012155",
     "connected_card_ids": [],
@@ -84,7 +84,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-8b65b7a3",
+        "ref": "evidence_request:ER-86ed9d1e",
         "entity_ids": [
           "SC-03006"
         ]
@@ -98,7 +98,7 @@
       "CC-4314",
       "CC-4318"
     ],
-    "summary": "Case CASE-006 investigated card_not_present_fraud activity on card SC-03006-K944 (customer SC-03006) around transaction 4012155 ($180.60, online). Assessed fraud probability 0.84 (CRITICAL risk) from 8 evidence items across 8 independent evidence families. Key signals: proxy/anonymous connection used; 2 online transactions in 48h window; 1 prior confirmed fraud case(s) on card/customer; device also used in 1 confirmed fraud case(s). Additional evidence requested (customer_validation, information value 0.75); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-006 (Card SC-03006-K944): The case involves two transactions (4012155, 4012156) totaling $346.15 exposure, flagged by real-time risk scoring at 0.83 for transaction 4012155 [EV-da6fa101]. The card SC-03006-K944 showed two online transactions within 48 hours of the flagged transaction [EV-423cfed4], with a proxy/anonymous connection from Spain used for transaction 4012155 [EV-c21271a8]. The device profile associated with the transaction appears in one prior confirmed fraud case [EV-2e608970], and the customer has one prior confirmed fraud case CC-4315 [EV-bc4abde3]. The customer reported they did not make these purchases and still possess the card [EV-cc60f3b8]. Six prior closed cases with the same card-not-present fraud pattern were retrieved for reference [EV-416d0137]. The investigation concluded with a fraud verdict and card_not_present_fraud pattern.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-006"
   },
@@ -170,7 +170,7 @@
   "sar": {
     "file": true,
     "reason": "R6: confirmed fraud connected to shared device profile or card",
-    "narrative": "Between 2026-09-18 and 2026-09-18, customer SC-03006 and card SC-03006-K944, device profile 'Mac OS X 10_15_5 Firefox 89.0 unit-caseCASE-006 | synth-os-case-006 | synth-browser-case-006 | synth-screen-case-006' were involved in 2 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $346.15. The flagged transaction 4012155 of $180.60 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 8 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.84. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "Suspicious Activity Report for CASE-006 involving card-not-present fraud on card SC-03006-K944. Two transactions (4012155 for $180.60 and 4012156) totaling $346.15 exposure were identified through real-time risk scoring at 0.83 [EV-da6fa101]. Transaction 4012155 originated from a proxy/anonymous connection in Spain [EV-c21271a8], and two online transactions occurred within 48 hours on the same card [EV-423cfed4]. The device fingerprint (Mac OS X 10_15_5 Firefox 89.0 with synthetic identifiers) matches one prior confirmed fraud case [EV-2e608970]. The customer SC-03006 has a prior confirmed fraud case CC-4315 [EV-bc4abde3] and denies authorizing the transactions while confirming physical card possession [EV-cc60f3b8]. The transaction amounts are consistent with the card's historical average of $173.07 [EV-c312af36]. Six prior card-not-present fraud cases were referenced for pattern consistency [EV-416d0137]. The investigation confirmed fraud verdict with card_not_present_fraud pattern. Funds totaling $346.15 are considered exposed. Recommend enhanced monitoring for card SC-03006-K944 and customer SC-03006.",
     "subjects": [
       "SC-03006",
       "SC-03006-K944",
@@ -182,8 +182,32 @@
       "2026-09-18"
     ]
   },
+  "nemotron": {
+    "model_proposal": null,
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_fraud",
+      "fraud_probability": 0.838,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": false,
+    "model_override_reason": "No valid model proposal (model unavailable or output invalid); policy engine decision stands.",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1279,
+        "completion_tokens": 1710
+      }
+    }
+  },
   "stop_reason": "stopping criteria met; no further evidence request is decision-relevant",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.11
+  "tokens": 1710,
+  "latency_s": 16.56
 }

@@ -92,7 +92,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-696fda91",
+        "ref": "evidence_request:ER-0db6b159",
         "entity_ids": [
           "SC-03013"
         ]
@@ -106,7 +106,7 @@
       "CC-4323",
       "CC-4320"
     ],
-    "summary": "Case CASE-013 investigated card_not_present_new_device activity on card SC-03013-K951 (customer SC-03013) around transaction 4012178 ($1215.69, online). Assessed fraud probability 0.85 (CRITICAL risk) from 9 evidence items across 8 independent evidence families. Key signals: new device for this account; proxy/anonymous connection used; 2 online transactions in 48h window; 1 prior confirmed fraud case(s) on card/customer. Additional evidence requested (customer_validation, information value 1.00); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-013 (Card SC-03013-K951): The real-time risk model scored transaction 4012178 ($1,215.69, domestic) at 0.85, triggering review [EV-f59b3cc7, query:trigger:risk_score]. The card SC-03013-K951 showed two prior transactions averaging $1,002.95 and two online transactions within 48 hours of the flagged transaction [EV-670616e5, query:card_transaction_history; EV-b06a1d71, query:card_window]. The transaction originated from a new device (Samsung SM-G973F map400 Playlist for Android) and an anonymous proxy IP in Argentina [EV-d6a20171, query:transaction_identity; EV-30b53252, query:transaction_identity]. The customer reported they did not make the purchases and still possessed the card [EV-508e977c, evidence_request:ER-0db6b159]. One prior confirmed fraud case (CC-4322) was linked to this customer/card, and the same device profile appeared in one confirmed fraud case [EV-17323360, query:closed_cases_for_customer; EV-33d48d97, query:closed_cases_by_device]. Six prior closed cases matched the card_not_present_new_device pattern [EV-85170f1c, retrieval:pattern+keyword].",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-013"
   },
@@ -183,7 +183,7 @@
   "sar": {
     "file": true,
     "reason": "R2: confirmed fraud with exposure > $1,000",
-    "narrative": "Between 2026-09-14 and 2026-09-14, customer SC-03013 and card SC-03013-K951, device profile 'Samsung SM-G973F map400 Playlist for Android unit-caseCASE-013 | synth-os-case-013 | synth-browser-case-013 | synth-screen-case-013' were involved in 2 transaction(s) assessed as fraud (card_not_present_new_device pattern) with total exposure $2005.89. The flagged transaction 4012178 of $1215.69 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 9 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_new_device pattern with assessed fraud probability 0.85. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "Suspicious Activity Report for CASE-013 involving card SC-03013-K951 and transactions 4012178 ($1,215.69) and 4012179 (amount not in evidence) totaling $2,005.89 exposure. The real-time risk model assigned a score of 0.85 to transaction 4012178, indicating elevated fraud probability [EV-f59b3cc7]. Transaction 4012178 originated from a previously unseen device (Samsung SM-G973F map400 Playlist for Android) and an anonymous proxy IP located in Argentina, both consistent with card-not-present fraud [EV-d6a20171, EV-30b53252]. The customer confirmed they did not authorize the transactions and retained physical possession of the card [EV-508e977c]. Historical analysis revealed one prior confirmed fraud case (CC-4322) associated with this customer/card and the same device profile appearing in another confirmed fraud case [EV-17323360, EV-33d48d97]. Pattern retrieval identified six prior closed cases sharing the card_not_present_new_device pattern, supporting the classification [EV-85170f1c]. The investigation concluded with a fraud verdict and the case was closed with total exposure of $2,005.89. No further action is recommended beyond standard recovery procedures.",
     "subjects": [
       "SC-03013-K951",
       "SC-03013",
@@ -195,8 +195,32 @@
       "2026-09-14"
     ]
   },
+  "nemotron": {
+    "model_proposal": null,
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_new_device",
+      "fraud_probability": 0.852,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": false,
+    "model_override_reason": "No valid model proposal (model unavailable or output invalid); policy engine decision stands.",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1398,
+        "completion_tokens": 1941
+      }
+    }
+  },
   "stop_reason": "Fraud probability 0.85 ≥ 0.85 with 8 independent evidence families.",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.13
+  "tokens": 1941,
+  "latency_s": 31.39
 }

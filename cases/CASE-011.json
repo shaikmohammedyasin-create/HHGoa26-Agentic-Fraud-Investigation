@@ -8,9 +8,9 @@
     "pattern_description": "Burst of 4 online transactions within 48h",
     "affected_txn_ids": [
       "4012160",
-      "4012163",
       "4012162",
-      "4012161"
+      "4012161",
+      "4012163"
     ],
     "first_suspicious_txn_id": "4012160",
     "connected_card_ids": [],
@@ -80,7 +80,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-e759a0f9",
+        "ref": "evidence_request:ER-d93f59fa",
         "entity_ids": [
           "SC-03011"
         ]
@@ -94,7 +94,7 @@
       "CC-4318",
       "CC-4315"
     ],
-    "summary": "Case CASE-011 investigated card_not_present_fraud activity on card SC-03011-K946 (customer SC-03011) around transaction 4012160 ($725.62, online). Assessed fraud probability 0.84 (CRITICAL risk) from 7 evidence items across 7 independent evidence families. Key signals: 4 online transactions in 48h window; 1 prior confirmed fraud case(s) on card/customer; device also used in 1 confirmed fraud case(s). Additional evidence requested (customer_validation, information value 0.75); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "The investigation for CASE-011 was triggered by a real-time risk score of 0.81 on transaction 4012160 ($725.62, domestic) [EV-2b8cb897]. Historical analysis of card SC-03011-K946 showed four prior transactions averaging $598.65 [EV-b4343e29] and four online transactions within 48 hours of the flagged transaction [EV-e9ae9111]. A prior confirmed fraud case (CC-4317) was linked to the same customer or card [EV-f5855bb6], and the device profile used in the suspicious transactions appeared in another confirmed fraud case [EV-df0b4651]. Pattern retrieval returned six prior card-not-present fraud cases [EV-119dd770]. The customer confirmed they did not authorize the purchases and retained physical possession of the card [EV-96fd05f6]. The case was closed with a fraud verdict, pattern card_not_present_fraud, exposure $2,394.60 across four transactions.",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-011"
   },
@@ -166,7 +166,7 @@
   "sar": {
     "file": true,
     "reason": "R2: confirmed fraud with exposure > $1,000",
-    "narrative": "Between 2026-09-13 and 2026-09-13, customer SC-03011 and card SC-03011-K946, device profile 'Windows Desktop MatchOS windows x64 dggfwmdd unit-caseCASE-011 | synth-os-case-011 | synth-browser-case-011 | synth-screen-case-011' were involved in 4 transaction(s) assessed as fraud (card_not_present_fraud pattern) with total exposure $2394.60. The flagged transaction 4012160 of $725.62 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the card_not_present_fraud pattern with assessed fraud probability 0.84. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "This Suspicious Activity Report covers CASE-011, a confirmed card-not-present fraud involving card SC-03011-K946 and customer SC-03011. The alert originated from a real-time model scoring transaction 4012160 at 0.81 risk [EV-2b8cb897]. Investigation revealed four online transactions within a 48-hour window [EV-e9ae9111], deviating from the card's historical average of $598.65 over four prior transactions [EV-b4343e29]. The device fingerprint associated with the suspicious activity matched a device seen in a prior confirmed fraud case [EV-df0b4651]. The customer reported no authorization of the transactions and confirmed physical card possession [EV-96fd05f6]. A prior fraud case (CC-4317) was linked to the same customer or card [EV-f5855bb6], and six additional card-not-present fraud cases were identified through pattern matching [EV-119dd770]. Total exposure across four transactions (4012160, 4012161, 4012162, 4012163) was $2,394.60. The case was adjudicated as fraud with a probability of 0.836. No further action is recommended beyond standard recovery procedures.",
     "subjects": [
       "SC-03011-K946",
       "SC-03011",
@@ -178,8 +178,47 @@
       "2026-09-13"
     ]
   },
+  "nemotron": {
+    "model_proposal": {
+      "pattern": "card_not_present_fraud",
+      "confidence": 0.9,
+      "evidence_ids": [
+        "EV-119dd770",
+        "EV-e9ae9111",
+        "EV-b4343e29",
+        "EV-f5855bb6",
+        "EV-df0b4651"
+      ],
+      "rationale": "Multiple online transactions, high risk score, prior fraud cases, and device linked to fraud indicate card-not-present fraud."
+    },
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "card_not_present_fraud",
+      "fraud_probability": 0.836,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": true,
+    "model_override_reason": "",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1231,
+        "completion_tokens": 1769
+      },
+      "pattern_classifier": {
+        "prompt_tokens": 1104,
+        "completion_tokens": 1014
+      }
+    }
+  },
   "stop_reason": "stopping criteria met; no further evidence request is decision-relevant",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.12
+  "tokens": 1769,
+  "latency_s": 22.34
 }

@@ -7,10 +7,10 @@
     "pattern": "undocumented",
     "pattern_description": "Activity does not match any of the five known fraud patterns, but the evidence shows coordinated abuse across accounts: 17 other card(s) share the device profile used here. It is reported as undocumented rather than forced into a known category, per policy R9.",
     "affected_txn_ids": [
-      "4012230",
-      "4012229",
+      "4012231",
       "4012211",
-      "4012231"
+      "4012229",
+      "4012230"
     ],
     "first_suspicious_txn_id": "4012231",
     "connected_card_ids": [
@@ -98,7 +98,7 @@
       {
         "claim": "Customer response (simulated): Customer states they did not make these purchases and still has the card in their possession.",
         "source": "customer",
-        "ref": "evidence_request:ER-60f3ee02",
+        "ref": "evidence_request:ER-62f2bc67",
         "entity_ids": [
           "SC-03014"
         ]
@@ -107,7 +107,7 @@
     "similar_prior_cases": [
       "CC-4327"
     ],
-    "summary": "Case CASE-014 investigated undocumented activity on card SC-03014-K956 (customer SC-03014) around transaction 4012211 ($1152.70, online). Assessed fraud probability 0.82 (CRITICAL risk) from 7 evidence items across 7 independent evidence families. Key signals: 4 online transactions in 48h window; device component contains 4 confirmed-fraud cards. Additional evidence requested (customer_validation, information value 1.00); response: Customer states they did not make these purchases and still has the card in their possession. Final actions: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS.",
+    "summary": "Case CASE-014 (Card SC-03014-K956): The case was triggered by a real-time risk score of 0.83 on transaction 4012211 ($1,152.70) [EV-28b3c385]. The flagged card SC-03014-K956 showed four online transactions within 48 hours, deviating from its historical average of $290.54 [EV-74fd18a5, EV-1e019e4c]. Device fingerprint analysis revealed the iOS device profile was shared across 17 other cards, including the ten connected cards in this case [EV-d09d544c]. Fraud-ring analysis confirmed four cards in that device cluster had prior fraud verdicts, indicating an 18-card ring [EV-08118e6b]. The customer denied authorizing the purchases and confirmed physical card possession [EV-9e53efe9]. One prior case for this customer was cleared as legitimate, but the current pattern was assessed as undocumented fraud with 82.4% probability [EV-4beb6489].",
     "written_to_graph": true,
     "graph_case_id": "CASE-2026-CASE-014"
   },
@@ -179,15 +179,15 @@
   "sar": {
     "file": true,
     "reason": "R2: confirmed fraud with exposure > $1,000",
-    "narrative": "Between 2026-09-15 and 2026-09-15, customer SC-03014 and card SC-03014-K956, connected cards SC-09000-K1, SC-09001-K1, SC-09002-K1, device profile 'IOS Device (Apple) unit-case-014-ring | synth-os-case-014-ring | synth-browser-case-014 | synth-screen-case-014' were involved in 4 transaction(s) assessed as fraud (undocumented pattern) with total exposure $1162.14. The flagged transaction 4012211 of $1152.70 (online, product W) is inconsistent with the cardholder's established history. Evidence supporting this assessment comprises 7 items including graph-retrieved transaction history, device records and prior case memory. The activity is suspicious because it matches the undocumented pattern with assessed fraud probability 0.82. Actions taken or pending: BLOCK_CARD, CREATE_CASE, FILE_REPORT, MONITOR_CONNECTED_CARDS. This report is filed under policy rule R2.",
+    "narrative": "Suspicious Activity Report for CASE-014 documents a coordinated fraud ring operating through a shared iOS device fingerprint. The investigation was initiated when transaction 4012211 received a real-time risk score of 0.83, amounting to $1,152.70 [EV-28b3c385]. The originating card SC-03014-K956 exhibited anomalous velocity with four online transactions in 48 hours, far exceeding its $290.54 historical average [EV-74fd18a5, EV-1e019e4c]. Device linkage analysis identified 17 additional cards sharing the identical device profile, encompassing all ten connected cards in this case [EV-d09d544c]. Within that device cluster, four cards carried confirmed fraud verdicts, establishing an 18-card fraud ring [EV-08118e6b]. The customer reported no authorization for the disputed transactions and retained physical possession of their card [EV-9e53efe9]. Total exposure across four transactions reaches $1,162.14 with an assessed fraud probability of 82.4%. The fraud pattern is classified as undocumented, with one similar prior case CC-4327 referenced for pattern continuity. No legitimate travel or purchase explanation was identified for the current activity, contrasting with one previously cleared case for this customer [EV-4beb6489]. The evidence supports a finding of organized card-not-present fraud facilitated by device compromise or credential sharing across the ring.",
     "subjects": [
-      "SC-09000-K1",
       "SC-09002-K1",
+      "SC-09000-K1",
+      "SC-09004-K2",
       "SC-03014-K956",
       "SC-09003-K1",
       "SC-09001-K1",
       "SC-03014",
-      "SC-09004-K2",
       "IOS Device (Apple) unit-case-014-ring | synth-os-case-014-ring | synth-browser-c"
     ],
     "total_amount_usd": 1162.14,
@@ -196,8 +196,32 @@
       "2026-09-15"
     ]
   },
+  "nemotron": {
+    "model_proposal": null,
+    "policy_decision": {
+      "verdict": "fraud",
+      "pattern": "undocumented",
+      "fraud_probability": 0.824,
+      "actions": [
+        "BLOCK_CARD",
+        "CREATE_CASE",
+        "FILE_REPORT",
+        "MONITOR_CONNECTED_CARDS"
+      ],
+      "decided_by": "deterministic policy engine (rules R1-R10)"
+    },
+    "model_agreed": false,
+    "model_override_reason": "No valid model proposal (model unavailable or output invalid); policy engine decision stands.",
+    "verification_draft": null,
+    "model_usage": {
+      "case_narrative_and_sar_draft": {
+        "prompt_tokens": 1316,
+        "completion_tokens": 1743
+      }
+    }
+  },
   "stop_reason": "stopping criteria met; no further evidence request is decision-relevant",
   "tool_calls": 16,
-  "tokens": 0,
-  "latency_s": 0.12
+  "tokens": 1743,
+  "latency_s": 22.31
 }
