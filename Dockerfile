@@ -1,6 +1,6 @@
 # HHGOA Agentic Fraud Investigation — single-container image.
-# FastAPI serves the API AND the frontend/ dashboard statically, so one
-# container runs the whole application.
+# API-only single-container image; the Sentinel UI (sentinel-ui/) is a
+# separate Next.js app.
 #
 # Judge-friendly defaults (this is a demo image):
 #   - Only the publishable synthetic data is copied in (data/synthetic/).
@@ -22,7 +22,6 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend ./backend
-COPY frontend ./frontend
 COPY cases ./cases
 COPY prompts ./prompts
 COPY scripts ./scripts

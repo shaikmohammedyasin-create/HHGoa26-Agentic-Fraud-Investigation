@@ -966,16 +966,6 @@ def get_risk_analysis(case_id: str):
     )
 
 
-# ─── Static Frontend Mount ───────────────────────────────────────────────────
-
-from pathlib import Path
-from fastapi.staticfiles import StaticFiles
-
-frontend_dir = Path(__file__).resolve().parents[1] / "frontend"
-if frontend_dir.exists():
-    app.mount("/", StaticFiles(directory=str(frontend_dir), html=True), name="frontend")
-
-
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def _reconstruct(payload: dict) -> Any:
