@@ -24,6 +24,7 @@ __pycache__/
 /closed_cases_history.csv
 /case_pack.csv
 data/*
+!data/README.md
 !data/synthetic/
 
 # Environment, secrets and keys
