@@ -3,6 +3,12 @@
 venv/
 env/
 
+# Node
+node_modules/
+
+# Tool caches
+.ruff_cache/
+
 # Python Cache
 __pycache__/
 *.py[cod]
@@ -10,12 +16,19 @@ __pycache__/
 *.pytest_cache/
 .pytest_cache/
 
-# Large dataset files (>100MB GitHub limit)
+# Large dataset files (round-provided / derived data - not redistributable)
 transactions.csv
+identity.csv
+closed_cases_history.csv
+case_pack.csv
 data/
+data/raw/
 
-# Environment and secrets
+# Environment, secrets and keys
 .env
+.env.local
+*.pem
+*.key
 
 # System & IDE files
 .DS_Store
