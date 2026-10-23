@@ -30,8 +30,15 @@ data/*
 # Environment, secrets and keys
 .env
 .env.local
+.env.*.local
 *.pem
 *.key
+*.pfx
+*.p12
+data/raw/
+
+# Local agent-session state (never published)
+.claude/settings.local.json
 
 # System & IDE files
 .DS_Store
