@@ -68,7 +68,7 @@ class TestFailureScenarios:
             res = run_investigation("CASE-001", force=True)
             assert res.llm_used is False
             assert len(res.summary) > 20
-            assert "C12382" in res.summary
+            assert res.card_id in res.summary
 
     def test_tigergraph_unavailable_in_strict_mode(self):
         """In strict mode, TigerGraph failures must raise RuntimeError rather than silently falling back."""
@@ -76,7 +76,8 @@ class TestFailureScenarios:
             with patch.object(settings, "graph_backend", "tigergraph"):
                 with patch("backend.graph.tg_adapter.get_transaction", side_effect=Exception("Connection refused")):
                     with pytest.raises(RuntimeError, match="TigerGraph execution failed in strict mode"):
-                        query_router.get_transaction("3514030")
+                        trigger = query_router.get_case_trigger("CASE-006")
+                        query_router.get_transaction(trigger["flagged_txn_id"])
 
 
 class TestLifecycleAndProvenance:

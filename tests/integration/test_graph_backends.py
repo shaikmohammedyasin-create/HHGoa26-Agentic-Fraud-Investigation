@@ -95,9 +95,10 @@ class TestRouterSelection:
 
         monkeypatch.setattr(tg_adapter, "get_transaction", boom)
         # Fallback must return the real local row, not None and not an error.
-        txn = query_router.get_transaction("3514030")
+        trigger = query_router.get_case_trigger("CASE-006")
+        txn = query_router.get_transaction(trigger["flagged_txn_id"])
         assert txn is not None
-        assert txn.txn_id == "3514030"
+        assert txn.txn_id == trigger["flagged_txn_id"]
 
     def test_health_reports_both_backends_when_tg(self):
         self._set_backend("tigergraph")

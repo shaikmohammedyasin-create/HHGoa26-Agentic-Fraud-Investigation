@@ -6,6 +6,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
+from backend.graph import query_router as graph
 from backend.main import app
 
 
@@ -84,17 +85,22 @@ class TestInvestigationEndpoints:
 
 class TestGraphEndpoints:
     def test_get_graph_transaction(self, client):
-        r = client.get("/graph/transaction/3514030")
+        trigger = graph.get_case_trigger("CASE-006")
+        assert trigger is not None
+        txn_id = trigger["flagged_txn_id"]
+        r = client.get(f"/graph/transaction/{txn_id}")
         assert r.status_code == 200
         data = r.json()
-        assert data["txn_id"] == "3514030"
+        assert data["txn_id"] == txn_id
 
     def test_get_customer_cards(self, client):
-        r = client.get("/graph/customer/C12382/cards")
+        trigger = graph.get_case_trigger("CASE-006")
+        customer_id = trigger["customer_id"]
+        r = client.get(f"/graph/customer/{customer_id}/cards")
         assert r.status_code == 200
         data = r.json()
         assert isinstance(data, list)
-        assert "C12382-K1" in data
+        assert trigger["card_id"] in data
 
 
 class TestBenchmarkEndpoints:

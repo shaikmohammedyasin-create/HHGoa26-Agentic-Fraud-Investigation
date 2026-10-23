@@ -27,11 +27,21 @@ def completed_case():
     return run_investigation("CASE-002", force=True)
 
 
+def _dataset_refs(case_id: str = "CASE-006"):
+    """Resolve a real (txn_id, card_id, customer_id) triple from the loaded dataset."""
+    trigger = graph.get_case_trigger(case_id)
+    assert trigger is not None, f"case pack trigger {case_id} missing"
+    return (trigger["flagged_txn_id"], trigger["card_id"], trigger["customer_id"])
+
+
 class TestRetrievalIsReal:
     """Retrieval must return actual rows from the dataset, not constants."""
 
     def test_closed_case_retrieval_returns_dataset_rows(self):
-        rows = graph.get_closed_cases_for_customer("C12382")
+        # Pick a customer that has closed cases, using the dataset itself.
+        sample = graph.get_closed_cases_by_pattern("card_not_present_fraud")
+        assert len(sample) > 0
+        rows = graph.get_closed_cases_for_customer(sample[0].customer_id)
         assert len(rows) > 0
         for r in rows:
             assert r.case_id.startswith("CC-")
@@ -49,7 +59,8 @@ class TestRetrievalIsReal:
             assert r.pattern == "card_testing"
 
     def test_graph_traversal_returns_transactions(self):
-        txn = graph.get_transaction("3514030")
+        txn_id, _, _ = _dataset_refs()
+        txn = graph.get_transaction(txn_id)
         assert txn is not None
         hist = graph.get_card_transaction_history(txn.card_id, limit=5)
         assert len(hist) > 0
@@ -58,20 +69,22 @@ class TestRetrievalIsReal:
 
 class TestContextGrounding:
     def _case(self):
+        txn_id, card_id, customer_id = _dataset_refs()
         t = TriggerRecord(
             case_id="CTX-1", opened_at=datetime(2016, 11, 1),
             trigger_type=TriggerType.risk_score, trigger_text="scored 0.61",
-            flagged_txn_id="3514030", card_id="C12382-K1", customer_id="C12382",
+            flagged_txn_id=txn_id, card_id=card_id, customer_id=customer_id,
             risk_score=0.61,
         )
         return InvestigationCase(
-            case_id="CTX-1", trigger=t, customer_id="C12382",
-            card_id="C12382-K1", flagged_txn_id="3514030",
+            case_id="CTX-1", trigger=t, customer_id=customer_id,
+            card_id=card_id, flagged_txn_id=txn_id,
         )
 
     def test_context_is_case_specific(self):
         case = self._case()
-        txn = graph.get_transaction("3514030")
+        txn = graph.get_transaction(case.flagged_txn_id)
+        assert txn is not None
         ctx = build_context(
             case=case, flagged_txn=txn, flagged_identity=None,
             card_history=graph.get_card_transaction_history(case.card_id, limit=5),
@@ -82,7 +95,7 @@ class TestContextGrounding:
         )
         # Grounding: the case id and the real entities appear
         assert ctx.case_id == "CTX-1"
-        assert ctx.flagged_transaction["txn_id"] == "3514030"
+        assert ctx.flagged_transaction["txn_id"] == case.flagged_txn_id
         assert ctx.flagged_transaction["amount_usd"] == txn.amount
         assert ctx.detected_pattern == "card_testing"
         # Policy + pattern knowledge is attached (the R in RAG)
@@ -92,7 +105,7 @@ class TestContextGrounding:
 
     def test_prompt_contains_retrieved_evidence_not_template(self):
         case = self._case()
-        txn = graph.get_transaction("3514030")
+        txn = graph.get_transaction(case.flagged_txn_id)
         case.evidence = [EvidenceItem(
             case_id="CTX-1", claim="REAL EVIDENCE MARKER 98765",
             source=EvidenceSource.graph, ref="query:x",
@@ -122,8 +135,11 @@ class TestOrchestratorGrounding:
             assert ev.ref != "", "evidence item without provenance ref"
             assert ev.entity_ids is not None
 
-    def test_retrieval_evidence_is_present(self, completed_case):
-        refs = [ev.ref for ev in completed_case.evidence]
+    def test_retrieval_evidence_is_present(self):
+        # A fraud-pattern case must trigger the round-2 similarity retrieval;
+        # CASE-006 has a non-none pattern with closed cases in the dataset.
+        fraud_case = run_investigation("CASE-006", force=True)
+        refs = [ev.ref for ev in fraud_case.evidence]
         assert any(r.startswith("retrieval:") for r in refs), \
             "no retrieval-sourced evidence — GraphRAG not wired"
 
